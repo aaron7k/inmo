@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'react-phone-number-input/style.css';
+
+.PhoneInput {
+  @apply w-full flex gap-2 relative;
+}
+
+.PhoneInputInput {
+  @apply flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2df9b4] focus:border-transparent;
+  position: absolute;
+  left: 130px;
+  right: 5px;
+}
+
+.PhoneInputCountrySelect {
+  @apply py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2df9b4] focus:border-transparent;
+ position: absolute;
+  left: 5px;
+  width: 120px;
+  height: 45px;
+  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: 40px; /* Limit the dropdown height */
+}
+
+.PhoneInputCountry {
+  @apply flex items-center;
+}
+
+.PhoneInputCountryIcon {
+  @apply block w-5 h-4;
+}
+
+.PhoneInputCountryIcon--border {
+  @apply box-content;
+}
+
+/* Ensure dropdown stays within container */
+.PhoneInputCountrySelect {
+  @apply z-10;
+}
+
+/* Add spacing for the absolute positioned elements */
+.PhoneInput {
+  height: 42px;
+  margin-bottom: 1rem;
+}
+
+/* Adjust dropdown option height */
+.PhoneInputCountrySelect option {
+  height: 45px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.PhoneInputCountrySelectOption .PhoneInputCountryIcon {
+  @apply mr-2; /* Add margin to separate flag and text */
+}
