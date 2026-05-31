@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 14 · Construir asistentes y agentes de IA para desarrollo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#EF4444 0%,#DC2626 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;transition:box-shadow .2s}
+    .tool-card:hover{box-shadow:0 4px 16px rgba(239,68,68,.12)}
+    .tool-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+    .tool-name{font-weight:700;font-size:.95rem;color:#1e293b}
+    .tool-cat{font-size:.75rem;color:#64748b;margin-bottom:.4rem}
+    .tool-desc{font-size:.82rem;color:#475569;line-height:1.5}
+    .tool-link{display:inline-block;margin-top:.6rem;font-size:.78rem;color:#EF4444;text-decoration:none;font-weight:600}
+    .tool-link:hover{text-decoration:underline}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600;white-space:nowrap}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .badge-oss{background:#f3e8ff;color:#7c3aed}
+    .module{border-left:3px solid #EF4444;padding-left:1rem;margin-bottom:1.5rem}
+    .module:last-child{margin-bottom:0}
+    .module-title{font-weight:700;font-size:1rem;color:#EF4444;margin-bottom:.5rem}
+    .module-subtitle{font-weight:600;font-size:.9rem;color:#1e293b;margin:.8rem 0 .3rem}
+    .module p{color:#475569;font-size:.92rem;margin-bottom:.6rem}
+    .exercise-box{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-title{font-weight:700;font-size:1rem;color:#DC2626;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem;color:#475569;font-size:.92rem}
+    li strong{color:#1e293b}
+    ol{padding-left:1.5rem}
+    ol li{margin-bottom:.6rem}
+    code{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:.3rem;padding:.1rem .4rem;font-size:.82rem;font-family:'JetBrains Mono','Fira Code',monospace;color:#DC2626}
+    pre{background:#1e293b;border-radius:.6rem;padding:1.2rem;overflow-x:auto;margin:.8rem 0}
+    pre code{background:transparent;border:none;color:#e2e8f0;font-size:.82rem;padding:0}
+    table{width:100%;border-collapse:collapse;font-size:.85rem;margin:.8rem 0}
+    th{background:#f8fafc;font-weight:700;text-align:left;padding:.6rem .8rem;border-bottom:2px solid #e2e8f0;color:#374151}
+    td{padding:.55rem .8rem;border-bottom:1px solid #f1f5f9;color:#475569;vertical-align:top}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#fafafa}
+    .objectives-list{counter-reset:obj}
+    .objectives-list li{list-style:none;counter-increment:obj;padding:.5rem 0 .5rem 2.5rem;position:relative;border-bottom:1px solid #f1f5f9;color:#1e293b}
+    .objectives-list li:last-child{border-bottom:none}
+    .objectives-list li::before{content:counter(obj);position:absolute;left:0;top:.5rem;background:#EF4444;color:white;width:1.6rem;height:1.6rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
+    .concept-table td:first-child{font-weight:600;color:#1e293b;min-width:180px}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(max-width:640px){.two-col{grid-template-columns:1fr}}
+    .resource-group{margin-bottom:1.2rem}
+    .resource-group-title{font-weight:700;font-size:.88rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem}
+    .resource-list{list-style:none;padding:0}
+    .resource-list li{padding:.35rem 0;border-bottom:1px solid #f8fafc;display:flex;align-items:flex-start;gap:.5rem}
+    .resource-list li::before{content:"→";color:#EF4444;flex-shrink:0;font-weight:700}
+    .resource-list a{color:#1e293b;text-decoration:none;font-size:.88rem}
+    .resource-list a:hover{color:#EF4444;text-decoration:underline}
+    .checklist{list-style:none;padding:0}
+    .checklist li{padding:.4rem 0;display:flex;align-items:flex-start;gap:.7rem;border-bottom:1px solid rgba(239,68,68,.1);font-size:.9rem}
+    .checklist li::before{content:"☐";color:#EF4444;font-size:1rem;flex-shrink:0;margin-top:.05rem}
+    .checklist li:last-child{border-bottom:none}
+    .highlight-box{background:linear-gradient(135deg,rgba(239,68,68,.05),rgba(220,38,38,.08));border:1px solid rgba(239,68,68,.2);border-radius:.6rem;padding:1rem 1.2rem;margin:.8rem 0;font-size:.88rem;color:#475569}
+    .highlight-box strong{color:#DC2626}
+    .step-list{list-style:none;padding:0;counter-reset:step}
+    .step-list li{counter-increment:step;padding:.6rem 0 .6rem 2.8rem;position:relative;border-bottom:1px solid #f1f5f9;font-size:.9rem;color:#1e293b}
+    .step-list li:last-child{border-bottom:none}
+    .step-list li::before{content:counter(step);position:absolute;left:0;top:.55rem;background:#FEE2E2;color:#DC2626;width:1.8rem;height:1.8rem;border-radius:.4rem;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    .tag{display:inline-block;background:#FEE2E2;color:#DC2626;font-size:.72rem;font-weight:600;padding:.1rem .5rem;border-radius:.3rem;margin-right:.3rem}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="tier-badge">Tier 4 · TI / Dev track</div>
+    <h1>🤖 Construir asistentes y agentes de IA<br>para desarrollo</h1>
+    <div class="hero-meta">
+      <span>👤 <strong>Pineda</strong></span>
+      <span>📅 Viernes 31 julio 2026</span>
+      <span>👥 Desarrolladores</span>
+      <span>⏱️ 90 minutos</span>
+      <span>🏷️ Clase 14</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la clase</div>
+    <ol class="objectives-list">
+      <li><strong>Construir un asistente funcional con Claude API</strong> implementando el ciclo completo: definición de herramientas, agentic loop y manejo de <code>tool_result</code>.</li>
+      <li><strong>Implementar tool use / function calling</strong> con esquemas JSON reales, incluyendo llamadas paralelas y programmatic tool calling para flujos multi-paso.</li>
+      <li><strong>Crear agentes con memoria persistente</strong> usando el Memory Tool de Anthropic y patrones de contexto multi-sesión sin depender de bases de datos vectoriales.</li>
+      <li><strong>Orquestar agentes con LangGraph</strong> modelando flujos como grafos de nodos y aristas con estado compartido, persistencia y reanudación ante fallos.</li>
+      <li><strong>Comparar los ecosistemas principales</strong> (Claude API, OpenAI Assistants, LangChain/LangGraph, Flowise, Botpress) para elegir la herramienta adecuada.</li>
+      <li><strong>Desplegar un agente a producción</strong> con observabilidad básica, manejo de errores y estrategias para reducir latencia y consumo de tokens.</li>
+    </ol>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+    <table class="concept-table">
+      <thead><tr><th>Término</th><th>Definición</th></tr></thead>
+      <tbody>
+        <tr><td>Asistente de IA</td><td>Sistema basado en LLM que mantiene contexto conversacional y puede ejecutar herramientas para completar tareas del usuario.</td></tr>
+        <tr><td>Agente de IA</td><td>IA capaz de planificar y ejecutar secuencias de acciones autónomas: buscar datos, escribir código, llamar APIs y corregir errores en un loop.</td></tr>
+        <tr><td>Tool Use / Function Calling</td><td>El LLM declara intención de llamar una función → devuelve <code>stop_reason: "tool_use"</code> + parámetros en JSON → tu código ejecuta → devuelve <code>tool_result</code>.</td></tr>
+        <tr><td>Agentic Loop</td><td>Ciclo razonamiento-acción: herramienta → resultado → razonamiento → herramienta → ... hasta <code>stop_reason == "end_turn"</code>.</td></tr>
+        <tr><td>Programmatic Tool Calling</td><td>Claude escribe Python que invoca herramientas en un sandbox. Reduce de N round-trips a 1 y disminuye tokens hasta 10× al filtrar datos antes del contexto.</td></tr>
+        <tr><td>Parallel Tool Calling</td><td>Claude 4+ puede emitir múltiples bloques <code>tool_use</code> simultáneos en una respuesta para llamadas independientes.</td></tr>
+        <tr><td>Memory Tool</td><td>Herramienta nativa de Anthropic que persiste archivos en <code>/memories</code> entre sesiones. Opera en el cliente: tú controlas el almacenamiento.</td></tr>
+        <tr><td>Multi-turn Conversation</td><td>La API es stateless: cada request incluye el historial completo de la conversación para mantener coherencia.</td></tr>
+        <tr><td>RAG</td><td>Retrieval-Augmented Generation: embedding de consulta → búsqueda en base vectorial → chunks relevantes → contexto enriquecido → respuesta del LLM.</td></tr>
+        <tr><td>Context Window</td><td>Máximo de tokens procesables en un request. Claude maneja 200K tokens, un 56% más que GPT-4o (128K).</td></tr>
+        <tr><td>Compaction</td><td>Función server-side de Anthropic que resume conversaciones largas automáticamente. Combínala con Memory Tool para no perder información crítica.</td></tr>
+        <tr><td>LangGraph</td><td>Capa de orquestación stateful de LangChain: modela flujos como grafos dirigidos con persistencia, loops complejos y human-in-the-loop.</td></tr>
+        <tr><td>Orchestrator / Subagent</td><td>Patrón multi-agente: el orquestador descompone tareas y delega a subagentes especializados que trabajan en paralelo.</td></tr>
+        <tr><td>MCP</td><td>Model Context Protocol — protocolo abierto de Anthropic para conectar LLMs con herramientas externas de forma estandarizada, evitando vendor lock-in.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Claude API</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-cat">LLM + Agentes · Anthropic</div>
+        <div class="tool-desc">Motor de razonamiento principal. Tool use, memory tool, programmatic calling, 200K contexto. Modelos Opus, Sonnet y Haiku.</div>
+        <a class="tool-link" href="https://platform.claude.com" target="_blank">platform.claude.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Claude Agent SDK</div>
+          <span class="badge badge-oss">Open Source</span>
+        </div>
+        <div class="tool-cat">SDK · Anthropic</div>
+        <div class="tool-desc">Abstracción de alto nivel sobre la API para construir agentes con loops, sub-agentes, MCP y gestión de contexto.</div>
+        <a class="tool-link" href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/build-a-tool-using-agent" target="_blank">Docs →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">LangChain</div>
+          <span class="badge badge-oss">Open Source</span>
+        </div>
+        <div class="tool-cat">Framework · LangChain AI</div>
+        <div class="tool-desc">Cadenas de LLM, integraciones con 200+ modelos y fuentes de datos. v0.3, componentes reutilizables para pipelines.</div>
+        <a class="tool-link" href="https://www.langchain.com/langchain" target="_blank">langchain.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">LangGraph</div>
+          <span class="badge badge-oss">Open Source</span>
+        </div>
+        <div class="tool-cat">Orquestación Stateful · LangChain AI</div>
+        <div class="tool-desc">Agentes con grafos dirigidos. Persistencia de estado, loops complejos, human-in-the-loop, +90K ⭐ en GitHub.</div>
+        <a class="tool-link" href="https://www.langchain.com/langgraph" target="_blank">langchain.com/langgraph →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">OpenAI Assistants API</div>
+          <span class="badge badge-paid">Pago</span>
+        </div>
+        <div class="tool-cat">LLM + Agentes · OpenAI</div>
+        <div class="tool-desc">Alternativa hosted con Threads, Vector Stores y Code Interpreter administrados. Ecosistema maduro pero con vendor lock-in fuerte.</div>
+        <a class="tool-link" href="https://platform.openai.com/docs/assistants" target="_blank">platform.openai.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Flowise</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-cat">No-code Builder · Flowise AI</div>
+        <div class="tool-desc">Constructor visual drag-and-drop de agentes sobre LangChain. SOC 2 compliant, on-premises, ideal para MVPs rápidos.</div>
+        <a class="tool-link" href="https://flowiseai.com" target="_blank">flowiseai.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Botpress</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-cat">Plataforma Conversacional</div>
+        <div class="tool-desc">Runtime autónomo para agentes conversacionales enterprise. Coordina memoria, herramientas y outputs estructurados a escala.</div>
+        <a class="tool-link" href="https://botpress.com" target="_blank">botpress.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Pinecone</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-cat">Vector Database</div>
+        <div class="tool-desc">Base de datos vectorial para RAG: indexado, búsqueda semántica, filtros híbridos denso + disperso. Estándar de la industria.</div>
+        <a class="tool-link" href="https://www.pinecone.io" target="_blank">pinecone.io →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Supabase (pgvector)</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-cat">Base de Datos + Vector</div>
+        <div class="tool-desc">PostgreSQL con extensión pgvector para RAG. Alternativa open source a Pinecone con SQL nativo y auth integrado.</div>
+        <a class="tool-link" href="https://supabase.com" target="_blank">supabase.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">LangSmith</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-cat">Observabilidad</div>
+        <div class="tool-desc">Tracing, evaluación y monitoreo de agentes LangChain/LangGraph. Visualiza rutas de ejecución y transiciones de estado.</div>
+        <a class="tool-link" href="https://smith.langchain.com" target="_blank">smith.langchain.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Anthropic Python SDK</div>
+          <span class="badge badge-oss">Open Source</span>
+        </div>
+        <div class="tool-cat">SDK Oficial</div>
+        <div class="tool-desc">Cliente oficial Python con helpers para memory tool, streaming, tool use y programmatic tool calling.</div>
+        <a class="tool-link" href="https://github.com/anthropics/anthropic-sdk-python" target="_blank">GitHub →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">n8n</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-cat">Automatización</div>
+        <div class="tool-desc">Automatización de flujos con nodos de IA. Alternativa a Flowise para integración con sistemas legacy y APIs externas.</div>
+        <a class="tool-link" href="https://n8n.io" target="_blank">n8n.io →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Contenido de la clase</div>
+
+    <!-- MÓDULO 1 -->
+    <div class="module">
+      <div class="module-title">Módulo 1 · Fundamentos de asistentes con Claude API — 20 min</div>
+
+      <div class="module-subtitle">¿Chatbot vs Asistente vs Agente?</div>
+      <p>Un <strong>chatbot</strong> responde texto sin acciones externas. Un <strong>asistente</strong> mantiene contexto multi-turn y accede a herramientas definidas. Un <strong>agente</strong> planifica, ejecuta herramientas en secuencia y corrige errores en un loop autónomo hasta completar objetivos complejos.</p>
+
+      <div class="module-subtitle">El ciclo básico de tool use</div>
+      <ol class="step-list">
+        <li>El dev define herramientas con nombre, descripción y <code>input_schema</code> (JSON Schema)</li>
+        <li>El usuario envía mensaje con el array <code>tools</code> al request</li>
+        <li>Claude decide si llamar una herramienta → devuelve <code>stop_reason: "tool_use"</code> + bloque <code>tool_use</code> con <code>id</code>, nombre y parámetros</li>
+        <li>Tu código ejecuta la función con los parámetros recibidos</li>
+        <li>Envías el resultado en un bloque <code>tool_result</code> con el <code>tool_use_id</code> correspondiente</li>
+        <li>Claude razona sobre el resultado, repite desde el paso 3 o finaliza con <code>end_turn</code></li>
+      </ol>
+
+      <pre><code>tools = [{
+    "name": "buscar_propiedad",
+    "description": "Busca propiedades por criterios específicos.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "ciudad": {"type": "string"},
+            "precio_max": {"type": "number"},
+            "habitaciones": {"type": "integer"}
+        },
+        "required": ["ciudad"]
+    }
+}]
+
+response = client.messages.create(
+    model="claude-opus-4-6",
+    max_tokens=2048,
+    tools=tools,
+    messages=[{"role": "user", "content": "Busca en CDMX"}]
+)
+# stop_reason == "tool_use" → ejecutar y continuar el loop</code></pre>
+
+      <div class="highlight-box">
+        <strong>Dato clave:</strong> La API es <strong>stateless</strong> — siempre envías el historial completo. Cada definición de herramienta añade ~290-675 tokens al costo según el modelo. Usa <code>strict: true</code> para garantizar que los parámetros sigan el schema exactamente.
+      </div>
+    </div>
+
+    <!-- MÓDULO 2 -->
+    <div class="module">
+      <div class="module-title">Módulo 2 · Tool Use avanzado: paralelo y programático — 25 min</div>
+
+      <div class="module-subtitle">Parallel Tool Calling (Claude 4+)</div>
+      <p>En una sola respuesta, el modelo emite múltiples bloques <code>tool_use</code> simultáneos. Tu código ejecuta todas las herramientas y devuelve todos los <code>tool_result</code> antes de la siguiente llamada. Ideal para consultas independientes (ej.: disponibilidad en 5 ciudades al mismo tiempo).</p>
+
+      <div class="module-subtitle">Programmatic Tool Calling — cambio de paradigma</div>
+      <p>Claude escribe código Python que invoca herramientas en un contenedor sandboxed. Solo el resultado final regresa al contexto del modelo:</p>
+      <ul>
+        <li>Procesar 20 empleados: <strong>20 round-trips tradicionales → 1</strong> con programmatic calling</li>
+        <li>Tokens reducidos hasta <strong>10×</strong> al filtrar datos antes de llegar al modelo</li>
+        <li>Requiere <code>code_execution_20260120</code> + <code>"allowed_callers": ["code_execution_20260120"]</code> en la herramienta</li>
+        <li>Compatible con Claude Opus/Sonnet 4.5, 4.6, 4.7, 4.8</li>
+      </ul>
+
+      <div class="module-subtitle">Herramientas server-side de Anthropic</div>
+      <table>
+        <thead><tr><th>Herramienta</th><th>Tipo</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td><code>web_search_20260209</code></td><td>Server</td><td>Búsqueda web en tiempo real; Anthropic ejecuta la búsqueda</td></tr>
+          <tr><td><code>code_execution_20260120</code></td><td>Server</td><td>Ejecución de Python en sandbox seguro; base del programmatic calling</td></tr>
+          <tr><td><code>memory_20250818</code></td><td>Cliente</td><td>Gestión de memoria persistente en directorio <code>/memories</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- MÓDULO 3 -->
+    <div class="module">
+      <div class="module-title">Módulo 3 · Memoria, contexto y conversaciones multi-sesión — 20 min</div>
+
+      <div class="module-subtitle">Las 4 estrategias de memoria</div>
+      <table>
+        <thead><tr><th>Estrategia</th><th>Mecanismo</th><th>Cuándo usar</th></tr></thead>
+        <tbody>
+          <tr><td><strong>In-context</strong></td><td>Historial completo en cada request</td><td>Conversaciones cortas (&lt;50 turnos)</td></tr>
+          <tr><td><strong>Memory Tool</strong></td><td>Archivos en <code>/memories</code> leídos bajo demanda</td><td>Proyectos multi-sesión, preferencias de usuario</td></tr>
+          <tr><td><strong>RAG</strong></td><td>Embeddings en base vectorial + búsqueda semántica</td><td>Bases de conocimiento grandes (docs, manuales)</td></tr>
+          <tr><td><strong>Compaction</strong></td><td>Resumen automático del servidor</td><td>Conversaciones muy largas sin control manual</td></tr>
+        </tbody>
+      </table>
+
+      <div class="module-subtitle">Memory Tool — implementación</div>
+      <pre><code># Habilitar el Memory Tool
+tools=[{"type": "memory_20250818", "name": "memory"}]
+
+# Claude automáticamente ejecuta antes de cualquier tarea:
+# { "command": "view", "path": "/memories" }
+# Luego lee archivos relevantes y usa el contexto acumulado</code></pre>
+
+      <div class="highlight-box">
+        <strong>Seguridad crítica:</strong> Valida que todas las rutas empiecen con <code>/memories</code>. Rechaza secuencias <code>../</code>, <code>..\\</code> o URL-encoded (<code>%2e%2e%2f</code>). Implementa límite de tamaño y expiración de memorias.
+      </div>
+
+      <div class="module-subtitle">RAG básico con Pinecone</div>
+      <pre><code># Flujo RAG simplificado
+# 1. INGESTA:  chunk → embedding → upsert en Pinecone
+# 2. RETRIEVAL: query → embedding → query(top_k=5) → chunks
+# 3. AUGMENTATION: f"Contexto:\n{chunks}\n\nPregunta: {query}"
+# 4. GENERATION: Claude responde con contexto enriquecido
+
+# Tendencia 2026: GraphRAG (Vectores + Grafos de Conocimiento)
+# + búsqueda híbrida (densa + dispersa) + semantic chunking</code></pre>
+    </div>
+
+    <!-- MÓDULO 4 -->
+    <div class="module">
+      <div class="module-title">Módulo 4 · LangGraph y despliegue a producción — 25 min</div>
+
+      <div class="module-subtitle">¿Por qué LangGraph?</div>
+      <p>LangGraph (v0.3, +90K estrellas en GitHub) modela flujos como grafos dirigidos permitiendo loops de razonamiento complejos, persistencia de estado entre ejecuciones, human-in-the-loop y coordinación multi-agente.</p>
+
+      <pre><code>from langgraph.graph import StateGraph, END
+from typing import TypedDict
+
+class AgentState(TypedDict):
+    messages: list
+    herramientas_usadas: list
+
+grafo = StateGraph(AgentState)
+grafo.add_node("agente", fn_agente)
+grafo.add_node("buscador", fn_buscador)
+grafo.add_conditional_edges(
+    "agente",
+    decidir_siguiente,
+    {"buscar": "buscador", "fin": END}
+)
+grafo.set_entry_point("agente")
+app = grafo.compile()
+resultado = app.invoke({"messages": [...]})</code></pre>
+
+      <div class="module-subtitle">Comparativa de plataformas para producción</div>
+      <table>
+        <thead><tr><th>Plataforma</th><th>Fortaleza</th><th>Ideal para</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Claude API directo</strong></td><td>Control total, menor latencia, programmatic calling</td><td>Equipos dev con lógica compleja</td></tr>
+          <tr><td><strong>LangGraph</strong></td><td>Flujos stateful, observabilidad LangSmith</td><td>Agentes multi-paso, human-in-the-loop</td></tr>
+          <tr><td><strong>Flowise</strong></td><td>Prototipado visual rápido, SOC 2</td><td>MVPs, demos, equipos mixtos</td></tr>
+          <tr><td><strong>Botpress</strong></td><td>Producción a escala, runtime autónomo</td><td>Chatbots conversacionales enterprise</td></tr>
+          <tr><td><strong>OpenAI Assistants</strong></td><td>Infraestructura completamente administrada</td><td>Equipos invertidos en ecosistema OpenAI</td></tr>
+        </tbody>
+      </table>
+
+      <div class="module-subtitle">Optimización para producción</div>
+      <ul>
+        <li><strong>Prompt caching:</strong> reducir costos en system prompts repetidos (caché automático en multi-turn)</li>
+        <li><strong>Container reuse:</strong> reutilizar el mismo container en programmatic calling (vida: hasta 30 días)</li>
+        <li><strong>Diseño de herramientas:</strong> retornar JSON estructurado con descripción clara del formato</li>
+        <li><strong>Logging:</strong> registrar todos los <code>tool_use</code> y <code>tool_result</code> para depuración</li>
+        <li><strong>LangSmith:</strong> tracing completo de grafos LangGraph para identificar cuellos de botella</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <div class="exercise-title">🏗️ Asistente Inmobiliario con Claude API y 2+ herramientas</div>
+
+      <p style="font-size:.9rem;color:#475569;margin-bottom:1rem"><strong>Objetivo:</strong> Implementar el agentic loop completo con al menos 2 herramientas funcionales y memoria entre sesiones.</p>
+
+      <div class="two-col">
+        <div>
+          <p style="font-weight:600;font-size:.88rem;color:#DC2626;margin-bottom:.5rem">Herramientas a implementar</p>
+          <ul>
+            <li><strong>buscar_propiedades</strong><br><span style="font-size:.82rem;color:#64748b">ciudad, precio_max, habitaciones → lista de propiedades del diccionario local</span></li>
+            <li style="margin-top:.5rem"><strong>calcular_credito</strong><br><span style="font-size:.82rem;color:#64748b">precio, enganche_%, tasa_anual, plazo_años → mensualidad hipotecaria</span></li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-weight:600;font-size:.88rem;color:#DC2626;margin-bottom:.5rem">Pregunta de prueba final</p>
+          <p style="font-size:.85rem;color:#475569;background:#fff;border:1px solid #FCA5A5;border-radius:.5rem;padding:.8rem;font-style:italic">"¿Cuánto pagaría mensualmente por un departamento de 2 recámaras en Monterrey con presupuesto de $3M MXN, 20% de enganche y 20 años de plazo?"</p>
+          <p style="font-size:.8rem;color:#64748b;margin-top:.5rem">El agente debe usar <strong>ambas herramientas en secuencia</strong> para responder.</p>
+        </div>
+      </div>
+
+      <pre style="margin-top:1rem"><code>def agente(pregunta):
+    messages = [{"role": "user", "content": pregunta}]
+    while True:
+        resp = client.messages.create(
+            model="claude-opus-4-6", max_tokens=2048,
+            tools=tools, messages=messages
+        )
+        if resp.stop_reason == "end_turn":
+            return resp.content[0].text
+        tool_results = []
+        for block in resp.content:
+            if block.type == "tool_use":
+                resultado = ejecutar_herramienta(block.name, block.input)
+                tool_results.append({
+                    "type": "tool_result",
+                    "tool_use_id": block.id,
+                    "content": str(resultado)
+                })
+        messages.append({"role": "assistant", "content": resp.content})
+        messages.append({"role": "user", "content": tool_results})</code></pre>
+
+      <p style="font-size:.85rem;color:#64748b;margin-top:1rem"><strong>Reto extra:</strong> Convertir una herramienta a programmatic tool calling con <code>code_execution_20260120</code> y comparar el número de tokens usados vs. la versión tradicional.</p>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos recomendados</div>
+    <div class="two-col">
+      <div>
+        <div class="resource-group">
+          <div class="resource-group-title">Documentación oficial</div>
+          <ul class="resource-list">
+            <li><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview" target="_blank">Tool Use Overview — Anthropic</a></li>
+            <li><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/build-a-tool-using-agent" target="_blank">Build a Tool-Using Agent (tutorial)</a></li>
+            <li><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling" target="_blank">Programmatic Tool Calling</a></li>
+            <li><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool" target="_blank">Memory Tool — Anthropic</a></li>
+            <li><a href="https://github.com/langchain-ai/langgraph" target="_blank">LangGraph GitHub</a></li>
+            <li><a href="https://docs.pinecone.io/guides/get-started/build-a-rag-chatbot" target="_blank">Pinecone: Build a RAG Chatbot</a></li>
+          </ul>
+        </div>
+        <div class="resource-group">
+          <div class="resource-group-title">Arquitectura y comparativas</div>
+          <ul class="resource-list">
+            <li><a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank">Anthropic: Multi-Agent Research System</a></li>
+            <li><a href="https://composio.dev/content/claude-agents-sdk-vs-openai-agents-sdk-vs-google-adk" target="_blank">Claude SDK vs OpenAI SDK vs Google ADK</a></li>
+            <li><a href="https://www.index.dev/skill-vs-skill/ai-langgraph-vs-n8n-vs-flowise" target="_blank">Flowise vs LangGraph vs n8n (2026)</a></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="resource-group">
+          <div class="resource-group-title">Tutoriales y guías</div>
+          <ul class="resource-list">
+            <li><a href="https://serpapi.com/blog/build-an-ai-agent-with-claude-agent-sdk/" target="_blank">Build an AI Agent with Claude Agent SDK</a></li>
+            <li><a href="https://ofox.ai/blog/function-calling-tool-use-complete-guide-2026/" target="_blank">Function Calling: Complete Guide 2026</a></li>
+            <li><a href="https://www.claudeapi.com/en/blog/dev-guides/langchain-claude-api-tutorial/" target="_blank">Claude API + LangChain: Complete Guide</a></li>
+            <li><a href="https://langchain-tutorials.github.io/langgraph-tutorial-2026-beginners-guide/" target="_blank">LangGraph Tutorial 2026: Beginner's Guide</a></li>
+            <li><a href="https://dev.to/hargun_singh/-building-an-ai-agent-with-rag-a-simple-guide-to-vector-databases-and-embeddings-2ch4" target="_blank">AI Agent with RAG: Vector DBs + Embeddings</a></li>
+          </ul>
+        </div>
+        <div class="resource-group">
+          <div class="resource-group-title">Cursos</div>
+          <ul class="resource-list">
+            <li><a href="https://www.coursera.org/learn/agentic-ai-with-langchain-and-langgraph" target="_blank">Agentic AI con LangChain y LangGraph — Coursera</a></li>
+            <li><a href="https://www.udemy.com/course/langchain/" target="_blank">LangChain: Agentic AI Engineering — Udemy</a></li>
+            <li><a href="https://blog.jetbrains.com/pycharm/2026/02/langchain-tutorial-2026/" target="_blank">LangChain Python Tutorial 2026 — JetBrains</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-clase</div>
+    <ul class="checklist">
+      <li>Crear cuenta en <a href="https://console.anthropic.com" target="_blank" style="color:#EF4444">Anthropic Console</a> y generar una API key</li>
+      <li>Completar el ejercicio del asistente inmobiliario con 2 herramientas funcionales</li>
+      <li>Leer el tutorial oficial "Build a Tool-Using Agent" (los 5 anillos concéntricos) en la docs de Anthropic</li>
+      <li>Explorar el Memory Tool con los ejemplos de Python en el repositorio del SDK de Anthropic</li>
+      <li>Instalar LangGraph (<code>pip install langgraph</code>) y replicar el grafo básico del módulo 4</li>
+      <li>Crear un índice gratuito en Pinecone e indexar al menos 10 documentos de prueba</li>
+      <li>Comparar tokens usados entre tool use tradicional vs. programmatic tool calling en un mismo flujo</li>
+      <li>Explorar Flowise: clonar el repositorio y ejecutar localmente para ver el constructor visual drag-and-drop</li>
+      <li>Activar LangSmith para tracing en tu proyecto LangGraph (<code>LANGCHAIN_API_KEY</code>)</li>
+      <li>Compartir tu asistente funcional en el canal del equipo con una captura de pantalla del agentic loop</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  <p>Clase 14 · Tier 4 · TI / Dev track &nbsp;·&nbsp; Presentador: Pineda &nbsp;·&nbsp; Viernes 31 julio 2026</p>
+  <p style="margin-top:.4rem">Programa de formación en IA · inmo</p>
+</footer>
+
+</body>
+</html>

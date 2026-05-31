@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 10 · Automatización inteligente de atención al cliente multicanal — Diana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#10B981 0%,#059669 100%);padding:3rem 2rem;color:white}
+    .hero-inner{max-width:900px;margin:0 auto}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-sub{font-size:1rem;opacity:.88;margin-top:.6rem;font-weight:500}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.88rem;margin-top:1.2rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .hero-meta svg{flex-shrink:0}
+
+    /* LAYOUT */
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+
+    /* CARDS */
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#0f172a}
+    .card-title .icon{font-size:1.3rem}
+
+    /* OBJETIVOS */
+    .objetivo-list{list-style:none;display:flex;flex-direction:column;gap:.75rem}
+    .objetivo-list li{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 1rem;border-radius:.5rem;background:#f0fdf4;border:1px solid #bbf7d0}
+    .objetivo-list li .num{background:#10B981;color:white;border-radius:999px;width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+
+    /* CONCEPTOS */
+    .concepto{border-left:3px solid #10B981;padding-left:1rem;margin-bottom:1.25rem}
+    .concepto h4{font-weight:700;color:#059669;font-size:.95rem;margin-bottom:.25rem}
+    .concepto p{font-size:.9rem;color:#475569}
+
+    /* STATS STRIP */
+    .stats-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .stat-item{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.75rem;padding:1rem;text-align:center}
+    .stat-num{font-size:1.8rem;font-weight:800;color:#059669;line-height:1.1}
+    .stat-label{font-size:.78rem;color:#64748b;margin-top:.3rem}
+
+    /* TOOL GRID */
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;background:#fafafa;display:flex;flex-direction:column;gap:.5rem;transition:box-shadow .2s}
+    .tool-card:hover{box-shadow:0 4px 16px rgba(16,185,129,.15);border-color:#10B981}
+    .tool-card-header{display:flex;align-items:center;justify-content:space-between}
+    .tool-name{font-weight:700;font-size:.9rem;color:#0f172a}
+    .tool-role{font-size:.8rem;color:#64748b;line-height:1.4}
+    .tool-price{font-size:.78rem;color:#475569;margin-top:auto}
+    .tool-link{font-size:.75rem;color:#10B981;text-decoration:none;font-weight:600}
+    .tool-link:hover{text-decoration:underline}
+
+    /* BADGES */
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .badge-enterprise{background:#f3e8ff;color:#7c3aed}
+
+    /* MÓDULOS */
+    .module{border-left:3px solid #10B981;padding-left:1.25rem;margin-bottom:2rem}
+    .module-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+    .module-num{background:#10B981;color:white;font-weight:800;font-size:.8rem;border-radius:.4rem;padding:.2rem .55rem}
+    .module-title{font-size:1.05rem;font-weight:700;color:#0f172a}
+    .module-time{font-size:.8rem;color:#94a3b8;margin-left:auto}
+    .module p{font-size:.9rem;color:#475569;margin-bottom:.75rem}
+    .module ul{font-size:.9rem;color:#475569;padding-left:1.4rem;margin-bottom:.75rem}
+    .module ul li{margin-bottom:.35rem}
+
+    /* TABLE */
+    .table-wrap{overflow-x:auto;margin:.75rem 0}
+    table{width:100%;border-collapse:collapse;font-size:.85rem}
+    th{background:#f0fdf4;color:#059669;font-weight:700;padding:.6rem .9rem;text-align:left;border-bottom:2px solid #bbf7d0}
+    td{padding:.55rem .9rem;border-bottom:1px solid #f1f5f9;color:#374151;vertical-align:top}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#f8fafc}
+
+    /* FLOW DIAGRAM */
+    .flow-box{background:#0f172a;border-radius:.75rem;padding:1.25rem 1.5rem;margin:.75rem 0;font-family:'Courier New',monospace;font-size:.82rem;color:#94a3b8;white-space:pre;line-height:1.8;overflow-x:auto}
+    .flow-box .hl{color:#10B981}
+    .flow-box .dim{color:#475569}
+
+    /* PROMPT BOX */
+    .prompt-box{background:#0f172a;border-radius:.75rem;padding:1.25rem 1.5rem;margin:.75rem 0;font-family:'Courier New',monospace;font-size:.8rem;color:#94a3b8;white-space:pre-wrap;line-height:1.7;overflow-x:auto}
+    .prompt-box .hl{color:#10B981}
+    .prompt-label{font-size:.75rem;font-weight:600;color:#64748b;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em}
+
+    /* EXERCISE BOX */
+    .exercise-box{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-box h3{color:#059669;font-size:1rem;font-weight:700;margin-bottom:.75rem}
+    .exercise-steps{list-style:none;counter-reset:step;display:flex;flex-direction:column;gap:.6rem}
+    .exercise-steps li{counter-increment:step;display:flex;gap:.75rem;font-size:.88rem;color:#374151}
+    .exercise-steps li::before{content:counter(step);background:#10B981;color:white;border-radius:999px;width:1.4rem;height:1.4rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+
+    /* ESCALATION TRIGGERS */
+    .trigger-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+    .trigger-item{display:flex;align-items:flex-start;gap:.75rem;padding:.7rem 1rem;border-radius:.5rem;background:#fff7ed;border:1px solid #fed7aa;font-size:.88rem;color:#374151}
+    .trigger-icon{font-size:1rem;flex-shrink:0;margin-top:.05rem}
+
+    /* KPI DASHBOARD */
+    .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;margin:.75rem 0}
+    .kpi-item{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.6rem;padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center}
+    .kpi-label{font-size:.82rem;color:#475569}
+    .kpi-value{font-size:1rem;font-weight:700;color:#059669}
+
+    /* RECURSOS */
+    .resource-section{margin-bottom:1.25rem}
+    .resource-section h4{font-size:.85rem;font-weight:700;color:#10B981;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem}
+    .resource-list{list-style:none;display:flex;flex-direction:column;gap:.4rem}
+    .resource-list a{font-size:.88rem;color:#0f172a;text-decoration:none;display:flex;align-items:flex-start;gap:.5rem}
+    .resource-list a:hover{color:#10B981}
+    .resource-list a::before{content:'→';color:#10B981;font-weight:700;flex-shrink:0;margin-top:.05rem}
+
+    /* ACCIONES */
+    .action-group{margin-bottom:1.25rem}
+    .action-group-title{font-size:.8rem;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem;padding:.2rem .7rem;background:#f0fdf4;border-radius:.3rem;display:inline-block}
+    .action-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+    .action-list li{display:flex;align-items:flex-start;gap:.75rem;font-size:.9rem;color:#374151}
+    .action-list li .checkbox{width:1.1rem;height:1.1rem;border:2px solid #10B981;border-radius:.25rem;flex-shrink:0;margin-top:.15rem}
+
+    /* UTILS */
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem}
+    a{color:#10B981}
+    strong{color:#0f172a}
+
+    /* FOOTER */
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem;border-top:1px solid #e2e8f0;margin-top:1rem}
+    footer strong{color:#10B981}
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="tier-badge">Tier 2 · Marketing track · Ventas &amp; CX</div>
+    <h1>💬 Automatización inteligente de<br>atención al cliente multicanal</h1>
+    <p class="hero-sub">WhatsApp · Email · Chat · Voz · Escalación inteligente · CSAT con IA</p>
+    <div class="hero-meta">
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Presentadora: <strong>Diana</strong>
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Viernes 10 julio 2026
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        90 minutos
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Ventas, CX
+      </span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ MAIN -->
+<main class="container">
+
+  <!-- STATS STRIP -->
+  <div class="stats-strip">
+    <div class="stat-item">
+      <div class="stat-num">65%</div>
+      <div class="stat-label">Consultas resueltas sin humano (2025)</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">98%</div>
+      <div class="stat-label">Tasa de apertura WhatsApp vs. 20% email</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">3.5x</div>
+      <div class="stat-label">ROI promedio por $1 invertido en IA de CX</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">67%</div>
+      <div class="stat-label">CSAT con atención omnicanal (vs. 28% multicanal)</div>
+    </div>
+  </div>
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la clase</div>
+    <ul class="objetivo-list">
+      <li>
+        <span class="num">1</span>
+        <span>Automatizar <strong>WhatsApp, email y chat en vivo</strong> con un flujo único que unifica todos los canales bajo una misma lógica de atención, sin perder contexto entre conversaciones.</span>
+      </li>
+      <li>
+        <span class="num">2</span>
+        <span>Crear <strong>flujos de escalación inteligente</strong> que transfieren la conversación al agente humano correcto con el historial completo, en el momento exacto y sin fricciones para el cliente.</span>
+      </li>
+      <li>
+        <span class="num">3</span>
+        <span>Medir <strong>CSAT y NPS de forma automatizada</strong> con IA para el 100% de las interacciones —no solo las encuestadas— detectando insatisfacción antes de que se convierta en churn.</span>
+      </li>
+      <li>
+        <span class="num">4</span>
+        <span>Configurar <strong>LLM routing</strong> para que cada consulta llegue al modelo, flujo o especialista más adecuado según intención, urgencia, canal e idioma del cliente.</span>
+      </li>
+      <li>
+        <span class="num">5</span>
+        <span>Construir un <strong>agente de atención por WhatsApp con Claude API</strong> que resuelva consultas frecuentes, ejecute acciones en el CRM y escale a humanos con contexto completo.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+
+    <div class="concepto">
+      <h4>Omnicanal</h4>
+      <p>Estrategia de atención donde todos los canales (WhatsApp, email, chat, voz, redes) comparten el mismo contexto del cliente en tiempo real. El cliente no tiene que repetirse al cambiar de canal o ser transferido.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Multicanal (el problema)</h4>
+      <p>Presencia en varios canales de forma aislada, sin coordinación ni datos compartidos. El 71% de los clientes que tienen que repetir su problema al ser transferidos se frustran y reducen su lealtad.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Chatbot basado en LLM</h4>
+      <p>Agente conversacional impulsado por un modelo de lenguaje (Claude, GPT-4o, Gemini) que comprende lenguaje natural, maneja consultas abiertas y puede ejecutar acciones reales mediante tool use.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>LLM Routing</h4>
+      <p>Lógica que clasifica cada consulta entrante y la dirige al flujo, agente o especialista óptimo. Puede basarse en intención detectada, canal, idioma, urgencia o valor del cliente (VIP, standard, freemium).</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Escalación inteligente</h4>
+      <p>Transferencia automática del chatbot al agente humano en el momento correcto: cuando detecta frustración acumulada, baja confianza del modelo, temas sensibles (PII, montos altos) o cuando el cliente lo solicita explícitamente.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>RAG (Retrieval-Augmented Generation)</h4>
+      <p>Técnica que permite al chatbot recuperar información actualizada de bases de conocimiento propias (FAQs, políticas, catálogos) antes de responder, reduciendo alucinaciones y manteniendo precisión en el 95%+ de respuestas.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Deflection rate</h4>
+      <p>Porcentaje de consultas resueltas por la IA sin intervención humana. Benchmark 2025: 65% en promedio. Las organizaciones líderes (ej. Lightspeed Commerce con Fin AI) reportan hasta el 80%.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>CSAT automatizado</h4>
+      <p>Puntuación de satisfacción calculada por IA para el 100% de las conversaciones, basada en análisis de sentimiento, velocidad de resolución y número de turnos. Elimina el sesgo de las encuestas tradicionales (5-15% de respuesta).</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Tool Use / Function Calling</h4>
+      <p>Capacidad de los LLM para ejecutar funciones externas en tiempo real: consultar CRM, actualizar tickets, procesar reembolsos, verificar stock, agendar citas. Convierte al chatbot de respondedor a agente real.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>WABA — WhatsApp Business API</h4>
+      <p>API oficial de Meta para integrar WhatsApp a plataformas empresariales. Permite bots, plantillas de mensajes aprobadas, métricas de entrega y lectura, y automatización a escala. Requiere un BSP (Business Solution Provider) como Twilio o 360Dialog.</p>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Zendesk AI</span>
+          <span class="badge badge-paid">Pago</span>
+        </div>
+        <div class="tool-role">Plataforma CX omnicanal con agente IA nativo. Resuelve hasta el 80% de consultas en 80+ idiomas. Enrutamiento por intención y macros automáticas.</div>
+        <div class="tool-price">Desde $55/agente/mes</div>
+        <a class="tool-link" href="https://www.zendesk.com" target="_blank">zendesk.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Intercom Fin AI</span>
+          <span class="badge badge-paid">$0.99/resolución</span>
+        </div>
+        <div class="tool-role">Agente IA con 65% de resolución autónoma documentada en 40M+ conversaciones. Soporta chat, voz, email, SMS y redes en 45+ idiomas. Deployable en &lt;1 hora.</div>
+        <div class="tool-price">$0.99 por resultado</div>
+        <a class="tool-link" href="https://www.intercom.com" target="_blank">intercom.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Tidio</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">Chat en vivo + chatbot IA para e-commerce y pymes. Copilot con sugerencias en tiempo real para agentes. Integra Shopify, WooCommerce, WordPress. 55-65% resolución automática.</div>
+        <div class="tool-price">Free / Starter $29/mes / Growth $59/mes</div>
+        <a class="tool-link" href="https://www.tidio.com" target="_blank">tidio.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">ManyChat</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">Automatización conversacional para WhatsApp, Instagram, Messenger y SMS. Funnels de captura de leads, campañas drip y segmentación de audiencias. Sin código.</div>
+        <div class="tool-price">Free (1.000 contactos) / Pro desde $15/mes</div>
+        <a class="tool-link" href="https://www.manychat.com" target="_blank">manychat.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Twilio</span>
+          <span class="badge badge-paid">Pago por uso</span>
+        </div>
+        <div class="tool-role">Infraestructura de comunicaciones: SMS, WhatsApp Business API, voz, email. Base técnica para construir canales personalizados con cualquier LLM. BSP oficial de Meta.</div>
+        <div class="tool-price">Desde $0.005/SMS</div>
+        <a class="tool-link" href="https://www.twilio.com" target="_blank">twilio.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Claude API</span>
+          <span class="badge badge-paid">Pago por tokens</span>
+        </div>
+        <div class="tool-role">Motor LLM de razonamiento avanzado. Tool use nativo, RAG, contexto 200K tokens, 200+ idiomas, consistencia de tono de marca. Modelos: Haiku (velocidad) y Opus (complejidad).</div>
+        <div class="tool-price">Haiku desde $0.25/M tokens</div>
+        <a class="tool-link" href="https://www.anthropic.com/api" target="_blank">anthropic.com/api →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Freshdesk AI (Freddy)</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">Helpdesk multicanal con IA integrada: clasificación automática de tickets, sugerencias de respuesta, Freddy Self Service chatbot. Canales: email, chat, teléfono y redes sociales.</div>
+        <div class="tool-price">Free / Growth $15/agente/mes</div>
+        <a class="tool-link" href="https://www.freshdesk.com" target="_blank">freshdesk.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Botpress</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">Constructor de agentes IA open-source con 190+ integraciones. Ideal para flujos complejos: lookups en Salesforce, gestión de tickets, multi-step support. Muy flexible para devs.</div>
+        <div class="tool-price">Free / Team $49/mes</div>
+        <a class="tool-link" href="https://www.botpress.com" target="_blank">botpress.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Crescendo.ai</span>
+          <span class="badge badge-enterprise">Enterprise</span>
+        </div>
+        <div class="tool-role">CSAT automatizado para el 100% de interacciones, sin encuestas manuales. Analiza voz, chat y email con detección de sentimiento y tono. Cierre del loop en minutos.</div>
+        <div class="tool-price">Demo bajo demanda</div>
+        <a class="tool-link" href="https://www.crescendo.ai" target="_blank">crescendo.ai →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Qualtrics XM</span>
+          <span class="badge badge-enterprise">Enterprise</span>
+        </div>
+        <div class="tool-role">Plataforma enterprise de CSAT, NPS y CX analytics. IA para análisis de temas, anomalías y predicción de churn desde encuestas, tickets, llamadas y redes sociales.</div>
+        <div class="tool-price">Enterprise</div>
+        <a class="tool-link" href="https://www.qualtrics.com" target="_blank">qualtrics.com →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MÓDULOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Contenido — 4 módulos (90 min)</div>
+
+    <!-- MÓDULO 1 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">01</span>
+        <span class="module-title">El estado de la atención automatizada en 2026</span>
+        <span class="module-time">15 min</span>
+      </div>
+
+      <p><strong>¿Por qué automatizar ahora?</strong> El mercado de IA para atención al cliente alcanza <strong>$15.12 mil millones en 2026</strong> (CAGR 25.8%). El 65% de consultas entrantes ya se resuelve sin intervención humana —cifra que era 52% en 2023. El 91% de los líderes de CX están bajo presión ejecutiva para implementar IA.</p>
+
+      <p><strong>La brecha omnicanal:</strong> atención omnicanal integrada produce un CSAT del <strong>67%</strong>; la atención multicanal desconectada solo el <strong>28%</strong>. El 71% de los clientes se frustra cuando debe repetir su problema al ser transferido entre canales o agentes.</p>
+
+      <div class="flow-box"><span class="hl">Consulta entrante</span> (WhatsApp / Email / Chat / Voz)
+         │
+         ▼
+<span class="hl">   LLM Router</span> — clasifica intención, urgencia, canal, idioma
+         │
+    ┌────┴────┐
+    ▼         ▼
+<span class="hl"> Chatbot IA</span>   <span class="dim">Agente humano</span>
+ (70-80%)   (20-30%)
+    │         ▲
+    └─────────┘
+<span class="hl">  Escalación inteligente</span> (con contexto completo)</div>
+
+      <p><strong>ROI documentado:</strong> las empresas obtienen en promedio <strong>$3.50 por cada $1</strong> invertido en IA de atención. Las líderes del sector reportan hasta 8x ROI. Los conversational AI deployments reducirán los costos laborales de contact centers en <strong>$80 mil millones</strong> globalmente.</p>
+    </div>
+
+    <!-- MÓDULO 2 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">02</span>
+        <span class="module-title">Arquitectura multicanal con IA</span>
+        <span class="module-time">25 min</span>
+      </div>
+
+      <p><strong>Los 4 canales clave y cómo automatizarlos:</strong></p>
+
+      <p><strong>WhatsApp Business API (WABA)</strong> — Canal de mayor impacto para CX en LATAM. Tasa de apertura del 98% vs. 20% del email. Casos de uso automatizables: respuestas a FAQs, estado de pedidos en tiempo real (tool use al CRM), agendamiento de citas, notificaciones proactivas y calificación de leads antes de pasar a ventas.</p>
+
+      <p><strong>Email automatizado con IA</strong> — Clasificación automática por intención (reclamo, consulta, solicitud, feedback). Borrador de respuesta generado por LLM y revisado por agente. Resolución autónoma del 40-60% de consultas repetitivas.</p>
+
+      <p><strong>Chat en vivo con copilot</strong> — El chatbot resuelve en primera línea (objetivo: 65% deflection). El copilot sugiere respuestas al agente humano en tiempo real. Resumen automático de conversación al cerrar ticket.</p>
+
+      <p><strong>Voz con IA</strong> — Transcripción en tiempo real + análisis de sentimiento + notas automáticas en CRM. CSAT inferido sin encuesta post-llamada.</p>
+
+      <p><strong>LLM Routing — el cerebro del sistema:</strong></p>
+      <div class="prompt-label">Prompt de clasificación de intención</div>
+      <div class="prompt-box"><span class="hl">system_prompt</span> = """
+Clasifica la consulta del cliente en una de estas categorías:
+
+- <span class="hl">FAQ_SIMPLE</span>: Responde directamente desde la base de conocimiento
+- <span class="hl">LOOKUP_CRM</span>: Requiere consultar datos del cliente (pedido, cuenta)
+- <span class="hl">ACCION_CRITICA</span>: Reembolso, cancelación, queja grave → escalar VIP
+- <span class="hl">FUERA_DE_SCOPE</span>: Redirigir al canal correcto
+- <span class="hl">SOLICITA_HUMANO</span>: Transferir inmediatamente sin fricción
+
+Responde solo con la categoría y un score de confianza del 0 al 1.
+"""</div>
+    </div>
+
+    <!-- MÓDULO 3 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">03</span>
+        <span class="module-title">Escalación inteligente sin fricción</span>
+        <span class="module-time">25 min</span>
+      </div>
+
+      <p><strong>Los 5 triggers de escalación automática:</strong></p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Trigger</th>
+              <th>Señal detectada</th>
+              <th>Acción del sistema</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Solicitud explícita</strong></td>
+              <td>"quiero hablar con una persona"</td>
+              <td>Transferencia inmediata sin loops</td>
+            </tr>
+            <tr>
+              <td><strong>Sentimiento negativo</strong></td>
+              <td>Frustración detectada ≥ 2 turnos</td>
+              <td>Escalación proactiva + disculpa empática</td>
+            </tr>
+            <tr>
+              <td><strong>Baja confianza LLM</strong></td>
+              <td>Score de confianza &lt; umbral</td>
+              <td>Ruta al agente + transcript completo</td>
+            </tr>
+            <tr>
+              <td><strong>Tema sensible</strong></td>
+              <td>PII, legales, montos altos, VIP</td>
+              <td>Escalación directa + prioridad alta</td>
+            </tr>
+            <tr>
+              <td><strong>Consulta repetida</strong></td>
+              <td>Misma pregunta 3+ veces sin resolución</td>
+              <td>Intervención humana + revisión de KB</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><strong>Principios de escalación sin fricción:</strong></p>
+      <ul>
+        <li><strong>Preservar contexto:</strong> el agente humano recibe transcript completo, datos del cliente y resumen de intención. El cliente no se repite.</li>
+        <li><strong>Routing al especialista correcto:</strong> "reembolso" → facturación; "error técnico" → tier 2; "VIP" → agente dedicado.</li>
+        <li><strong>Tiempo visible:</strong> el cliente sabe cuántos minutos espera. El bot puede ofrecer callback mientras tanto.</li>
+        <li><strong>Feedback loop:</strong> cada escalación alimenta el modelo de calidad. ¿El chatbot debería haberlo resuelto? ¿Faltaba contenido en la KB?</li>
+      </ul>
+
+      <div class="prompt-label">Prompt de agente con escalación inteligente</div>
+      <div class="prompt-box"><span class="hl">IDENTITY</span> = """Eres Mía, asistente de atención de [Empresa].
+
+Tienes acceso a estas herramientas:
+- <span class="hl">get_order_status</span>(order_id) → estado de pedido en tiempo real
+- <span class="hl">get_customer_info</span>(phone) → historial y tier del cliente
+- <span class="hl">create_ticket</span>(summary, priority) → crea ticket en helpdesk
+- <span class="hl">escalate_to_human</span>(summary, reason, urgency) → transfiere a agente
+
+<span class="hl">Reglas de escalación:</span>
+1. Si el cliente dice "quiero hablar con alguien" → escala INMEDIATAMENTE
+2. Si detectas frustración en 2+ mensajes → urgency=high
+3. Si la consulta involucra montos > $500 → urgency=critical
+4. Nunca hagas esperar a un cliente que pide un humano.
+"""</div>
+
+      <p style="font-size:.85rem;color:#64748b">Benchmarks de Anthropic: escalación correcta objetivo del <strong>95%</strong>. Deflection rate saludable: <strong>70-80%</strong> del volumen. El 20-30% que escala debe llegar con contexto completo.</p>
+    </div>
+
+    <!-- MÓDULO 4 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">04</span>
+        <span class="module-title">Medir CSAT y NPS con IA</span>
+        <span class="module-time">25 min</span>
+      </div>
+
+      <p><strong>El problema de la medición tradicional:</strong> las encuestas post-interacción tienen tasas de respuesta del <strong>5-15%</strong>. Hay sesgo de selección: responden los muy satisfechos y los muy insatisfechos. Resultado: datos sobre el 10% de los clientes, ciegos al 90% restante.</p>
+
+      <p><strong>CSAT automatizado para el 100% de conversaciones:</strong> la IA analiza cada conversación y asigna un score basado en análisis de sentimiento, velocidad de resolución, número de turnos, necesidad de escalación y presencia de lenguaje explícito de frustración o satisfacción.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Herramienta</th>
+              <th>Cómo funciona</th>
+              <th>Canales</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Crescendo.ai</strong></td>
+              <td>CSAT IA para 100% de interacciones sin encuesta. Sentimiento + tono en cada mensaje.</td>
+              <td>Voz, chat, email</td>
+            </tr>
+            <tr>
+              <td><strong>MaestroQA</strong></td>
+              <td>QA automatizado con scoring personalizable. FCR, AHT, CSAT.</td>
+              <td>Omnicanal</td>
+            </tr>
+            <tr>
+              <td><strong>Qualtrics AI</strong></td>
+              <td>Análisis de temas y anomalías en encuestas, tickets y social. Sin etiquetado manual.</td>
+              <td>Omnicanal</td>
+            </tr>
+            <tr>
+              <td><strong>Insight7</strong></td>
+              <td>Análisis de llamadas: sentimiento, upsell opportunities, coaching automático.</td>
+              <td>Voz, chat</td>
+            </tr>
+            <tr>
+              <td><strong>Simplesat</strong></td>
+              <td>CSAT y NPS integrado con Zendesk/Freshdesk/HubSpot. Cierre del loop en minutos.</td>
+              <td>Email, ticket</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><strong>Dashboard de KPIs objetivo:</strong></p>
+      <div class="kpi-grid">
+        <div class="kpi-item"><span class="kpi-label">CSAT promedio</span><span class="kpi-value">4.2 / 5.0</span></div>
+        <div class="kpi-item"><span class="kpi-label">NPS inferido</span><span class="kpi-value">+42</span></div>
+        <div class="kpi-item"><span class="kpi-label">Deflection rate</span><span class="kpi-value">67%</span></div>
+        <div class="kpi-item"><span class="kpi-label">First Contact Resolution</span><span class="kpi-value">78%</span></div>
+        <div class="kpi-item"><span class="kpi-label">Tiempo promedio respuesta</span><span class="kpi-value">&lt;2 min</span></div>
+        <div class="kpi-item"><span class="kpi-label">Escalaciones correctas</span><span class="kpi-value">94%</span></div>
+      </div>
+
+      <p style="font-size:.85rem;color:#64748b;margin-top:.75rem"><strong>Acciones desde los datos:</strong> CSAT bajo en conversaciones largas → revisar flujo de escalación. NPS bajo en canal email → migrar más consultas a WhatsApp. Alta escalación por tema X → crear contenido en KB para ese tema.</p>
+    </div>
+  </div>
+
+  <!-- EJERCICIO PRÁCTICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <h3>🤖 "El agente de WhatsApp con IA y escalación humana"</h3>
+      <p style="font-size:.88rem;color:#374151;margin-bottom:1rem"><strong>Objetivo:</strong> Construir un flujo de atención por WhatsApp que resuelva preguntas frecuentes con IA, consulte el CRM en tiempo real y escale a un agente humano con contexto completo.</p>
+      <p style="font-size:.82rem;color:#64748b;margin-bottom:1rem"><strong>Herramientas:</strong> Claude API + ManyChat o Botpress + Twilio WABA (o cuenta de prueba)</p>
+      <ul class="exercise-steps">
+        <li><span><strong>Mapa de intenciones (10 min):</strong> Identifica las 10 consultas más frecuentes de tu equipo de CX. Clasifícalas: ✅ resolvibles por IA, 🔧 requieren CRM lookup, 🚨 siempre escalar.</span></li>
+        <li><span><strong>Prompt del agente (15 min):</strong> Escribe el system prompt de Mía con identidad, herramientas disponibles y reglas de escalación. Incluye ejemplos de 3 conversaciones ideales.</span></li>
+        <li><span><strong>Conectar el canal (20 min):</strong> En ManyChat o Botpress, conecta un número WhatsApp Business vía Twilio. Configura el webhook que llama a Claude API con tool use habilitado.</span></li>
+        <li><span><strong>Ruta de escalación (10 min):</strong> Cuando <code>escalate_to_human</code> es llamada, enviar notificación al agente por Slack con el transcript completo. El agente retoma el hilo desde WhatsApp.</span></li>
+        <li><span><strong>Prueba con 5 escenarios (15 min):</strong> Estado de pedido (lookup CRM), "esto es un desastre" (escalación por frustración), "quiero hablar con alguien" (transferencia inmediata), horarios (FAQ), reembolso $800 (escalación crítica).</span></li>
+      </ul>
+      <p style="font-size:.82rem;color:#059669;margin-top:1rem"><strong>Entregable:</strong> Screenshot del flujo con al menos un mensaje resuelto por IA y uno escalado correctamente, mostrando el transcript que llega al agente.</p>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos</div>
+
+    <div class="resource-section">
+      <h4>Documentación oficial</h4>
+      <ul class="resource-list">
+        <li><a href="https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat" target="_blank">Claude API — Customer Support Guide (Anthropic)</a></li>
+        <li><a href="https://www.intercom.com/help/en/articles/8205718-fin-ai-agent-outcomes" target="_blank">Intercom Fin AI — Outcomes & Pricing Model</a></li>
+        <li><a href="https://developers.facebook.com/docs/whatsapp" target="_blank">WhatsApp Business API — Meta for Developers</a></li>
+        <li><a href="https://www.intercom.com/pricing" target="_blank">Intercom Pricing — Planes y modelo $0.99/resolución</a></li>
+      </ul>
+    </div>
+
+    <div class="resource-section">
+      <h4>Lecturas recomendadas</h4>
+      <ul class="resource-list">
+        <li><a href="https://www.zendesk.com/blog/ai-customer-service-statistics/" target="_blank">59 AI Customer Service Statistics 2026 — Zendesk</a></li>
+        <li><a href="https://www.eesel.ai/blog/chatbot-escalation" target="_blank">A Strategic Guide to Chatbot Escalation 2025 — eesel AI</a></li>
+        <li><a href="https://www.spurnow.com/en/blogs/chatbot-to-human-handoff" target="_blank">Chatbot to Human Handoff: Complete Guide — Spur</a></li>
+        <li><a href="https://fin.ai/learn/best-ai-chatbots-customer-support" target="_blank">Best AI Chatbots for Customer Support 2026 — Fin.ai</a></li>
+        <li><a href="https://www.crescendo.ai/blog/ai-tools-to-measure-customer-satisfaction-score-csat" target="_blank">5 AI Tools to Measure CSAT Automatically — Crescendo</a></li>
+        <li><a href="https://www.gleap.io/blog/intercom-fin-ai-pricing-2026" target="_blank">Intercom Fin AI Pricing Explained: ¿Vale $0.99 por resolución? — Gleap</a></li>
+      </ul>
+    </div>
+
+    <div class="resource-section">
+      <h4>Herramientas para explorar</h4>
+      <ul class="resource-list">
+        <li><a href="https://botpress.com" target="_blank">Botpress — Constructor de agentes IA con 190+ integraciones (plan gratuito)</a></li>
+        <li><a href="https://manychat.com" target="_blank">ManyChat — Flujos WhatsApp e Instagram sin código</a></li>
+        <li><a href="https://www.simplesat.io" target="_blank">Simplesat — CSAT y NPS integrado con Zendesk y Freshdesk</a></li>
+        <li><a href="https://www.tidio.com" target="_blank">Tidio — Prueba gratuita de chatbot IA para e-commerce</a></li>
+        <li><a href="https://claude.ai/platform/api" target="_blank">Claude API — Empieza a construir tu agente de atención</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-clase</div>
+
+    <div class="action-group">
+      <div class="action-group-title">Esta semana — implementables hoy</div>
+      <ul class="action-list">
+        <li>
+          <span class="checkbox"></span>
+          <span><strong>Audita tus canales actuales:</strong> cuenta cuántas consultas recibiste la semana pasada y qué porcentaje podrías haber automatizado. Apunta el número como línea de base.</span>
+        </li>
+        <li>
+          <span class="checkbox"></span>
+          <span><strong>Mapa de las 10 preguntas más frecuentes:</strong> habla con tu equipo de CX y lista las consultas que responden una y otra vez. Estas son las primeras candidatas a automatizar.</span>
+        </li>
+        <li>
+          <span class="checkbox"></span>
+          <span><strong>Prueba Intercom Fin o Tidio en modo trial:</strong> ambos tienen prueba gratuita. Conéctalos a tu base de conocimiento y mide qué resolución autónoma logran en 48 horas.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="action-group">
+      <div class="action-group-title">Próximas 2 semanas — quick wins</div>
+      <ul class="action-list">
+        <li>
+          <span class="checkbox"></span>
+          <span><strong>Activa CSAT automático:</strong> si usas Zendesk, Freshdesk o Intercom, activa la encuesta post-resolución. Establece una línea de base para comparar después de implementar IA.</span>
+        </li>
+        <li>
+          <span class="checkbox"></span>
+          <span><strong>Crea tu primer flujo en ManyChat:</strong> empieza con las 3 preguntas más frecuentes. Sin código. En menos de 2 horas tienes un bot básico de WhatsApp funcionando.</span>
+        </li>
+        <li>
+          <span class="checkbox"></span>
+          <span><strong>Define tus triggers de escalación:</strong> documenta cuándo SÍ y cuándo NO debe escalar el bot. Sin esta regla clara, la automatización crea fricción en lugar de eliminarla.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="action-group">
+      <div class="action-group-title">Próximo mes — transformación real</div>
+      <ul class="action-list">
+        <li>
+          <span class="checkbox"></span>
+          <span><strong>Integra Claude API como motor:</strong> una vez que tengas el flujo básico, reemplaza el motor de respuestas por Claude con tool use conectado a tu CRM. Aquí pasa de chatbot a agente real.</span>
+        </li>
+        <li>
+          <span class="checkbox"></span>
+          <span><strong>Configura CSAT IA para el 100% de conversaciones:</strong> implementa análisis de sentimiento sobre todos los tickets cerrados. En 30 días tendrás datos sobre 10x más interacciones.</span>
+        </li>
+        <li>
+          <span class="checkbox"></span>
+          <span><strong>Presenta resultados al equipo:</strong> compara deflection rate, CSAT y tiempo de respuesta del antes vs. después. El ROI justifica la inversión en el primer mes.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════ FOOTER -->
+<footer>
+  <p>Clase 10 · <strong>Programa de IA Aplicada</strong> · Marketing Track · Tier 2</p>
+  <p style="margin-top:.4rem">Presentado por <strong>Diana</strong> · Viernes 10 julio 2026 · 90 minutos</p>
+</footer>
+
+</body>
+</html>

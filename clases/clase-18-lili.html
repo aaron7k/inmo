@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 18 · Análisis de datos y big data con IA · Lili</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#374151 0%,#1F2937 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title span{font-size:1.4rem}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem}
+    .tool-card h4{font-size:.95rem;font-weight:700;margin-bottom:.3rem;color:#1e293b}
+    .tool-card p{font-size:.82rem;color:#64748b;margin-bottom:.6rem;line-height:1.4}
+    .tool-card a{font-size:.8rem;color:#374151;font-weight:600;text-decoration:none;border-bottom:1px solid #374151}
+    .tool-card a:hover{opacity:.7}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600;display:inline-block;margin-bottom:.5rem}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .module{border-left:3px solid #374151;padding-left:1rem;margin-bottom:1.8rem}
+    .module h3{font-size:1rem;font-weight:700;color:#374151;margin-bottom:.5rem}
+    .module p{font-size:.9rem;color:#475569;margin-bottom:.5rem}
+    .exercise-box{background:rgba(55,65,81,.06);border:1px solid rgba(55,65,81,.2);border-radius:.75rem;padding:1.5rem;margin-bottom:1rem}
+    .exercise-box h4{font-size:.95rem;font-weight:700;margin-bottom:.75rem;color:#1e293b}
+    .exercise-step{display:flex;gap:.75rem;margin-bottom:.75rem}
+    .step-num{flex-shrink:0;width:1.6rem;height:1.6rem;border-radius:50%;background:#374151;color:white;font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:.15rem}
+    .exercise-step p{font-size:.88rem;color:#475569;line-height:1.5}
+    pre{background:#1e293b;color:#e2e8f0;border-radius:.5rem;padding:1rem;font-size:.78rem;line-height:1.5;overflow-x:auto;margin:.75rem 0;font-family:'Courier New',monospace}
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem;font-size:.9rem;color:#475569}
+    .objectives-list li{color:#1e293b}
+    .objectives-list li strong{color:#374151}
+    table{width:100%;border-collapse:collapse;font-size:.85rem}
+    th{background:#374151;color:white;padding:.6rem .75rem;text-align:left;font-weight:600}
+    td{padding:.55rem .75rem;border-bottom:1px solid #f1f5f9;color:#475569;vertical-align:top}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#f8fafc}
+    td a{color:#374151;font-weight:600;text-decoration:none}
+    td a:hover{text-decoration:underline}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .concept-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1.25rem;background:#fafbfc}
+    .concept-card h4{font-size:.92rem;font-weight:700;color:#374151;margin-bottom:.4rem}
+    .concept-card p{font-size:.83rem;color:#64748b;line-height:1.45}
+    .resource-link{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem;border-radius:.5rem;text-decoration:none;color:inherit;transition:background .15s}
+    .resource-link:hover{background:#f1f5f9}
+    .resource-link-icon{font-size:1.1rem;flex-shrink:0;margin-top:.1rem}
+    .resource-link-text{font-size:.88rem}
+    .resource-link-text strong{display:block;color:#1e293b;font-weight:600;margin-bottom:.15rem}
+    .resource-link-text span{color:#64748b}
+    .action-section h4{font-size:.95rem;font-weight:700;color:#374151;margin:.75rem 0 .5rem}
+    .checklist{list-style:none;padding:0}
+    .checklist li{display:flex;align-items:flex-start;gap:.6rem;padding:.4rem 0;font-size:.88rem;color:#475569}
+    .checklist li::before{content:"☐";font-size:1rem;color:#374151;flex-shrink:0;line-height:1.3}
+    .stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:1rem}
+    .stat-card{background:linear-gradient(135deg,#374151,#1F2937);border-radius:.75rem;padding:1.25rem;color:white;text-align:center}
+    .stat-card .stat-num{font-size:1.8rem;font-weight:800;line-height:1}
+    .stat-card .stat-label{font-size:.75rem;opacity:.8;margin-top:.3rem}
+    .arch-box{background:#1e293b;border-radius:.75rem;padding:1.5rem;color:#e2e8f0;font-family:'Courier New',monospace;font-size:.82rem;line-height:2;overflow-x:auto;margin:.75rem 0}
+    .arch-box span{color:#94a3b8}
+    .tag-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem}
+    .tag{background:#f1f5f9;color:#374151;font-size:.75rem;font-weight:600;padding:.2rem .7rem;border-radius:999px}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    .section-divider{height:1px;background:linear-gradient(90deg,transparent,#e2e8f0,transparent);margin:0 0 1.5rem}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="tier-badge">Tier 5 · Datos</div>
+    <h1>📊 Análisis de datos y big data con IA</h1>
+    <div class="hero-meta">
+      <span>👩‍💻 <strong>Lili</strong></span>
+      <span>📅 Viernes 21 agosto 2026</span>
+      <span>🎯 Data · Marketing analítico</span>
+      <span>⏱ 90 minutos</span>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="container">
+  <div class="stat-grid" style="margin-top:1.5rem">
+    <div class="stat-card">
+      <div class="stat-num">96%</div>
+      <div class="stat-label">Precisión de text-to-SQL con modelos especializados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">3 min</div>
+      <div class="stat-label">EDA completo con Claude vs. 2–4 horas manual</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">350+</div>
+      <div class="stat-label">Conectores de datos pre-construidos en Airbyte</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">99%</div>
+      <div class="stat-label">Precisión en queries SQL simples con IA (2026)</div>
+    </div>
+  </div>
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span>🎯</span> Objetivos</div>
+    <ul class="objectives-list">
+      <li><strong>Analizar datasets con Claude</strong> de manera conversacional: cargar archivos CSV y Excel, hacer preguntas en lenguaje natural y obtener insights accionables sin escribir código.</li>
+      <li><strong>Implementar pipelines de datos</strong> que combinen ingesta (Airbyte), transformación (dbt), orquestación (Apache Airflow) y almacenamiento (BigQuery, Snowflake o Databricks).</li>
+      <li><strong>Visualizar insights</strong> con herramientas de BI modernas (Looker Studio, Metabase) y saber cuándo usar cada una según el equipo y el volumen de datos.</li>
+      <li><strong>Aplicar text-to-SQL</strong> para democratizar el acceso a datos: convertir preguntas de negocio en consultas SQL precisas usando IA, con 90–99% de precisión según la complejidad.</li>
+      <li><strong>Distinguir big data de smart data</strong>: entender que el objetivo no es acumular datos sino extraer señal útil para decisiones con la menor fricción posible.</li>
+    </ul>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span>🔑</span> Conceptos clave</div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>ETL / ELT</h4>
+        <p>Proceso de extraer datos de fuentes, transformarlos y cargarlos en un destino analítico. En 2026 domina el patrón ELT: primero cargar al warehouse, luego transformar con dbt dentro de BigQuery o Snowflake.</p>
+      </div>
+      <div class="concept-card">
+        <h4>EDA (Análisis Exploratorio)</h4>
+        <p>Primera fase de cualquier proyecto de datos: entender estructura, distribución y calidad del dataset. Con Claude, un EDA que tomaba 4 horas ahora toma 3 minutos.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Text-to-SQL</h4>
+        <p>IA que convierte preguntas en lenguaje natural en SQL ejecutable. Los mejores modelos especializados superan el 96% de precisión en benchmarks estándar (2025–2026).</p>
+      </div>
+      <div class="concept-card">
+        <h4>Data Pipeline</h4>
+        <p>Flujo automatizado de datos de la fuente al destino analítico. Incluye ingesta, orquestación con Airflow, transformación con dbt, y servicio vía BI o API.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Visualización de datos</h4>
+        <p>Convertir números en decisiones. Looker Studio para Google ecosystem, Metabase para self-service SQL, Tableau/Power BI para enterprise con gobernanza avanzada.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Big Data vs. Smart Data</h4>
+        <p>El paradigma de "más datos = mejor" cedió paso al Smart Data: priorizar calidad, relevancia y accionabilidad sobre volumen. La IA actúa como filtro de señal vs. ruido.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span>🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <h4>Claude (Anthropic)</h4>
+        <p>EDA conversacional con CSV/Excel, text-to-SQL, generación de código Python para datos, interpretación de resultados. 1M-token context window para workbooks complejos.</p>
+        <a href="https://claude.ai" target="_blank">claude.ai →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-free">Gratis</span>
+        <h4>Python + Pandas / PandasAI</h4>
+        <p>Manipulación de datos estructurados. PandasAI añade interfaz de lenguaje natural sobre DataFrames. Polars como alternativa de alto rendimiento para datasets &gt;10 GB.</p>
+        <a href="https://pandas.pydata.org" target="_blank">pandas.pydata.org →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <h4>Google BigQuery</h4>
+        <p>Data warehouse serverless con BigQuery Gemini integrado para IA y text-to-SQL. Consultas SQL a escala sin gestión de infraestructura. Pago por consulta.</p>
+        <a href="https://cloud.google.com/bigquery" target="_blank">cloud.google.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-paid">Pago</span>
+        <h4>Snowflake</h4>
+        <p>Data warehouse con Snowflake Cortex para modelos de IA y embeddings sobre datos gobernados. Text-to-SQL nativo con Cortex Analyst. Modelo de créditos por compute.</p>
+        <a href="https://www.snowflake.com" target="_blank">snowflake.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-paid">Pago</span>
+        <h4>Databricks</h4>
+        <p>Lakehouse unificado con Mosaic AI para entrenamiento y serving de modelos. Soporta Claude, GPT y modelos open-source vía Foundation Model APIs. El stack más profundo de AI.</p>
+        <a href="https://www.databricks.com" target="_blank">databricks.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-free">Gratis</span>
+        <h4>Looker Studio</h4>
+        <p>BI gratuito de Google. Dashboards conectados a BigQuery, Sheets y 800+ fuentes de datos. Ideal para equipos de marketing analítico sin presupuesto de BI.</p>
+        <a href="https://lookerstudio.google.com" target="_blank">lookerstudio.google.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <h4>Metabase</h4>
+        <p>BI open-source con self-service SQL. Permite a analistas no técnicos explorar bases de datos propias con preguntas en lenguaje natural. Self-hosted gratuito.</p>
+        <a href="https://www.metabase.com" target="_blank">metabase.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-free">Gratis (open source)</span>
+        <h4>Apache Airflow</h4>
+        <p>Orquestación de pipelines de datos como DAGs en Python. Estándar de la industria para scheduling, monitoreo y alertas de workflows. Astronomer para versión gestionada.</p>
+        <a href="https://airflow.apache.org" target="_blank">airflow.apache.org →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <h4>dbt (data build tool)</h4>
+        <p>Transformación de datos dentro del warehouse usando SQL con control de versiones, tests y documentación automática. El estándar moderno para la capa Transform en ELT.</p>
+        <a href="https://www.getdbt.com" target="_blank">getdbt.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <h4>Airbyte</h4>
+        <p>Ingesta y sincronización de datos con más de 350 conectores pre-construidos para CRMs, APIs, bases de datos y archivos. Se orquesta con Airflow para pipelines productivos.</p>
+        <a href="https://airbyte.com" target="_blank">airbyte.com →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MÓDULOS -->
+  <div class="card">
+    <div class="card-title"><span>📋</span> Módulos de la clase</div>
+
+    <div class="module">
+      <h3>Módulo 1 · EDA con IA — del CSV al insight en minutos (20 min)</h3>
+      <p>El Análisis Exploratorio de Datos es donde la IA genera el mayor ahorro de tiempo inmediato. Sin IA: 2–4 horas para un EDA básico. Con Claude: 3 minutos para un reporte estructurado con código reproducible.</p>
+      <p><strong>Qué analizar en un EDA de ventas/marketing:</strong></p>
+      <ul>
+        <li>Completitud: % de nulos en variables clave (email, monto, fecha)</li>
+        <li>Distribuciones: ¿los montos siguen distribución normal o hay colas largas? ¿Meses anómalos?</li>
+        <li>Segmentación natural: clusters de clientes por comportamiento de compra</li>
+        <li>Correlaciones accionables: qué variables predicen mejor el ticket promedio o frecuencia de compra</li>
+        <li>Calidad de datos: duplicados, fechas inconsistentes, variantes del mismo valor ("CDMX", "cdmx", "Ciudad de Mexico")</li>
+      </ul>
+      <div class="tag-row">
+        <span class="tag">PandasAI</span>
+        <span class="tag">Jupyter AI</span>
+        <span class="tag">Polars</span>
+        <span class="tag">Claude + CSV</span>
+      </div>
+    </div>
+
+    <div class="module">
+      <h3>Módulo 2 · Text-to-SQL — hablar con la base de datos (20 min)</h3>
+      <p>Text-to-SQL democratiza el acceso a los datos: cualquier persona del equipo puede obtener respuestas de la base de datos sin escribir SQL. El diferenciador crítico es la <strong>conciencia de esquema</strong>: los modelos que leen el esquema real de la BD generan queries significativamente más precisos.</p>
+      <p><strong>Estado del arte en 2026:</strong></p>
+      <ul>
+        <li>SQLCoder-70b alcanza <strong>96% de precisión</strong> en benchmarks estándar, superando a GPT-4</li>
+        <li>Queries simples (SELECT, WHERE, GROUP BY): precisión &gt;99%</li>
+        <li>Queries complejos (ratios, subconsultas, ventanas): 85–91% de precisión</li>
+        <li>Multi-Agent Systems se vuelven el default: agentes separados para intent, retrieval y validación</li>
+      </ul>
+      <div class="tag-row">
+        <span class="tag">Claude + MCP</span>
+        <span class="tag">Vanna.ai 2.0</span>
+        <span class="tag">DBHub</span>
+        <span class="tag">BigQuery Gemini</span>
+        <span class="tag">Snowflake Cortex Analyst</span>
+      </div>
+    </div>
+
+    <div class="module">
+      <h3>Módulo 3 · Pipelines de datos — del dato crudo a la métrica (25 min)</h3>
+      <p>Un pipeline productivo transforma datos crudos en métricas confiables y actualizadas automáticamente. La IA añade inteligencia en cada etapa del flujo.</p>
+      <div class="arch-box">
+        <span>[Fuentes]</span> → <span>[Ingesta]</span>  → <span>[Warehouse]</span>  → <span>[Transform]</span> → <span>[BI / IA]</span><br>
+        APIs &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Airbyte &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BigQuery &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dbt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Looker Studio<br>
+        CRM &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fivetran &nbsp;&nbsp;&nbsp;&nbsp; Snowflake &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SQL + Python &nbsp; Metabase<br>
+        Sheets &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n8n &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Databricks &nbsp;&nbsp;&nbsp; Claude &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tableau
+      </div>
+      <p><strong>IA en el pipeline:</strong> detección de anomalías automática, limpieza inteligente de datos inconsistentes, documentación automática de modelos dbt con Claude, alertas cuando una métrica sale de su rango estadístico normal.</p>
+      <div class="tag-row">
+        <span class="tag">Airflow DAGs</span>
+        <span class="tag">dbt</span>
+        <span class="tag">Great Expectations</span>
+        <span class="tag">Airbyte</span>
+      </div>
+    </div>
+
+    <div class="module">
+      <h3>Módulo 4 · Visualización e insights — datos en decisiones (25 min)</h3>
+      <p>El dato sin contexto no tiene valor. Tres niveles de visualización según el público:</p>
+      <ul>
+        <li><strong>Exploración (analistas):</strong> Jupyter notebooks con matplotlib/Plotly. Claude genera el código desde la descripción del gráfico.</li>
+        <li><strong>Monitoreo (equipos):</strong> Metabase o Looker Studio actualizados automáticamente. Marketing ve métricas de campañas en tiempo real sin pedir reportes al área de datos.</li>
+        <li><strong>Comunicación (stakeholders):</strong> presentaciones con narrativa generadas con Claude. El analista extrae los datos, Claude construye la historia.</li>
+      </ul>
+      <div class="tag-row">
+        <span class="tag">Looker Studio</span>
+        <span class="tag">Metabase</span>
+        <span class="tag">Tableau AI</span>
+        <span class="tag">Plotly</span>
+        <span class="tag">Claude narrativas</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOOKER vs METABASE -->
+  <div class="card">
+    <div class="card-title"><span>⚖️</span> Looker Studio vs. Metabase</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Criterio</th>
+          <th>Looker Studio</th>
+          <th>Metabase</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Costo</td>
+          <td>Gratis</td>
+          <td>Freemium (self-hosted gratis)</td>
+        </tr>
+        <tr>
+          <td>Mejor para</td>
+          <td>Equipos de marketing, Google ecosystem</td>
+          <td>Equipos técnicos, self-service SQL</td>
+        </tr>
+        <tr>
+          <td>Conexión a BigQuery</td>
+          <td>Nativa y sin costo adicional</td>
+          <td>Requiere configuración manual</td>
+        </tr>
+        <tr>
+          <td>Text-to-SQL integrado</td>
+          <td>Sí, vía Gemini</td>
+          <td>Sí, Metabase AI</td>
+        </tr>
+        <tr>
+          <td>Curva de aprendizaje</td>
+          <td>Baja — drag &amp; drop</td>
+          <td>Media — requiere entender SQL básico</td>
+        </tr>
+        <tr>
+          <td>Gobernanza de datos</td>
+          <td>Básica</td>
+          <td>Avanzada en plan Cloud</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span>💪</span> Ejercicio práctico</div>
+    <p style="font-size:.95rem;font-weight:600;margin-bottom:1.25rem;color:#374151">Subir un dataset de ventas y obtener insights accionables con Claude — 30 minutos</p>
+
+    <div class="exercise-box">
+      <h4>Paso 1 — Preparar el dataset (5 min)</h4>
+      <p style="font-size:.88rem;color:#475569">Usa tu propio archivo de ventas o descarga el <a href="https://www.kaggle.com/datasets/kyanyoga/sample-sales-data" target="_blank" style="color:#374151;font-weight:600">Sample Sales Data de Kaggle</a>. Necesitas al menos: fecha, producto/categoría, monto, canal de venta y una dimensión geográfica o de cliente.</p>
+    </div>
+
+    <div class="exercise-box">
+      <h4>Paso 2 — EDA inicial con Claude (10 min)</h4>
+      <p style="font-size:.88rem;color:#475569;margin-bottom:.75rem">Abre <a href="https://claude.ai" target="_blank" style="color:#374151;font-weight:600">claude.ai</a>, adjunta el CSV y usa este prompt:</p>
+      <pre>Eres un analista de datos senior especializado en marketing analítico.
+Analiza este dataset de ventas y genera:
+
+1. RESUMEN EJECUTIVO: cuántos registros, período cubierto, variables
+   disponibles, calidad de los datos (% nulos, duplicados detectados).
+
+2. TOP 5 INSIGHTS: hallazgos relevantes para un equipo de marketing.
+   Para cada uno: dato concreto + contexto + pregunta de seguimiento.
+
+3. ALERTAS DE CALIDAD: problemas que puedan distorsionar el análisis.
+
+4. CÓDIGO PYTHON: pandas para reproducir el análisis más importante.
+
+Responde en español. Sé específico con números, no generalices.</pre>
+    </div>
+
+    <div class="exercise-box">
+      <h4>Paso 3 — Análisis profundo por segmento (10 min)</h4>
+      <pre>Basándote en el dataset que analizaste:
+
+- ¿Qué segmento de clientes tiene el mayor LTV potencial? Justifica.
+- ¿Hay algún patrón estacional relevante que anticipar?
+- ¿Cuál es el canal de venta con mejor rentabilidad por unidad?
+- Si tuvieras que recomendar en qué categoría doblar la inversión
+  de marketing, ¿cuál sería y por qué?</pre>
+    </div>
+
+    <div class="exercise-box">
+      <h4>Paso 4 — Recomendaciones accionables (5 min)</h4>
+      <pre>Convierte los insights anteriores en un plan de acción concreto:
+- 3 acciones que se pueden implementar esta semana
+- 2 experimentos A/B para correr el próximo mes
+- 1 métrica nueva que el equipo debería empezar a monitorear
+
+Formato: lista de viñetas, lenguaje directo, sin jerga técnica.</pre>
+    </div>
+
+    <p style="font-size:.85rem;color:#64748b;margin-top:.5rem">Reflexión grupal: cada participante comparte el insight más sorprendente de su dataset y la acción que planea tomar.</p>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span>📚</span> Recursos recomendados</div>
+
+    <p style="font-size:.88rem;font-weight:600;color:#374151;margin-bottom:.75rem">Lecturas y guías esenciales</p>
+    <a class="resource-link" href="https://ai.exoticaitsolutions.com/blog/top-ai-tools-for-automating-python-data-analysis-pipelines-in-2026/" target="_blank">
+      <span class="resource-link-icon">📖</span>
+      <span class="resource-link-text"><strong>Top AI Tools for Automating Python Data Analysis Pipelines in 2026</strong><span>Exotica IT Solutions — herramientas, best practices y stack recomendado</span></span>
+    </a>
+    <a class="resource-link" href="https://www.blazesql.com/blog/natural-language-to-sql" target="_blank">
+      <span class="resource-link-icon">🗣️</span>
+      <span class="resource-link-text"><strong>Natural Language to SQL: The Complete 2026 Guide</strong><span>BlazeSQL — cómo funciona, herramientas top, benchmarks de precisión</span></span>
+    </a>
+    <a class="resource-link" href="https://builder.ai2sql.io/blog/text-to-sql-complete-guide" target="_blank">
+      <span class="resource-link-icon">⚡</span>
+      <span class="resource-link-text"><strong>Text2SQL Complete Guide: Tools, Accuracy, Real Examples</strong><span>AI2SQL — guía completa con ejemplos reales y comparativa de herramientas</span></span>
+    </a>
+    <a class="resource-link" href="https://airbyte.com/top-etl-tools-for-sources/the-essential-modern-data-stack-tools" target="_blank">
+      <span class="resource-link-icon">🔧</span>
+      <span class="resource-link-text"><strong>The Essential Modern Data Stack Tools for 2026</strong><span>Airbyte — arquitectura completa del Modern Data Stack con tool picks</span></span>
+    </a>
+    <a class="resource-link" href="https://technologymatch.com/blog/snowflake-vs-databricks-vs-bigquery-a-guide-for-it-leaders-in-2026" target="_blank">
+      <span class="resource-link-icon">🏗️</span>
+      <span class="resource-link-text"><strong>Snowflake vs Databricks vs BigQuery: Guía para IT Leaders 2026</strong><span>TechnologyMatch — comparativa completa de los tres grandes warehouses</span></span>
+    </a>
+    <a class="resource-link" href="https://orbilontech.com/claude-in-excel-ai-spreadsheet-automation-2026/" target="_blank">
+      <span class="resource-link-icon">📊</span>
+      <span class="resource-link-text"><strong>Claude in Excel: AI Spreadsheet Automation Guide 2026</strong><span>Orbilontech — integración Claude + Excel, capacidades y workflows</span></span>
+    </a>
+
+    <div class="section-divider" style="margin-top:1.5rem"></div>
+    <p style="font-size:.88rem;font-weight:600;color:#374151;margin-bottom:.75rem">Herramientas para explorar esta semana</p>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <h4>Claude.ai</h4>
+        <p>Sube un CSV y empieza el EDA hoy. Plan Free disponible sin tarjeta.</p>
+        <a href="https://claude.ai" target="_blank">claude.ai →</a>
+      </div>
+      <div class="tool-card">
+        <span class="badge badge-free">Gratis</span>
+        <h4>Looker Studio</h4>
+        <p>Dashboards gratis, conectado a Google Sheets en 5 minutos.</p>
+        <a href="https://lookerstudio.google.com" target="_blank">lookerstudio.google.com →</a>
+      </div>
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <h4>PandasAI</h4>
+        <p>Lenguaje natural sobre DataFrames de Python. Open source.</p>
+        <a href="https://pandas-ai.com" target="_blank">pandas-ai.com →</a>
+      </div>
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <h4>Vanna.ai</h4>
+        <p>Agente text-to-SQL personalizable con tu historial de queries. Plan gratuito.</p>
+        <a href="https://vanna.ai" target="_blank">vanna.ai →</a>
+      </div>
+      <div class="tool-card">
+        <span class="badge badge-free">Gratis (Developer)</span>
+        <h4>dbt Cloud</h4>
+        <p>Cuenta Developer gratuita para proyectos individuales de transformación de datos.</p>
+        <a href="https://www.getdbt.com" target="_blank">getdbt.com →</a>
+      </div>
+      <div class="tool-card">
+        <span class="badge badge-free">Gratis (open source)</span>
+        <h4>Apache Airflow</h4>
+        <p>Orquestación de pipelines. Self-hosted gratuito; Astronomer para versión gestionada.</p>
+        <a href="https://airflow.apache.org" target="_blank">airflow.apache.org →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span>🔗</span> Acciones post-clase</div>
+    <div class="action-section">
+      <h4>Esta semana — compromiso mínimo</h4>
+      <ul class="checklist">
+        <li>Subir un dataset real de tu empresa a Claude y pedir un EDA completo; documentar los 3 insights más útiles que encontró.</li>
+        <li>Probar Looker Studio conectado a Google Sheets con datos de tus últimas campañas de marketing.</li>
+        <li>Instalar PandasAI en Python y hacer 5 preguntas sobre un dataset propio en lenguaje natural.</li>
+      </ul>
+      <h4>Este mes</h4>
+      <ul class="checklist">
+        <li>Definir las 5 métricas de negocio más importantes para tu equipo y verificar que cada una tiene una fuente de datos confiable y actualizada automáticamente.</li>
+        <li>Probar Vanna.ai o un text-to-SQL sobre la base de datos de tu organización y documentar la precisión real en queries de tu dominio específico.</li>
+        <li>Diseñar el esquema del pipeline ideal para tu equipo: fuentes → warehouse → transformaciones → dashboard. Identificar qué parte falta o no está automatizada.</li>
+      </ul>
+      <h4>Este trimestre</h4>
+      <ul class="checklist">
+        <li>Implementar un pipeline básico con al menos tres etapas automatizadas (ingesta + transformación + dashboard).</li>
+        <li>Capacitar a al menos 2 personas no técnicas del equipo para que puedan obtener datos del warehouse por su cuenta usando text-to-SQL o Metabase.</li>
+        <li>Establecer un proceso de calidad de datos: definir qué tests correr automáticamente, qué alertas disparar, y quién es responsable de resolverlas.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Clase 18 · Programa IA Aplicada · Tier 5 · Datos<br>
+  Presentado por Lili · Viernes 21 agosto 2026
+</footer>
+
+</body>
+</html>
