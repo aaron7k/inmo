@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 15 — Integración de agentes IA con APIs y webhooks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#EF4444 0%,#DC2626 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;transition:box-shadow .2s}
+    .tool-card:hover{box-shadow:0 4px 16px rgba(239,68,68,.12);border-color:#fca5a5}
+    .tool-name{font-weight:700;font-size:.95rem;margin-bottom:.25rem;color:#1e293b}
+    .tool-desc{font-size:.82rem;color:#64748b;margin-bottom:.6rem;line-height:1.5}
+    .tool-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .tool-link{font-size:.78rem;color:#EF4444;text-decoration:none;font-weight:500}
+    .tool-link:hover{text-decoration:underline}
+    .module{border-left:3px solid #EF4444;padding-left:1.25rem;margin-bottom:1.75rem}
+    .module-title{font-weight:700;font-size:1rem;color:#DC2626;margin-bottom:.5rem}
+    .module-desc{font-size:.9rem;color:#475569;line-height:1.6}
+    .exercise-box{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-title{font-weight:700;color:#DC2626;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem;font-size:.92rem}
+    .objectives-list{list-style:none;padding:0}
+    .objectives-list li{display:flex;gap:.75rem;padding:.6rem 0;border-bottom:1px solid #f1f5f9;font-size:.92rem}
+    .objectives-list li:last-child{border-bottom:none}
+    .obj-num{background:#EF4444;color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+    .concepts-table{width:100%;border-collapse:collapse}
+    .concepts-table th{background:#fef2f2;color:#DC2626;font-weight:700;padding:.75rem 1rem;text-align:left;font-size:.85rem;border-bottom:2px solid #fca5a5}
+    .concepts-table td{padding:.75rem 1rem;font-size:.88rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    .concepts-table td:first-child{font-weight:600;color:#1e293b;white-space:nowrap}
+    .concepts-table td:last-child{color:#475569}
+    .concepts-table tr:hover{background:#fff5f5}
+    code{background:#fef2f2;color:#DC2626;padding:.15rem .4rem;border-radius:.3rem;font-size:.82em;font-family:'Courier New',monospace}
+    pre{background:#1e293b;color:#e2e8f0;border-radius:.75rem;padding:1.25rem;overflow-x:auto;margin:.75rem 0;font-size:.82rem;line-height:1.6}
+    pre code{background:none;color:inherit;padding:0;font-size:inherit}
+    .step-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;margin-bottom:.75rem}
+    .step-num{font-weight:700;color:#EF4444;font-size:.85rem;margin-bottom:.35rem}
+    .step-content{font-size:.88rem;color:#475569}
+    .comparison-table{width:100%;border-collapse:collapse;font-size:.85rem}
+    .comparison-table th{background:#fef2f2;color:#DC2626;font-weight:700;padding:.6rem .75rem;text-align:left;border-bottom:2px solid #fca5a5}
+    .comparison-table td{padding:.6rem .75rem;border-bottom:1px solid #f1f5f9;color:#475569;vertical-align:top}
+    .comparison-table td:first-child{font-weight:600;color:#1e293b}
+    .comparison-table tr:hover{background:#fff5f5}
+    .pattern-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:1rem}
+    .pattern-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;background:#fafafa}
+    .pattern-num{background:#EF4444;color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;margin-bottom:.5rem}
+    .pattern-title{font-weight:700;font-size:.9rem;margin-bottom:.3rem;color:#1e293b}
+    .pattern-desc{font-size:.82rem;color:#64748b;line-height:1.5}
+    .resources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .resource-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;background:white}
+    .resource-category{font-size:.72rem;font-weight:700;color:#EF4444;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+    .resource-link{display:block;font-size:.87rem;font-weight:600;color:#1e293b;text-decoration:none;margin-bottom:.2rem}
+    .resource-link:hover{color:#EF4444}
+    .resource-desc{font-size:.78rem;color:#94a3b8}
+    .checklist{list-style:none;padding:0}
+    .checklist li{display:flex;gap:.75rem;padding:.5rem 0;border-bottom:1px solid #f1f5f9;font-size:.9rem;align-items:flex-start}
+    .checklist li:last-child{border-bottom:none}
+    .check-box{width:18px;height:18px;border:2px solid #EF4444;border-radius:.3rem;flex-shrink:0;margin-top:.1rem}
+    .tag{display:inline-block;background:#fef2f2;color:#DC2626;font-size:.72rem;padding:.1rem .5rem;border-radius:.3rem;font-weight:600;margin-right:.3rem}
+    .highlight-box{background:linear-gradient(135deg,#fef2f2,#fff5f5);border-left:4px solid #EF4444;border-radius:0 .75rem .75rem 0;padding:1rem 1.25rem;margin:.75rem 0}
+    .highlight-box p{font-size:.9rem;color:#475569}
+    .highlight-box strong{color:#DC2626}
+    .info-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
+    .info-pill{background:#fef2f2;color:#DC2626;padding:.3rem .8rem;border-radius:999px;font-size:.8rem;font-weight:600}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem;border-top:1px solid #e2e8f0;margin-top:1rem}
+    .section-label{font-size:.75rem;font-weight:700;color:#EF4444;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem}
+    .event-table{width:100%;border-collapse:collapse;font-size:.84rem}
+    .event-table th{background:#1e293b;color:#e2e8f0;padding:.5rem .75rem;text-align:left;font-size:.8rem}
+    .event-table td{padding:.5rem .75rem;border-bottom:1px solid #f1f5f9;color:#475569;font-family:'Courier New',monospace;font-size:.82rem}
+    .event-table td:last-child{font-family:'Inter',sans-serif;font-size:.82rem}
+    .event-table tr:hover{background:#f8fafc}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="tier-badge">Tier 4 · TI / Dev track · Clase 15 de 20</div>
+    <h1>🔄 Integración de agentes IA<br>con APIs y webhooks</h1>
+    <div class="hero-meta">
+      <span>👨‍💻 <strong>Adrian</strong></span>
+      <span>📅 Viernes 31 julio 2026</span>
+      <span>⏱️ 90 minutos</span>
+      <span>🎯 Audiencia: Devs</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la clase</div>
+    <ul class="objectives-list">
+      <li>
+        <span class="obj-num">1</span>
+        <span>Integrar agentes IA con APIs REST externas, entendiendo los <strong>5 patrones principales</strong> de integración y cuándo aplicar cada uno en producción.</span>
+      </li>
+      <li>
+        <span class="obj-num">2</span>
+        <span>Configurar <strong>endpoints de webhooks seguros</strong> que reciban eventos de sistemas externos y los procesen de forma asíncrona sin bloquear el hilo principal.</span>
+      </li>
+      <li>
+        <span class="obj-num">3</span>
+        <span>Manejar eventos asíncronos correctamente, implementando <strong>acuse de recibo inmediato, colas de trabajo</strong> y procesamiento diferido para cumplir SLAs.</span>
+      </li>
+      <li>
+        <span class="obj-num">4</span>
+        <span>Implementar <strong>autenticación robusta</strong> para agentes IA usando API keys, JWT y OAuth 2.0, aplicando el principio de mínimo privilegio.</span>
+      </li>
+      <li>
+        <span class="obj-num">5</span>
+        <span>Aplicar <strong>retry logic con backoff exponencial</strong> e idempotencia para garantizar la entrega exactamente-una-vez en flujos críticos.</span>
+      </li>
+      <li>
+        <span class="obj-num">6</span>
+        <span>Usar herramientas <strong>no-code/low-code</strong> (n8n, Make.com) para protototipar integraciones de agentes antes de pasarlas a producción.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>Término</th>
+          <th>Definición</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>REST API</td>
+          <td>Interfaz que sigue los principios REST. El agente hace la llamada (pull). Verbos HTTP: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>.</td>
+        </tr>
+        <tr>
+          <td>Webhook</td>
+          <td>Mecanismo push inverso al REST: el sistema externo llama a tu endpoint cuando ocurre un evento. Elimina el polling y reduce latencia a milisegundos.</td>
+        </tr>
+        <tr>
+          <td>Evento (Event)</td>
+          <td>Notificación JSON que describe algo ocurrido: <code>session.status_idled</code>, <code>payment.completed</code>. Contiene <code>type</code>, <code>id</code> y <code>created_at</code>.</td>
+        </tr>
+        <tr>
+          <td>Async vs Sync</td>
+          <td>Síncrono: espera a que termine (riesgo de timeout). Asíncrono: devuelve <code>202 Accepted</code> de inmediato y el trabajo va a una cola.</td>
+        </tr>
+        <tr>
+          <td>Autenticación</td>
+          <td>Para webhooks: firma <code>HMAC-SHA256</code> en <code>X-Webhook-Signature</code>. Para APIs: API key, Bearer JWT, OAuth 2.0. Siempre verificar antes de procesar.</td>
+        </tr>
+        <tr>
+          <td>Rate Limiting</td>
+          <td>Límite de solicitudes por tiempo. Patrones: token bucket por agente, ventana deslizante, cuotas por costo de tokens de IA consumidos.</td>
+        </tr>
+        <tr>
+          <td>Retry Logic</td>
+          <td>Reintento ante fallos con <strong>backoff exponencial + jitter</strong>. El jitter evita el "thundering herd problem" (avalancha de reintentos simultáneos).</td>
+        </tr>
+        <tr>
+          <td>Idempotencia</td>
+          <td>Una operación produce el mismo resultado si se ejecuta 1 o N veces con los mismos datos. Clave para manejar reintentos de webhooks sin duplicar efectos.</td>
+        </tr>
+        <tr>
+          <td>Circuit Breaker</td>
+          <td>Patrón que "abre el circuito" y deja de reintentar cuando un servicio está caído. Se cierra progresivamente cuando el servicio se recupera.</td>
+        </tr>
+        <tr>
+          <td>MCP</td>
+          <td>Model Context Protocol: estándar abierto de Anthropic que estandariza cómo los agentes IA se conectan a herramientas externas. Reemplaza integraciones ad-hoc.</td>
+        </tr>
+        <tr>
+          <td>Dead Letter Queue</td>
+          <td>Cola donde van los eventos que agotaron todos sus reintentos. Permite auditarlos, investigar el error y reprocesarlos manualmente.</td>
+        </tr>
+        <tr>
+          <td>ngrok</td>
+          <td>Túnel HTTPS público a tu servidor local. Esencial para recibir webhooks durante el desarrollo sin necesidad de desplegar a producción.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-name">Claude API</div>
+        <div class="tool-desc">Motor de IA: procesa texto, clasifica eventos de webhook, toma decisiones. Soporta webhooks nativos para Managed Agents con 8 tipos de eventos de sesión.</div>
+        <div class="tool-footer">
+          <span class="badge badge-freemium">Freemium</span>
+          <a href="https://platform.claude.com" target="_blank" class="tool-link">platform.claude.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">FastAPI (Python)</div>
+        <div class="tool-desc">Framework de alto rendimiento para endpoints de webhooks. Validación automática con Pydantic, async nativo, Background Tasks y documentación OpenAPI.</div>
+        <div class="tool-footer">
+          <span class="badge badge-free">Gratis</span>
+          <a href="https://fastapi.tiangolo.com" target="_blank" class="tool-link">fastapi.tiangolo.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">Express.js (Node)</div>
+        <div class="tool-desc">Framework minimalista para webhooks en TypeScript con el SDK oficial de Anthropic. Usa <code>express.raw()</code> para verificar firmas sobre bytes crudos.</div>
+        <div class="tool-footer">
+          <span class="badge badge-free">Gratis</span>
+          <a href="https://expressjs.com" target="_blank" class="tool-link">expressjs.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">n8n</div>
+        <div class="tool-desc">Automatización con +70 nodos de IA (LangChain nativo), webhooks como triggers, memoria persistente y agentes autónomos. Self-hosteable sin límites desde agosto 2025.</div>
+        <div class="tool-footer">
+          <span class="badge badge-freemium">Freemium</span>
+          <a href="https://n8n.io" target="_blank" class="tool-link">n8n.io →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">Make.com</div>
+        <div class="tool-desc">Automatización visual drag-and-drop. Incluye Maia (IA que construye escenarios desde lenguaje natural) y nodos HTTP para llamar a cualquier API REST.</div>
+        <div class="tool-footer">
+          <span class="badge badge-freemium">Freemium</span>
+          <a href="https://make.com" target="_blank" class="tool-link">make.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">ngrok</div>
+        <div class="tool-desc">Túnel HTTPS seguro para exponer tu servidor local durante desarrollo. Indispensable para recibir webhooks reales sin desplegar a producción.</div>
+        <div class="tool-footer">
+          <span class="badge badge-freemium">Freemium</span>
+          <a href="https://ngrok.com" target="_blank" class="tool-link">ngrok.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">Postman</div>
+        <div class="tool-desc">Plataforma para diseñar, testear y simular APIs. Mock servers para simular eventos de webhook sin el sistema real. Colecciones compartibles.</div>
+        <div class="tool-footer">
+          <span class="badge badge-freemium">Freemium</span>
+          <a href="https://postman.com" target="_blank" class="tool-link">postman.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">Redis</div>
+        <div class="tool-desc">Base de datos in-memory usada como cola de mensajes (Redis Streams / BullMQ) para procesamiento asíncrono de webhooks e implementación de idempotencia.</div>
+        <div class="tool-footer">
+          <span class="badge badge-freemium">Freemium</span>
+          <a href="https://redis.io" target="_blank" class="tool-link">redis.io →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">Hookdeck</div>
+        <div class="tool-desc">Gateway especializado en webhooks: retry automático, filtrado, transformación de payloads, monitoreo y replay de eventos fallidos. Ideal para producción.</div>
+        <div class="tool-footer">
+          <span class="badge badge-freemium">Freemium</span>
+          <a href="https://hookdeck.com" target="_blank" class="tool-link">hookdeck.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">Zapier</div>
+        <div class="tool-desc">Automatización no-code con 8000+ integraciones. Zapier Agents ejecuta tareas autónomas. Ideal para prototipado rápido sin código.</div>
+        <div class="tool-footer">
+          <span class="badge badge-freemium">Freemium</span>
+          <a href="https://zapier.com" target="_blank" class="tool-link">zapier.com →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTENIDO: 4 MÓDULOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Contenido — 4 módulos</div>
+
+    <!-- Módulo 1 -->
+    <div class="module">
+      <div class="module-title">Módulo 1 · Fundamentos de integración API con agentes IA (20 min)</div>
+      <div class="module-desc">
+        <p style="margin-bottom:.75rem">Los agentes IA necesitan APIs para actuar en el mundo real. Sin integración de APIs, un agente solo es un chatbot. Los 5 patrones de integración son:</p>
+        <div class="pattern-grid">
+          <div class="pattern-card">
+            <div class="pattern-num">1</div>
+            <div class="pattern-title">Llamadas REST directas</div>
+            <div class="pattern-desc">El agente hace GET/POST directamente. Simple pero síncrono. Ideal para consultas con tiempo de respuesta predecible.</div>
+          </div>
+          <div class="pattern-card">
+            <div class="pattern-num">2</div>
+            <div class="pattern-title">Tool Use / Function Calling</div>
+            <div class="pattern-desc">El agente decide qué herramientas usar según el contexto. El patrón más potente para agentes autónomos con Claude API.</div>
+          </div>
+          <div class="pattern-card">
+            <div class="pattern-num">3</div>
+            <div class="pattern-title">MCP (Model Context Protocol)</div>
+            <div class="pattern-desc">El estándar emergente 2025-2026. Más rápido que REST ad-hoc, más fácil de depurar, estandarizado entre proveedores.</div>
+          </div>
+          <div class="pattern-card">
+            <div class="pattern-num">4</div>
+            <div class="pattern-title">Plataformas unificadas</div>
+            <div class="pattern-desc">Composio, Unified.to: capa sobre cientos de APIs. El agente usa una interfaz única; la plataforma gestiona auth y traducción.</div>
+          </div>
+          <div class="pattern-card">
+            <div class="pattern-num">5</div>
+            <div class="pattern-title">Protocolo A2A</div>
+            <div class="pattern-desc">Agent-to-Agent: agentes que se llaman entre sí. Arquitecturas multiagente donde un coordinador delega a agentes especializados.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Módulo 2 -->
+    <div class="module">
+      <div class="module-title">Módulo 2 · Webhooks: arquitectura push y eventos asíncronos (25 min)</div>
+      <div class="module-desc">
+        <div class="highlight-box">
+          <p><strong>Regla de oro:</strong> Los webhooks devuelven el <code>id</code> del objeto, no el objeto completo. Siempre haz un GET adicional para obtener datos frescos. Esto evita entregar datos obsoletos en reintentos.</p>
+        </div>
+        <p style="margin:1rem 0 .75rem">Comparativa Webhook vs Polling:</p>
+        <table class="comparison-table">
+          <thead><tr><th>Aspecto</th><th>Polling</th><th>Webhook</th></tr></thead>
+          <tbody>
+            <tr><td>Dirección</td><td>Tu sistema llama al externo</td><td>El externo llama a tu sistema</td></tr>
+            <tr><td>Latencia</td><td>Minutos u horas</td><td>Milisegundos</td></tr>
+            <tr><td>Recursos</td><td>Desperdicia CPU en llamadas vacías</td><td>Solo consume cuando hay eventos</td></tr>
+            <tr><td>Complejidad</td><td>Simple de implementar</td><td>Requiere endpoint público + firma</td></tr>
+          </tbody>
+        </table>
+        <p style="margin:1rem 0 .75rem">Eventos de webhook de Claude Managed Agents:</p>
+        <table class="event-table">
+          <thead><tr><th>Evento</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td>session.status_run_started</td><td>Ejecución del agente iniciada</td></tr>
+            <tr><td>session.status_idled</td><td>Agente en espera de input del usuario o aprobación de herramienta</td></tr>
+            <tr><td>session.status_rescheduled</td><td>Error transitorio — reintentando automáticamente</td></tr>
+            <tr><td>session.status_terminated</td><td>Error terminal — sesión finalizada</td></tr>
+            <tr><td>session.thread_created</td><td>Nuevo hilo abierto en arquitectura multiagente</td></tr>
+            <tr><td>session.outcome_evaluation_ended</td><td>Evaluación de resultado de iteración completada</td></tr>
+          </tbody>
+        </table>
+        <pre><code># Implementación Python (Flask + SDK oficial Anthropic)
+@app.route("/webhook", methods=["POST"])
+def webhook():
+    try:
+        # unwrap() verifica firma Y valida que el payload
+        # no tenga más de 5 minutos (anti-replay)
+        event = client.beta.webhooks.unwrap(
+            request.get_data(as_text=True),
+            headers=dict(request.headers),
+        )
+    except Exception:
+        return "firma inválida", 400
+
+    if event.data.type == "session.status_idled":
+        session = client.beta.sessions.retrieve(event.data.id)
+        notificar_usuario(session)
+
+    return "", 204  # ACK inmediato</code></pre>
+      </div>
+    </div>
+
+    <!-- Módulo 3 -->
+    <div class="module">
+      <div class="module-title">Módulo 3 · Integraciones comunes: n8n, Make.com y Zapier (25 min)</div>
+      <div class="module-desc">
+        <table class="comparison-table" style="margin-bottom:1rem">
+          <thead><tr><th>Criterio</th><th>n8n</th><th>Make.com</th><th>Zapier</th></tr></thead>
+          <tbody>
+            <tr><td>Perfil ideal</td><td>Dev con servidor propio</td><td>Usuario técnico-medio</td><td>No-dev / prototipado</td></tr>
+            <tr><td>Agentes IA</td><td>LangChain nativo, 70+ nodos</td><td>Maia AI + HTTP nodes</td><td>Zapier Agents (8000+ apps)</td></tr>
+            <tr><td>Self-hosted</td><td>Sí (sin límites desde ago 2025)</td><td>No</td><td>No</td></tr>
+            <tr><td>Costo 1K runs/día</td><td>~$0 (self-hosted)</td><td>~$50-100/mes</td><td>~$200-400/mes</td></tr>
+            <tr><td>Mejor para</td><td>Flujos complejos, producción</td><td>Flujos visuales elaborados</td><td>Prototipado rápido</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:.88rem;color:#475569">Flujo típico en n8n: <code>Webhook Trigger</code> → <code>Set Node</code> → <code>HTTP Request (Claude API)</code> → <code>IF Node</code> → <code>CRM Update</code> / <code>Send Email</code></p>
+        <div style="margin-top:1rem">
+          <p style="font-size:.85rem;font-weight:600;color:#1e293b;margin-bottom:.5rem">Túnel local con ngrok:</p>
+          <pre><code>ngrok http 3000
+# → https://abc123.ngrok-free.app
+# Registra esta URL en el panel de webhooks del servicio externo</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Módulo 4 -->
+    <div class="module">
+      <div class="module-title">Módulo 4 · Manejo de errores, retry logic y seguridad (20 min)</div>
+      <div class="module-desc">
+        <div class="highlight-box" style="margin-bottom:1rem">
+          <p><strong>Principio fundamental:</strong> Reconoce el webhook de inmediato (<code>200 OK</code>), luego procesa en segundo plano. Procesar síncronamente causa timeouts y falsos reintentos.</p>
+        </div>
+        <p style="font-size:.85rem;font-weight:600;color:#1e293b;margin-bottom:.5rem">Retry con backoff exponencial + jitter:</p>
+        <pre><code>async def llamar_con_retry(url, payload, max_intentos=5):
+    for intento in range(max_intentos):
+        try:
+            response = await client.post(url, json=payload)
+            if response.status_code == 429:
+                await asyncio.sleep(int(response.headers.get("Retry-After", 60)))
+                continue
+            response.raise_for_status()
+            return response.json()
+        except Exception:
+            if intento == max_intentos - 1:
+                raise
+            espera = (2 ** intento) * random.uniform(0.7, 1.3)
+            await asyncio.sleep(min(espera, 60))  # máx 60 segundos</code></pre>
+        <p style="font-size:.85rem;margin-top:1rem;margin-bottom:.5rem"><strong>5 patrones de rate limiting para agentes IA:</strong></p>
+        <ul>
+          <li><strong>Token bucket por identidad de agente</strong> — más justo que límites por IP cuando todos los agentes comparten infraestructura</li>
+          <li><strong>Cuotas basadas en costo</strong> — limitar por tokens de IA consumidos, no por número de llamadas</li>
+          <li><strong>Retry budget</strong> — presupuesto de reintentos por agente por unidad de tiempo</li>
+          <li><strong>Circuit breaker</strong> — abre el circuito cuando la tasa de error supera el umbral</li>
+          <li><strong>Throttling adaptativo</strong> — ajusta el límite dinámicamente según carga del sistema</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO PRÁCTICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <div class="exercise-title">
+        <span>🎯</span>
+        <span>Pipeline: Webhook → Cola → Claude → CRM (30 min)</span>
+      </div>
+      <p style="font-size:.9rem;color:#475569;margin-bottom:1.25rem">
+        Crear un endpoint FastAPI que recibe un webhook de lead nuevo, lo encola asincrónicamente, llama a Claude para análisis y clasificación, y retorna el score con la acción recomendada.
+      </p>
+
+      <div class="step-box">
+        <div class="step-num">Paso 1 — Setup del entorno</div>
+        <pre style="margin-top:.5rem"><code>pip install fastapi uvicorn anthropic redis httpx python-dotenv
+# .env: ANTHROPIC_API_KEY, WEBHOOK_SECRET, REDIS_URL</code></pre>
+      </div>
+
+      <div class="step-box">
+        <div class="step-num">Paso 2 — Endpoint con verificación de firma y ACK inmediato</div>
+        <pre style="margin-top:.5rem"><code>@app.post("/webhook/lead")
+async def recibir_lead(request: Request, background_tasks: BackgroundTasks):
+    body = await request.body()
+    firma = request.headers.get("X-Webhook-Signature", "")
+
+    if not verificar_firma(body, firma):        # 1. Seguridad
+        raise HTTPException(status_code=400)
+
+    evento = json.loads(body)
+    event_id = evento.get("id")
+
+    if await redis.get(f"processed:{event_id}"):  # 2. Idempotencia
+        return JSONResponse({"status": "ya procesado"})
+
+    background_tasks.add_task(procesar_con_claude, evento)  # 3. ACK
+    await redis.setex(f"processed:{event_id}", 86400, "1")
+
+    return JSONResponse({"status": "recibido"})</code></pre>
+      </div>
+
+      <div class="step-box">
+        <div class="step-num">Paso 3 — Claude procesa y clasifica el lead</div>
+        <pre style="margin-top:.5rem"><code>async def procesar_con_claude(evento: dict):
+    response = claude.messages.create(
+        model="claude-opus-4-5",
+        max_tokens=256,
+        messages=[{"role": "user", "content": f"""
+Analiza este lead y responde con JSON:
+Lead: {json.dumps(evento['data'], ensure_ascii=False)}
+Responde: {{"score": 0-100, "categoria": "caliente|tibio|frío",
+           "razon": "...", "accion_recomendada": "..."}}
+        """}]
+    )
+    resultado = json.loads(response.content[0].text)
+    print(f"Lead clasificado: {resultado}")
+    # → actualizar_crm(evento['data']['id'], resultado)</code></pre>
+      </div>
+
+      <div class="step-box">
+        <div class="step-num">Paso 4 — Exponer con ngrok y enviar un webhook de prueba</div>
+        <pre style="margin-top:.5rem"><code># Terminal 1: uvicorn main:app --reload --port 3000
+# Terminal 2: ngrok http 3000
+
+curl -X POST https://xxxx.ngrok-free.app/webhook/lead \
+  -H "Content-Type: application/json" \
+  -H "X-Webhook-Signature: sha256=&lt;firma&gt;" \
+  -d '{"id":"evt_001","data":{"nombre":"María García",
+       "empresa":"Startup XYZ","mensaje":"Necesito automatizar ventas"}}'
+
+# Log esperado:
+# Lead clasificado: {"score": 85, "categoria": "caliente",
+#   "razon": "Necesidad clara de automatización",
+#   "accion_recomendada": "Llamar en 2 horas con demo"}</code></pre>
+      </div>
+
+      <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(239,68,68,.2)">
+        <p style="font-size:.85rem;font-weight:600;color:#DC2626;margin-bottom:.5rem">Extensiones opcionales para los más rápidos:</p>
+        <ul>
+          <li style="font-size:.85rem">Agregar Redis Streams para colas más robustas que Background Tasks</li>
+          <li style="font-size:.85rem">Integrar con HubSpot API para actualizar el lead en el CRM real</li>
+          <li style="font-size:.85rem">Implementar el Circuit Breaker sobre la llamada a Claude</li>
+          <li style="font-size:.85rem">Crear un endpoint <code>/webhook/replay/:id</code> para reprocesar eventos fallidos</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos</div>
+    <div class="resources-grid">
+
+      <div class="resource-card">
+        <div class="resource-category">Documentación oficial</div>
+        <a href="https://platform.claude.com/docs/en/managed-agents/webhooks" target="_blank" class="resource-link">Claude API — Webhooks Managed Agents</a>
+        <div class="resource-desc">Docs oficiales con código en Python, TypeScript, Go, Java, PHP y Ruby.</div>
+      </div>
+
+      <div class="resource-card">
+        <div class="resource-category">Documentación oficial</div>
+        <a href="https://docs.anthropic.com/claude/docs/tool-use" target="_blank" class="resource-link">Claude API — Tool Use / Function Calling</a>
+        <div class="resource-desc">Cómo definir herramientas para agentes autónomos con schemas JSON.</div>
+      </div>
+
+      <div class="resource-card">
+        <div class="resource-category">Tutoriales</div>
+        <a href="https://hookdeck.com/blog/webhook-skills" target="_blank" class="resource-link">Hookdeck — Webhook Skills para agentes IA</a>
+        <div class="resource-desc">Framework open-source de conocimiento de webhooks para agentes de código.</div>
+      </div>
+
+      <div class="resource-card">
+        <div class="resource-category">Tutoriales</div>
+        <a href="https://dev.to/henry_hang/webhook-best-practices-retry-logic-idempotency-and-error-handling-27i3" target="_blank" class="resource-link">Webhook Best Practices — DEV Community</a>
+        <div class="resource-desc">Retry logic, idempotencia y manejo de errores con ejemplos prácticos.</div>
+      </div>
+
+      <div class="resource-card">
+        <div class="resource-category">Comparativas</div>
+        <a href="https://zapier.com/blog/n8n-vs-make/" target="_blank" class="resource-link">n8n vs Make (Zapier Blog 2026)</a>
+        <div class="resource-desc">Comparativa actualizada de plataformas de automatización con IA.</div>
+      </div>
+
+      <div class="resource-card">
+        <div class="resource-category">Comparativas</div>
+        <a href="https://composio.dev/content/apis-ai-agents-integration-patterns" target="_blank" class="resource-link">Composio — 5 patrones de integración</a>
+        <div class="resource-desc">Los 5 patrones de integración API para agentes IA con pros y contras.</div>
+      </div>
+
+      <div class="resource-card">
+        <div class="resource-category">Seguridad</div>
+        <a href="https://securityboulevard.com/2025/11/jwts-for-ai-agents-authenticating-non-human-identities/" target="_blank" class="resource-link">JWTs para agentes IA — Security Boulevard</a>
+        <div class="resource-desc">Autenticación de identidades no-humanas con JWT, OAuth y DPoP.</div>
+      </div>
+
+      <div class="resource-card">
+        <div class="resource-category">Seguridad</div>
+        <a href="https://curity.io/resources/learn/api-security-best-practice-for-ai-agents/" target="_blank" class="resource-link">8 API Security Best Practices — Curity</a>
+        <div class="resource-desc">Mejores prácticas de seguridad de APIs para agentes IA en producción.</div>
+      </div>
+
+      <div class="resource-card">
+        <div class="resource-category">Herramientas</div>
+        <a href="https://ngrok.com/docs" target="_blank" class="resource-link">ngrok Documentation</a>
+        <div class="resource-desc">Configuración de túneles HTTPS para desarrollo local con webhooks.</div>
+      </div>
+
+      <div class="resource-card">
+        <div class="resource-category">Herramientas</div>
+        <a href="https://redis.io/docs/data-types/streams/" target="_blank" class="resource-link">Redis Streams</a>
+        <div class="resource-desc">Colas de mensajes persistentes para procesamiento asíncrono de webhooks.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-clase</div>
+    <ul class="checklist">
+      <li>
+        <div class="check-box"></div>
+        <div><span class="tag">Hoy</span> Crear cuenta en <a href="https://platform.claude.com" target="_blank" style="color:#EF4444">platform.claude.com</a> y obtener tu API key de desarrollo</div>
+      </li>
+      <li>
+        <div class="check-box"></div>
+        <div><span class="tag">Hoy</span> Instalar ngrok y verificar que puedes recibir un webhook en localhost con <code>ngrok http 3000</code></div>
+      </li>
+      <li>
+        <div class="check-box"></div>
+        <div><span class="tag">Esta semana</span> Implementar el ejercicio completo del pipeline Webhook → Claude → respuesta con FastAPI</div>
+      </li>
+      <li>
+        <div class="check-box"></div>
+        <div><span class="tag">Esta semana</span> Crear un flujo básico en n8n que reciba un webhook, llame a Claude y procese la respuesta</div>
+      </li>
+      <li>
+        <div class="check-box"></div>
+        <div><span class="tag">Antes del viernes</span> Agregar retry logic con backoff exponencial + jitter a tu implementación del ejercicio</div>
+      </li>
+      <li>
+        <div class="check-box"></div>
+        <div><span class="tag">Reto avanzado</span> Implementar el Circuit Breaker pattern y medir cuándo se activa bajo carga simulada</div>
+      </li>
+      <li>
+        <div class="check-box"></div>
+        <div><span class="tag">Compartir</span> Postear en el grupo tu endpoint funcionando: URL ngrok + logs de Claude respondiendo</div>
+      </li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  Clase 15 de 20 · Track TI/Dev · Programa de IA Aplicada · Julio 2026<br>
+  Presentador: Adrian · Tier 4 · Dev track
+</footer>
+
+</body>
+</html>

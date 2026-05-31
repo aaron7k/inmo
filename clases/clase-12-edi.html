@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 12 · IA para imagen, color, audio y cortes pro · Edi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#8B5CF6 0%,#7C3AED 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;transition:border-color .2s,box-shadow .2s}
+    .tool-card:hover{border-color:#8B5CF6;box-shadow:0 0 0 3px rgba(139,92,246,.08)}
+    .tool-card a{text-decoration:none;color:#8B5CF6;font-size:.8rem;font-weight:500}
+    .tool-card a:hover{text-decoration:underline}
+    .tool-name{font-weight:700;font-size:.95rem;margin-bottom:.25rem;color:#1e293b}
+    .tool-desc{font-size:.82rem;color:#64748b;margin-bottom:.5rem;line-height:1.45}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600;display:inline-block}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .module{border-left:3px solid #8B5CF6;padding-left:1rem;margin-bottom:1.5rem}
+    .module-title{font-weight:700;font-size:1rem;color:#7C3AED;margin-bottom:.5rem}
+    .module-body{font-size:.9rem;color:#334155}
+    .module-body p{margin-bottom:.6rem}
+    .exercise-box{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-box h3{color:#7C3AED;font-size:1rem;margin-bottom:.75rem}
+    .exercise-step{display:flex;gap:.75rem;margin-bottom:.5rem;align-items:flex-start;font-size:.88rem}
+    .step-num{background:#8B5CF6;color:white;border-radius:999px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;margin-top:2px}
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem;font-size:.9rem}
+    .objectives-list{list-style:none;padding:0}
+    .objectives-list li{display:flex;gap:.75rem;align-items:flex-start;margin-bottom:.75rem;font-size:.9rem}
+    .obj-num{background:linear-gradient(135deg,#8B5CF6,#7C3AED);color:white;border-radius:999px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:1px}
+    table{width:100%;border-collapse:collapse;font-size:.85rem}
+    th{background:#f1f5f9;padding:.6rem .8rem;text-align:left;font-weight:600;font-size:.8rem;color:#475569;border-bottom:2px solid #e2e8f0}
+    td{padding:.6rem .8rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    td a{color:#8B5CF6;text-decoration:none;font-weight:500}
+    td a:hover{text-decoration:underline}
+    tr:hover td{background:#faf5ff}
+    .action-list{list-style:none;padding:0}
+    .action-list li{display:flex;gap:.75rem;align-items:flex-start;padding:.5rem 0;border-bottom:1px solid #f1f5f9;font-size:.88rem}
+    .action-list li:last-child{border-bottom:none}
+    .check-box{width:18px;height:18px;border:2px solid #8B5CF6;border-radius:4px;flex-shrink:0;margin-top:2px}
+    .resources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .resource-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;font-size:.85rem}
+    .resource-card strong{display:block;margin-bottom:.25rem;color:#1e293b}
+    .resource-card a{color:#8B5CF6;text-decoration:none;font-size:.8rem}
+    .resource-card p{color:#64748b;font-size:.82rem;margin-top:.25rem}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(max-width:600px){.two-col{grid-template-columns:1fr}}
+    .highlight{background:linear-gradient(135deg,#8B5CF6,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+    .concept-card{background:#faf5ff;border:1px solid #e9d5ff;border-radius:.75rem;padding:1rem}
+    .concept-term{font-weight:700;font-size:.9rem;color:#7C3AED;margin-bottom:.3rem}
+    .concept-def{font-size:.82rem;color:#475569;line-height:1.5}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    footer span{color:#8B5CF6;font-weight:600}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="tier-badge">Tier 3 · Audiovisual</div>
+    <h1>🎨 IA para modelado de imagen, ritmo visual,<br>presets de color, audio y cortes pro</h1>
+    <div class="hero-meta">
+      <span>🎤 <strong>Edi</strong></span>
+      <span>📅 Viernes 17 julio 2026</span>
+      <span>👥 Audiencia: Audiovisual</span>
+      <span>⏱ 90 minutos</span>
+      <span>🎓 Clase 12</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la clase</div>
+    <ul class="objectives-list">
+      <li>
+        <div class="obj-num">1</div>
+        <div><strong>Aplicar herramientas de IA para retoque y modelado de imagen</strong> — upscaling, reducción de ruido y enmascaramiento automático con resultados de nivel profesional.</div>
+      </li>
+      <li>
+        <div class="obj-num">2</div>
+        <div><strong>Generar y aplicar presets de color y LUTs con asistencia de IA</strong> — reducir el tiempo de corrección de color de horas a minutos sin perder coherencia visual entre tomas.</div>
+      </li>
+      <li>
+        <div class="obj-num">3</div>
+        <div><strong>Crear pistas de audio originales con IA</strong> (música ambiental, efectos, soundtracks) adecuadas para producciones audiovisuales con derechos de uso claros.</div>
+      </li>
+      <li>
+        <div class="obj-num">4</div>
+        <div><strong>Automatizar el corte y sincronización rítmica de video</strong> usando el Neural Engine de DaVinci Resolve y el AI Music Editor para sincronizar cuts con el beat de forma precisa.</div>
+      </li>
+      <li>
+        <div class="obj-num">5</div>
+        <div><strong>Integrar un flujo de trabajo IA end-to-end</strong> que combine imagen, color, audio y edición de video en una producción audiovisual coherente y eficiente.</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-term">LUT (Look-Up Table)</div>
+        <div class="concept-def">Archivo de mapa de color que transforma los valores de píxel para lograr un aspecto visual específico. Puede generarse con IA desde prompts o imágenes de referencia.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Color Grading</div>
+        <div class="concept-def">Proceso creativo de ajuste de color para establecer el tono emocional y estético. Va más allá de la corrección técnica y define el "look" visual de la pieza.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Neural Engine</div>
+        <div class="concept-def">Motor de IA integrado en DaVinci Resolve que ejecuta algoritmos de aprendizaje profundo en tu GPU local, sin necesidad de procesar en la nube.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Upscaling con IA</div>
+        <div class="concept-def">Proceso que aumenta la resolución de imagen o video usando redes neuronales que predicen e inventan detalle realista, superando el interpolado bicúbico tradicional.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">AI Music Editor</div>
+        <div class="concept-def">Función de DaVinci Resolve que analiza la estructura musical (estrofa, coro, puente) y ajusta la duración de la pista para coincidir exactamente con el corte.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Beat Sync / Ritmo Visual</div>
+        <div class="concept-def">Técnica de edición donde los cortes de video se sincronizan con los beats de la música, creando ritmo visual que refuerza la energía del contenido.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Stem Separation</div>
+        <div class="concept-def">Proceso de IA que descompone una canción en sus pistas individuales (voz, batería, bajo, instrumentos) para ajuste de niveles, remixes o sincronización selectiva.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Enmascaramiento Adaptativo</div>
+        <div class="concept-def">Capacidad de la IA para seleccionar automáticamente sujetos, cielos, fondos u objetos en imagen o video, sin trazado manual por el editor.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Generative Credits</div>
+        <div class="concept-def">Unidades que plataformas como Adobe usan para cuantificar el consumo de funciones IA generativa (relleno generativo, borrado de objetos, generación de contenido).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLOGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-name">Adobe Firefly</div>
+        <div class="tool-desc">Modelo de imagen generativa de Adobe. Relleno generativo, batch de miles de imágenes, reemplazo de fondos y corrección de color consistente. Integrado en Creative Cloud.</div>
+        <span class="badge badge-freemium">Freemium (incluido en CC)</span><br>
+        <a href="https://firefly.adobe.com" target="_blank">firefly.adobe.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">Adobe Lightroom</div>
+        <div class="tool-desc">Enmascaramiento IA (sujeto, cielo, paisaje), Denoise AI, corrección de color adaptativa y flujo completo de fotografía profesional.</div>
+        <span class="badge badge-freemium">Freemium / Pago desde $9.99/mes</span><br>
+        <a href="https://lightroom.adobe.com" target="_blank">lightroom.adobe.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">Topaz Photo AI</div>
+        <div class="tool-desc">Upscaling hasta 6x, enfoque IA, eliminación de ruido. Plugin nativo para Photoshop y Firefly. Modelos Wonder 2 y 3 para detalle realista.</div>
+        <span class="badge badge-paid">Pago ($199/año)</span><br>
+        <a href="https://www.topazlabs.com" target="_blank">topazlabs.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">DaVinci Resolve 20</div>
+        <div class="tool-desc">Neural Engine con 15+ funciones IA: AI Music Editor, beat detection, Magic Mask v2, Color Match, IntelliScript, Multicam SmartSwitch y Music Remixer.</div>
+        <span class="badge badge-free">Gratis / Studio $295 (único)</span><br>
+        <a href="https://www.blackmagicdesign.com/products/davinciresolve" target="_blank">blackmagicdesign.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">LUTBuilder.ai</div>
+        <div class="tool-desc">Generador de LUTs con IA desde descripciones en texto. Compatible con Premiere, DaVinci Resolve, Final Cut Pro y Photoshop.</div>
+        <span class="badge badge-freemium">Freemium</span><br>
+        <a href="https://www.lutbuilder.ai" target="_blank">lutbuilder.ai</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">Lutgen.app</div>
+        <div class="tool-desc">Genera LUTs y presets de Lightroom desde prompts de texto. Exporta en .cube, .3dl, .look, .csp. Sin curva de aprendizaje técnica.</div>
+        <span class="badge badge-freemium">Freemium</span><br>
+        <a href="https://www.lutgen.app" target="_blank">lutgen.app</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">Suno AI</div>
+        <div class="tool-desc">Genera canciones completas (voz, instrumentos, estructura) desde un prompt de texto. 50 créditos diarios gratuitos (~10 canciones/día).</div>
+        <span class="badge badge-freemium">Freemium (Pro $10/mes)</span><br>
+        <a href="https://suno.com" target="_blank">suno.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">AIVA</div>
+        <div class="tool-desc">Especializado en composición orquestal y cinematográfica. 250+ estilos, soporte MIDI, exportación WAV. Ideal para film scores y documentales.</div>
+        <span class="badge badge-freemium">Freemium (Pro €49/mes)</span><br>
+        <a href="https://www.aiva.ai" target="_blank">aiva.ai</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">Epidemic Sound</div>
+        <div class="tool-desc">Música humana con edición IA. Permite modificar pistas licenciadas: ajustar tempo, aislar stems, cambiar instrumentación. "Zero Risk" para uso comercial.</div>
+        <span class="badge badge-paid">Pago (desde $11.99/mes)</span><br>
+        <a href="https://www.epidemicsound.com" target="_blank">epidemicsound.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">Descript</div>
+        <div class="tool-desc">Edición de audio y video por transcripción de texto. Elimina filler words, reduce ruido, clona voz, traduce a 20+ idiomas y genera notas de episodio.</div>
+        <span class="badge badge-freemium">Freemium (Creator $24/mes)</span><br>
+        <a href="https://www.descript.com" target="_blank">descript.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">Opus Clip</div>
+        <div class="tool-desc">Corta videos largos en clips virales automáticamente. Virality Score, auto-reframe 9:16, subtítulos animados 97%+ precisión. ~80% clips listos para publicar.</div>
+        <span class="badge badge-freemium">Freemium</span><br>
+        <a href="https://www.opus.pro" target="_blank">opus.pro</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">CapCut AI</div>
+        <div class="tool-desc">Suite completa de edición IA. Auto-corte, beat sync automático, plantillas virales, remoción de fondo, mejora de video y efectos de tendencia para redes sociales.</div>
+        <span class="badge badge-free">Gratis / Pro disponible</span><br>
+        <a href="https://www.capcut.com" target="_blank">capcut.com</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTENIDO MODULAR -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Contenido de la clase</div>
+
+    <div class="module">
+      <div class="module-title">Módulo 1 · IA para imagen y fotografía (20 min)</div>
+      <div class="module-body">
+        <p><strong>Retoque inteligente con Adobe Firefly y Lightroom:</strong> El enmascaramiento IA de Lightroom selecciona sujetos, cielos, fondos y elementos de paisaje con un solo clic. Denoise AI elimina ruido digital en fotos de alto ISO conservando textura. Firefly Creative Production permite editar miles de imágenes en batch: reemplazar fondos, aplicar corrección de color consistente y recortes automáticos.</p>
+        <p><strong>Upscaling y recuperación con Topaz Labs:</strong> Topaz Photo AI consolida upscaling (hasta 6x), enfoque y reducción de ruido en una sola app. Sus modelos Wonder 2 y 3 predicen detalle realista. Desde 2025, Topaz Gigapixel está integrado como plugin en Photoshop y Firefly.</p>
+        <p><strong>Caso de uso:</strong> Rescatar tomas de cámara de vigilancia, imágenes de baja resolución de redes sociales, o fotogramas de video para usar como fotografía impresa de alta calidad.</p>
+      </div>
+    </div>
+
+    <div class="module">
+      <div class="module-title">Módulo 2 · Color grading con IA — presets y LUTs (25 min)</div>
+      <div class="module-body">
+        <p><strong>Generación de LUTs desde texto:</strong> Lutgen.app y LUTBuilder.ai permiten describir el look deseado en lenguaje natural y exportar el LUT al instante en .cube, .3dl, .look, .csp — compatible con Premiere, DaVinci, Final Cut Pro y Photoshop.</p>
+        <p><strong>Generación de LUTs desde imagen de referencia:</strong> Colorby AI e Imagen AI analizan el contenido, iluminación y mood de una foto de referencia para proponer una corrección de color aplicable a cualquier proyecto.</p>
+        <p><strong>DaVinci Resolve Neural Engine para color:</strong> Magic Mask v2 rastrea personas y objetos con un clic para color grading selectivo sin rotoscopia. Scene Cut Detection IA detecta cortes automáticamente. Color Match iguala paletas entre clips de forma automática. ON1 Photo RAW ofrece AI Adaptive Presets que se ajustan a la iluminación específica de cada foto.</p>
+      </div>
+    </div>
+
+    <div class="module">
+      <div class="module-title">Módulo 3 · Audio con IA — música, ambientación y diseño sonoro (20 min)</div>
+      <div class="module-body">
+        <p><strong>Suno AI:</strong> Genera canciones completas (voz + instrumentos + estructura) desde un prompt. Plan gratuito: 50 créditos/día (~10 canciones). Plan Pro ($10/mes): derechos comerciales, 2,500 créditos/mes.</p>
+        <p><strong>AIVA:</strong> Especializado en composición orquestal y cinematográfica (250+ estilos). Acepta MIDI propio para modelos de estilo personalizados. Plan gratuito: 3 descargas/mes. Plan Pro (€49/mes): derechos comerciales completos, 300 descargas en WAV alta calidad.</p>
+        <p><strong>Epidemic Sound:</strong> La opción más segura para uso comercial ("Zero Risk") — música compuesta por humanos y mejorada con IA. Permite modificar pistas licenciadas: ajustar tempo, aislar stems, cambiar instrumentación desde la plataforma.</p>
+        <p><strong>Descript:</strong> Edición de audio y video por transcripción. Elimina filler words y retakes, reduce ruido, clona voz para correcciones sin re-grabar, traduce a 20+ idiomas, genera títulos y notas de episodio automáticamente.</p>
+      </div>
+    </div>
+
+    <div class="module">
+      <div class="module-title">Módulo 4 · Edición de video IA — cortes automáticos y ritmo visual (25 min)</div>
+      <div class="module-body">
+        <p><strong>DaVinci Resolve 20 Neural Engine (lanzado NAB 2025):</strong> Más de 15 funciones IA ejecutadas en GPU local. AI Music Editor analiza estructura musical completa (intro, estrofas, coros, puentes) y ajusta la duración de la pista inteligentemente. Beat Detection coloca marcadores automáticos en cada pulso musical para edición rítmica. AI IntelliScript construye timelines desde un guion escrito. AI Multicam SmartSwitch corta entre ángulos de cámara según la voz activa. Music Remixer separa stems directamente en Fairlight.</p>
+        <p><strong>Opus Clip:</strong> Analiza videos largos y extrae momentos más compartibles. Virality Score (0–100) por clip, auto-reframe 16:9→9:16 con tracking del hablante, subtítulos animados con 97%+ de precisión. Aproximadamente 80% de clips listos para publicar con ajustes mínimos.</p>
+        <p><strong>CapCut AI:</strong> Suite completa de edición con auto-corte, detección de escenas, sincronización automática de clips con música (beat sync), plantillas virales con efectos de tendencia y remoción de fondo IA. Versión gratuita muy completa para creación social.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EJERCICIO PRACTICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico — "De imagen RAW a video con ritmo"</div>
+    <div class="exercise-box">
+      <h3>Parte 1 · Crear preset de color con IA (15 min)</h3>
+      <div class="exercise-step"><div class="step-num">1</div><div>Tomar 3 fotos propias o usar las fotos de práctica del drive compartido.</div></div>
+      <div class="exercise-step"><div class="step-num">2</div><div>Abrir <strong>Lutgen.app</strong> o <strong>LUTBuilder.ai</strong> en el navegador.</div></div>
+      <div class="exercise-step"><div class="step-num">3</div><div>Escribir un prompt describiendo el look: <em>"Tonos cinematográficos con sombras frías azul-teal, luces cálidas naranjas, contraste medio-alto, estilo película años 90"</em>.</div></div>
+      <div class="exercise-step"><div class="step-num">4</div><div>Descargar el LUT generado en formato <strong>.cube</strong>.</div></div>
+      <div class="exercise-step"><div class="step-num">5</div><div>Importar el LUT en Lightroom (Develop → Efecto de color → Importar perfil) o en DaVinci Resolve (Color → LUTs).</div></div>
+      <div class="exercise-step"><div class="step-num">6</div><div>Aplicar el LUT a las 3 fotos y comparar resultados antes/después.</div></div>
+      <div class="exercise-step"><div class="step-num">7</div><div><strong>Bonus:</strong> Subir una foto de referencia a Colorby AI y comparar el LUT generado automáticamente vs. el creado con prompt.</div></div>
+    </div>
+
+    <div style="height:1rem"></div>
+
+    <div class="exercise-box">
+      <h3>Parte 2 · Video sincronizado con audio IA (15 min)</h3>
+      <div class="exercise-step"><div class="step-num">1</div><div>Abrir <a href="https://suno.com" target="_blank">suno.com</a> y generar una pista de 30–60 seg. Prompt sugerido: <em>"Música electrónica instrumental, energética, 128 BPM, mood motivacional para video de marca"</em>.</div></div>
+      <div class="exercise-step"><div class="step-num">2</div><div>Descargar el audio MP3 generado.</div></div>
+      <div class="exercise-step"><div class="step-num">3</div><div>Abrir <strong>DaVinci Resolve</strong> (versión gratuita) e importar 5–8 clips de video cortos al Media Pool.</div></div>
+      <div class="exercise-step"><div class="step-num">4</div><div>Arrastrar el audio MP3 a la timeline → clic derecho → <strong>"Analyze Music"</strong> (AI Music Editor).</div></div>
+      <div class="exercise-step"><div class="step-num">5</div><div>Observar los marcadores de beat que aparecen automáticamente en la timeline.</div></div>
+      <div class="exercise-step"><div class="step-num">6</div><div>Arrastrar los clips de video sobre los marcadores para crear un corte rítmico.</div></div>
+      <div class="exercise-step"><div class="step-num">7</div><div>Reproducir, ajustar posiciones de clips según feeling y compartir el resultado con el grupo.</div></div>
+      <div style="margin-top:1rem;background:rgba(139,92,246,.12);border-radius:.5rem;padding:.75rem;font-size:.85rem;color:#5b21b6">
+        <strong>Entregable:</strong> Screenshot del timeline con marcadores de beat y clips alineados + las 3 fotos con el LUT aplicado comparadas antes/después.
+      </div>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos complementarios</div>
+    <div class="resources-grid">
+      <div class="resource-card">
+        <strong>Imagen AI LUT Generator</strong>
+        <a href="https://imagen-ai.com/tools/lut-generator-from-image/" target="_blank">imagen-ai.com</a>
+        <p>Genera LUTs desde imágenes de referencia para igualar looks entre proyectos sin esfuerzo manual.</p>
+      </div>
+      <div class="resource-card">
+        <strong>Colorby AI</strong>
+        <a href="https://colorby.ai" target="_blank">colorby.ai</a>
+        <p>Analiza iluminación y mood de imágenes para proponer correcciones de color exportables a todos los NLEs principales.</p>
+      </div>
+      <div class="resource-card">
+        <strong>Soundraw</strong>
+        <a href="https://soundraw.io" target="_blank">soundraw.io</a>
+        <p>Generador de música IA entrenado en datos propios (sin riesgo de copyright). Edición por segmentos dentro de la plataforma.</p>
+      </div>
+      <div class="resource-card">
+        <strong>Artlist AI Music</strong>
+        <a href="https://artlist.io" target="_blank">artlist.io</a>
+        <p>Música IA con licencia comercial clara, integrado con Google Lyria. Alternativa segura a Suno para uso empresarial.</p>
+      </div>
+      <div class="resource-card">
+        <strong>Fylm.ai</strong>
+        <a href="https://fylm.ai" target="_blank">fylm.ai</a>
+        <p>Editor de color asistido por IA en la nube orientado a flujos de trabajo con gestión de color profesional y show LUTs.</p>
+      </div>
+      <div class="resource-card">
+        <strong>Udio</strong>
+        <a href="https://www.udio.com" target="_blank">udio.com</a>
+        <p>Alternativa a Suno para géneros experimentales y electrónica. Usar con precaución en contextos comerciales (revisión legal en curso).</p>
+      </div>
+    </div>
+    <div style="margin-top:1.25rem">
+      <p style="font-size:.85rem;font-weight:600;color:#1e293b;margin-bottom:.5rem">Lecturas recomendadas:</p>
+      <ul>
+        <li><a href="https://larryjordan.com" target="_blank" style="color:#8B5CF6">DaVinci Resolve 20: AI-Powered Features</a> — Larry Jordan Blog</li>
+        <li><a href="https://fullstackcreators.com" target="_blank" style="color:#8B5CF6">AI Music Generation 2026: Every Tool Ranked Honestly</a> — Full Stack Creators</li>
+        <li><a href="https://aaapresets.com" target="_blank" style="color:#8B5CF6">AI + LUTs: How Neural Tools Are Leveling Up Your Color Grading Game</a> — AAA Presets</li>
+        <li><a href="https://www.digitalcameraworld.com/tech/software/topaz-labs-ai-integration-is-a-huge-boon-for-adobe-photoshop-users" target="_blank" style="color:#8B5CF6">Topaz Labs AI Integration in Photoshop</a> — Digital Camera World</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ACCIONES POST CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-clase</div>
+    <ul class="action-list">
+      <li><div class="check-box"></div><div>Crear una cuenta gratuita en <strong>Suno AI</strong> y generar tu primera pista original usando un prompt específico para tu tipo de proyecto.</div></li>
+      <li><div class="check-box"></div><div>Instalar <strong>DaVinci Resolve 20</strong> (versión gratuita) y explorar el AI Music Editor con cualquier canción — observar cómo detecta beats automáticamente.</div></li>
+      <li><div class="check-box"></div><div>Generar un LUT personalizado en <strong>Lutgen.app</strong> y aplicarlo a tu próximo proyecto de foto o video como preset base.</div></li>
+      <li><div class="check-box"></div><div>Probar <strong>Topaz Photo AI</strong> en modo trial con una foto de baja resolución o alta ISO — comparar el resultado con Lightroom Denoise.</div></li>
+      <li><div class="check-box"></div><div>Subir un video largo (clase, entrevista, webinar) a <strong>Opus Clip</strong> y revisar los clips sugeridos con sus Virality Scores.</div></li>
+      <li><div class="check-box"></div><div>Comparar un mismo proyecto editado manualmente vs. con herramientas IA y compartir el antes/después con el grupo del programa.</div></li>
+      <li><div class="check-box"></div><div>Explorar <strong>AIVA</strong> con el plan gratuito: generar 3 pistas instrumentales en diferentes estilos (cinemático, ambiental, electrónico) y elegir la más adecuada para un proyecto propio.</div></li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  <p>Clase 12 · Tier 3 · Audiovisual · <span>Programa de Formación en IA Aplicada</span></p>
+  <p style="margin-top:.25rem">Presentador: Edi · Viernes 17 julio 2026</p>
+</footer>
+
+</body>
+</html>

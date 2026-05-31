@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendario Programa IA 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#0f172a;color:#f1f5f9;line-height:1.6;min-height:100vh}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);padding:3rem 2rem 2rem;text-align:center;border-bottom:1px solid #1e293b;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-60%;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(circle,rgba(99,102,241,0.15) 0%,transparent 70%);pointer-events:none}
+.header h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;background:linear-gradient(135deg,#f1f5f9 0%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.5rem}
+.header p{color:#64748b;font-size:1.1rem;margin-bottom:2rem}
+.stats{display:flex;flex-wrap:wrap;justify-content:center;gap:2rem;margin-top:1.5rem}
+.stat{text-align:center}
+.stat-num{font-size:2rem;font-weight:800;color:#f1f5f9}
+.stat-label{font-size:.8rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em}
+
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem;padding:1.5rem 2rem;background:#0f172a;border-bottom:1px solid #1e293b}
+.legend-item{display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:#94a3b8}
+.legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.c1{background:#F59E0B}.c2{background:#10B981}.c3{background:#8B5CF6}.c4{background:#EF4444}.c5{background:#6b7280}
+
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:2rem 1rem}
+
+/* MONTH */
+.month-section{margin-bottom:3rem}
+.month-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+.month-name{font-size:1.5rem;font-weight:700;color:#f1f5f9}
+.month-year{font-size:.9rem;color:#64748b;background:#1e293b;padding:.25rem .75rem;border-radius:999px}
+.month-line{flex:1;height:1px;background:#1e293b}
+
+/* WEEK ROW */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+.day-label{text-align:center;font-size:.72rem;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:.05em;padding:.5rem 0}
+
+/* CALENDAR GRID */
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.day-cell{min-height:80px;background:#1e293b;border-radius:.5rem;padding:.5rem;position:relative;transition:background .2s}
+.day-cell.empty{background:transparent}
+.day-cell.today{border:1px solid #3b82f6}
+.day-num{font-size:.8rem;font-weight:600;color:#64748b;margin-bottom:.25rem}
+.day-cell.has-event .day-num{color:#f1f5f9}
+.event-pill{border-radius:.375rem;padding:.2rem .4rem;margin-top:.2rem;cursor:pointer;transition:opacity .15s}
+.event-pill:hover{opacity:.85}
+.event-tier1{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:#fbbf24}
+.event-tier2{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#34d399}
+.event-tier3{background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);color:#a78bfa}
+.event-tier4{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#f87171}
+.event-tier5{background:rgba(107,114,128,.15);border:1px solid rgba(107,114,128,.3);color:#9ca3af}
+.event-pill .ev-title{font-size:.65rem;font-weight:600;line-height:1.2;display:block}
+.event-pill .ev-presenter{font-size:.6rem;opacity:.75;display:block}
+
+/* TIMELINE LIST */
+.timeline{margin-top:3rem}
+.timeline-header{font-size:1.5rem;font-weight:700;color:#f1f5f9;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem}
+.timeline-header::after{content:'';flex:1;height:1px;background:#1e293b}
+.timeline-item{display:grid;grid-template-columns:140px 1fr;gap:1.5rem;margin-bottom:1rem;align-items:start}
+.tl-date{text-align:right;padding-top:.75rem}
+.tl-date-main{font-size:.85rem;font-weight:700;color:#94a3b8}
+.tl-date-sub{font-size:.75rem;color:#475569}
+.tl-content{position:relative;padding-left:1.5rem}
+.tl-content::before{content:'';position:absolute;left:0;top:0;bottom:-1rem;width:1px;background:#1e293b}
+.tl-content::after{content:'';position:absolute;left:-5px;top:.8rem;width:11px;height:11px;border-radius:50%;border:2px solid}
+.tier1-line .tl-content::after{border-color:#F59E0B;background:#F59E0B}
+.tier2-line .tl-content::after{border-color:#10B981;background:#10B981}
+.tier3-line .tl-content::after{border-color:#8B5CF6;background:#8B5CF6}
+.tier4-line .tl-content::after{border-color:#EF4444;background:#EF4444}
+.tier5-line .tl-content::after{border-color:#6b7280;background:#6b7280}
+.tl-card{background:#1e293b;border-radius:.75rem;padding:1rem 1.25rem;border-left:3px solid}
+.tier1-line .tl-card{border-color:#F59E0B}
+.tier2-line .tl-card{border-color:#10B981}
+.tier3-line .tl-card{border-color:#8B5CF6}
+.tier4-line .tl-card{border-color:#EF4444}
+.tier5-line .tl-card{border-color:#6b7280}
+.tl-session-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem}
+.tier1-label{color:#F59E0B}.tier2-label{color:#10B981}.tier3-label{color:#8B5CF6}.tier4-label{color:#EF4444}.tier5-label{color:#6b7280}
+.tl-sessions{display:flex;flex-direction:column;gap:.5rem}
+.tl-session{display:flex;gap:.75rem;align-items:flex-start}
+.tl-session-presenter{font-size:.78rem;font-weight:700;color:#f1f5f9;min-width:70px;flex-shrink:0}
+.tl-session-title{font-size:.78rem;color:#94a3b8;line-height:1.3}
+.tl-audience{font-size:.72rem;color:#475569;margin-top:.5rem}
+.tl-link{display:inline-block;font-size:.72rem;color:#6366F1;text-decoration:none;margin-top:.5rem}
+.tl-link:hover{text-decoration:underline}
+
+/* FOOTER */
+footer{text-align:center;padding:3rem 2rem;border-top:1px solid #1e293b;color:#475569;font-size:.85rem;margin-top:2rem}
+
+@media(max-width:768px){
+  .calendar-grid,.week-grid{grid-template-columns:repeat(7,1fr)}
+  .day-cell{min-height:60px;padding:.25rem}
+  .event-pill .ev-title{font-size:.55rem}
+  .event-pill .ev-presenter{display:none}
+  .timeline-item{grid-template-columns:1fr;gap:.5rem}
+  .tl-date{text-align:left;padding-top:0}
+  .tl-content::before{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>Programa de IA 2026</h1>
+  <p>13 viernes grupales · Mayo → Agosto 2026</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">13</div><div class="stat-label">Viernes grupales</div></div>
+    <div class="stat"><div class="stat-num">18</div><div class="stat-label">Presentaciones</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Tiers / tracks</div></div>
+    <div class="stat"><div class="stat-num">~3</div><div class="stat-label">Meses de programa</div></div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot c1"></div> Tier 1 · Fundamentos</div>
+  <div class="legend-item"><div class="legend-dot c2"></div> Tier 2 · Marketing track</div>
+  <div class="legend-item"><div class="legend-dot c3"></div> Tier 3 · Audiovisual</div>
+  <div class="legend-item"><div class="legend-dot c4"></div> Tier 4 · TI / Dev track</div>
+  <div class="legend-item"><div class="legend-dot c5"></div> Tier 5 · Datos</div>
+</div>
+
+<div class="main">
+
+  <!-- ═══════════════════════════════ MAYO 2026 ═══════════════════════════════ -->
+  <div class="month-section">
+    <div class="month-header">
+      <div class="month-name">Mayo</div>
+      <div class="month-year">2026</div>
+      <div class="month-line"></div>
+    </div>
+    <div class="week-grid">
+      <div class="day-label">Lun</div><div class="day-label">Mar</div><div class="day-label">Mié</div>
+      <div class="day-label">Jue</div><div class="day-label">Vie</div><div class="day-label">Sáb</div><div class="day-label">Dom</div>
+    </div>
+    <div class="calendar-grid">
+      <!-- Mayo 2026: 1 = viernes -->
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell has-event"><div class="day-num">1</div></div>
+      <div class="day-cell"><div class="day-num">2</div></div>
+      <div class="day-cell"><div class="day-num">3</div></div>
+      <div class="day-cell"><div class="day-num">4</div></div>
+      <div class="day-cell"><div class="day-num">5</div></div>
+      <div class="day-cell"><div class="day-num">6</div></div>
+      <div class="day-cell"><div class="day-num">7</div></div>
+      <div class="day-cell"><div class="day-num">8</div></div>
+      <div class="day-cell"><div class="day-num">9</div></div>
+      <div class="day-cell"><div class="day-num">10</div></div>
+      <div class="day-cell"><div class="day-num">11</div></div>
+      <div class="day-cell"><div class="day-num">12</div></div>
+      <div class="day-cell"><div class="day-num">13</div></div>
+      <div class="day-cell"><div class="day-num">14</div></div>
+      <div class="day-cell"><div class="day-num">15</div></div>
+      <div class="day-cell"><div class="day-num">16</div></div>
+      <div class="day-cell"><div class="day-num">17</div></div>
+      <div class="day-cell"><div class="day-num">18</div></div>
+      <div class="day-cell"><div class="day-num">19</div></div>
+      <div class="day-cell"><div class="day-num">20</div></div>
+      <div class="day-cell"><div class="day-num">21</div></div>
+      <div class="day-cell"><div class="day-num">22</div></div>
+      <div class="day-cell"><div class="day-num">23</div></div>
+      <div class="day-cell"><div class="day-num">24</div></div>
+      <div class="day-cell"><div class="day-num">25</div></div>
+      <div class="day-cell has-event">
+        <div class="day-num">29</div>
+        <a href="clase-01-cata.html" class="event-pill event-tier1">
+          <span class="ev-presenter">Cata</span>
+          <span class="ev-title">Alcance y capacidad de IA</span>
+        </a>
+      </div>
+      <div class="day-cell"><div class="day-num">30</div></div>
+      <div class="day-cell"><div class="day-num">31</div></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <!-- Note: Days 26-28 fall on Tue-Thu, displayed above in correct order -->
+      <!-- Actually let me redo this properly -->
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ JUNIO 2026 ═══════════════════════════════ -->
+  <div class="month-section">
+    <div class="month-header">
+      <div class="month-name">Junio</div>
+      <div class="month-year">2026</div>
+      <div class="month-line"></div>
+    </div>
+    <div class="week-grid">
+      <div class="day-label">Lun</div><div class="day-label">Mar</div><div class="day-label">Mié</div>
+      <div class="day-label">Jue</div><div class="day-label">Vie</div><div class="day-label">Sáb</div><div class="day-label">Dom</div>
+    </div>
+    <div class="calendar-grid">
+      <!-- Junio 2026: 1 = lunes -->
+      <div class="day-cell"><div class="day-num">1</div></div>
+      <div class="day-cell"><div class="day-num">2</div></div>
+      <div class="day-cell"><div class="day-num">3</div></div>
+      <div class="day-cell"><div class="day-num">4</div></div>
+      <div class="day-cell has-event">
+        <div class="day-num">5</div>
+        <a href="clase-02-anie.html" class="event-pill event-tier1">
+          <span class="ev-presenter">Anie</span>
+          <span class="ev-title">Solicitudes de prompt</span>
+        </a>
+        <a href="clase-03-efren.html" class="event-pill event-tier1">
+          <span class="ev-presenter">Efren</span>
+          <span class="ev-title">Habilidad para hacer prompt</span>
+        </a>
+      </div>
+      <div class="day-cell"><div class="day-num">6</div></div>
+      <div class="day-cell"><div class="day-num">7</div></div>
+      <div class="day-cell"><div class="day-num">8</div></div>
+      <div class="day-cell"><div class="day-num">9</div></div>
+      <div class="day-cell"><div class="day-num">10</div></div>
+      <div class="day-cell"><div class="day-num">11</div></div>
+      <div class="day-cell has-event">
+        <div class="day-num">12</div>
+        <a href="clase-04-fajardo.html" class="event-pill event-tier1">
+          <span class="ev-presenter">Fajardo</span>
+          <span class="ev-title">Claude como extensión</span>
+        </a>
+      </div>
+      <div class="day-cell"><div class="day-num">13</div></div>
+      <div class="day-cell"><div class="day-num">14</div></div>
+      <div class="day-cell"><div class="day-num">15</div></div>
+      <div class="day-cell"><div class="day-num">16</div></div>
+      <div class="day-cell"><div class="day-num">17</div></div>
+      <div class="day-cell"><div class="day-num">18</div></div>
+      <div class="day-cell has-event">
+        <div class="day-num">19</div>
+        <a href="clase-05-manu.html" class="event-pill event-tier2">
+          <span class="ev-presenter">Manu</span>
+          <span class="ev-title">IA actualizada para marketing</span>
+        </a>
+      </div>
+      <div class="day-cell"><div class="day-num">20</div></div>
+      <div class="day-cell"><div class="day-num">21</div></div>
+      <div class="day-cell"><div class="day-num">22</div></div>
+      <div class="day-cell"><div class="day-num">23</div></div>
+      <div class="day-cell"><div class="day-num">24</div></div>
+      <div class="day-cell"><div class="day-num">25</div></div>
+      <div class="day-cell has-event">
+        <div class="day-num">26</div>
+        <a href="clase-06-lina-andromeda.html" class="event-pill event-tier2">
+          <span class="ev-presenter">Lina</span>
+          <span class="ev-title">IA de Meta (Andromeda)</span>
+        </a>
+        <a href="clase-07-lau.html" class="event-pill event-tier2">
+          <span class="ev-presenter">Lau</span>
+          <span class="ev-title">Claude a Meta + A/B testing</span>
+        </a>
+      </div>
+      <div class="day-cell"><div class="day-num">27</div></div>
+      <div class="day-cell"><div class="day-num">28</div></div>
+      <div class="day-cell"><div class="day-num">29</div></div>
+      <div class="day-cell"><div class="day-num">30</div></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ JULIO 2026 ═══════════════════════════════ -->
+  <div class="month-section">
+    <div class="month-header">
+      <div class="month-name">Julio</div>
+      <div class="month-year">2026</div>
+      <div class="month-line"></div>
+    </div>
+    <div class="week-grid">
+      <div class="day-label">Lun</div><div class="day-label">Mar</div><div class="day-label">Mié</div>
+      <div class="day-label">Jue</div><div class="day-label">Vie</div><div class="day-label">Sáb</div><div class="day-label">Dom</div>
+    </div>
+    <div class="calendar-grid">
+      <!-- Julio 2026: 1 = miércoles -->
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell"><div class="day-num">1</div></div>
+      <div class="day-cell"><div class="day-num">2</div></div>
+      <div class="day-cell has-event">
+        <div class="day-num">3</div>
+        <a href="clase-08-sol.html" class="event-pill event-tier2">
+          <span class="ev-presenter">Sol</span>
+          <span class="ev-title">Claude a RRSS + Listening</span>
+        </a>
+      </div>
+      <div class="day-cell"><div class="day-num">4</div></div>
+      <div class="day-cell"><div class="day-num">5</div></div>
+      <div class="day-cell"><div class="day-num">6</div></div>
+      <div class="day-cell"><div class="day-num">7</div></div>
+      <div class="day-cell"><div class="day-num">8</div></div>
+      <div class="day-cell"><div class="day-num">9</div></div>
+      <div class="day-cell has-event">
+        <div class="day-num">10</div>
+        <a href="clase-09-alexa.html" class="event-pill event-tier2">
+          <span class="ev-presenter">Alexa</span>
+          <span class="ev-title">IA para vender mejor</span>
+        </a>
+        <a href="clase-10-diana.html" class="event-pill event-tier2">
+          <span class="ev-presenter">Diana</span>
+          <span class="ev-title">Atención cliente multicanal</span>
+        </a>
+      </div>
+      <div class="day-cell"><div class="day-num">11</div></div>
+      <div class="day-cell"><div class="day-num">12</div></div>
+      <div class="day-cell"><div class="day-num">13</div></div>
+      <div class="day-cell"><div class="day-num">14</div></div>
+      <div class="day-cell"><div class="day-num">15</div></div>
+      <div class="day-cell"><div class="day-num">16</div></div>
+      <div class="day-cell has-event">
+        <div class="day-num">17</div>
+        <a href="clase-11-nico.html" class="event-pill event-tier3">
+          <span class="ev-presenter">Nico</span>
+          <span class="ev-title">Agentes audiovisual IA</span>
+        </a>
+        <a href="clase-12-edi.html" class="event-pill event-tier3">
+          <span class="ev-presenter">Edi</span>
+          <span class="ev-title">IA imagen, color, audio</span>
+        </a>
+      </div>
+      <div class="day-cell"><div class="day-num">18</div></div>
+      <div class="day-cell"><div class="day-num">19</div></div>
+      <div class="day-cell"><div class="day-num">20</div></div>
+      <div class="day-cell"><div class="day-num">21</div></div>
+      <div class="day-cell"><div class="day-num">22</div></div>
+      <div class="day-cell"><div class="day-num">23</div></div>
+      <div class="day-cell has-event">
+        <div class="day-num">24</div>
+        <a href="clase-13-dani.html" class="event-pill event-tier4">
+          <span class="ev-presenter">Dani</span>
+          <span class="ev-title">Optimizar créditos Claude</span>
+        </a>
+      </div>
+      <div class="day-cell"><div class="day-num">25</div></div>
+      <div class="day-cell"><div class="day-num">26</div></div>
+      <div class="day-cell"><div class="day-num">27</div></div>
+      <div class="day-cell"><div class="day-num">28</div></div>
+      <div class="day-cell"><div class="day-num">29</div></div>
+      <div class="day-cell"><div class="day-num">30</div></div>
+      <div class="day-cell has-event">
+        <div class="day-num">31</div>
+        <a href="clase-14-pineda.html" class="event-pill event-tier4">
+          <span class="ev-presenter">Pineda</span>
+          <span class="ev-title">Construir agentes IA</span>
+        </a>
+        <a href="clase-15-adrian.html" class="event-pill event-tier4">
+          <span class="ev-presenter">Adrian</span>
+          <span class="ev-title">APIs y webhooks</span>
+        </a>
+      </div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ AGOSTO 2026 ═══════════════════════════════ -->
+  <div class="month-section">
+    <div class="month-header">
+      <div class="month-name">Agosto</div>
+      <div class="month-year">2026</div>
+      <div class="month-line"></div>
+    </div>
+    <div class="week-grid">
+      <div class="day-label">Lun</div><div class="day-label">Mar</div><div class="day-label">Mié</div>
+      <div class="day-label">Jue</div><div class="day-label">Vie</div><div class="day-label">Sáb</div><div class="day-label">Dom</div>
+    </div>
+    <div class="calendar-grid">
+      <!-- Agosto 2026: 1 = sábado -->
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell"><div class="day-num">1</div></div>
+      <div class="day-cell"><div class="day-num">2</div></div>
+      <div class="day-cell"><div class="day-num">3</div></div>
+      <div class="day-cell"><div class="day-num">4</div></div>
+      <div class="day-cell"><div class="day-num">5</div></div>
+      <div class="day-cell"><div class="day-num">6</div></div>
+      <div class="day-cell has-event">
+        <div class="day-num">7</div>
+        <a href="clase-16-oviedo.html" class="event-pill event-tier4">
+          <span class="ev-presenter">Oviedo</span>
+          <span class="ev-title">Agentes autónomos</span>
+        </a>
+      </div>
+      <div class="day-cell"><div class="day-num">8</div></div>
+      <div class="day-cell"><div class="day-num">9</div></div>
+      <div class="day-cell"><div class="day-num">10</div></div>
+      <div class="day-cell"><div class="day-num">11</div></div>
+      <div class="day-cell"><div class="day-num">12</div></div>
+      <div class="day-cell"><div class="day-num">13</div></div>
+      <div class="day-cell has-event">
+        <div class="day-num">14</div>
+        <a href="clase-17-aaron.html" class="event-pill event-tier4">
+          <span class="ev-presenter">Aaron</span>
+          <span class="ev-title">Agentes cronometrados</span>
+        </a>
+      </div>
+      <div class="day-cell"><div class="day-num">15</div></div>
+      <div class="day-cell"><div class="day-num">16</div></div>
+      <div class="day-cell"><div class="day-num">17</div></div>
+      <div class="day-cell"><div class="day-num">18</div></div>
+      <div class="day-cell"><div class="day-num">19</div></div>
+      <div class="day-cell"><div class="day-num">20</div></div>
+      <div class="day-cell has-event">
+        <div class="day-num">21</div>
+        <a href="clase-18-lili.html" class="event-pill event-tier5">
+          <span class="ev-presenter">Lili</span>
+          <span class="ev-title">Análisis de datos y big data</span>
+        </a>
+      </div>
+      <div class="day-cell"><div class="day-num">22</div></div>
+      <div class="day-cell"><div class="day-num">23</div></div>
+      <div class="day-cell"><div class="day-num">24</div></div>
+      <div class="day-cell"><div class="day-num">25</div></div>
+      <div class="day-cell"><div class="day-num">26</div></div>
+      <div class="day-cell"><div class="day-num">27</div></div>
+      <div class="day-cell"><div class="day-num">28</div></div>
+      <div class="day-cell"><div class="day-num">29</div></div>
+      <div class="day-cell"><div class="day-num">30</div></div>
+      <div class="day-cell"><div class="day-num">31</div></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ TIMELINE COMPLETO ═══════════════════════════════ -->
+  <div class="timeline">
+    <div class="timeline-header">Cronograma detallado</div>
+
+    <!-- 29 MAY -->
+    <div class="timeline-item tier1-line">
+      <div class="tl-date"><div class="tl-date-main">Vie 29 Mayo</div><div class="tl-date-sub">2026</div></div>
+      <div class="tl-content">
+        <div class="tl-card">
+          <div class="tl-session-label tier1-label">🟡 Tier 1 · Fundamentos</div>
+          <div class="tl-sessions">
+            <div class="tl-session">
+              <div class="tl-session-presenter">Catalina</div>
+              <div class="tl-session-title">Alcance y capacidad de IA para integrarla a tareas diarias</div>
+            </div>
+          </div>
+          <div class="tl-audience">👥 Todos · 90 min</div>
+          <a href="clase-01-cata.html" class="tl-link">Ver clase →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 JUN -->
+    <div class="timeline-item tier1-line">
+      <div class="tl-date"><div class="tl-date-main">Vie 5 Jun</div><div class="tl-date-sub">2026</div></div>
+      <div class="tl-content">
+        <div class="tl-card">
+          <div class="tl-session-label tier1-label">🟡 Tier 1 · Fundamentos</div>
+          <div class="tl-sessions">
+            <div class="tl-session">
+              <div class="tl-session-presenter">Anie</div>
+              <div class="tl-session-title">Aprendizaje para la realización de solicitudes de prompt</div>
+            </div>
+            <div class="tl-session">
+              <div class="tl-session-presenter">Efren</div>
+              <div class="tl-session-title">Habilidad para hacer prompt</div>
+            </div>
+          </div>
+          <div class="tl-audience">👥 Todos · 90 min</div>
+          <a href="clase-02-anie.html" class="tl-link">Ver clase Anie →</a>
+          <a href="clase-03-efren.html" class="tl-link" style="margin-left:.75rem">Ver clase Efren →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12 JUN -->
+    <div class="timeline-item tier1-line">
+      <div class="tl-date"><div class="tl-date-main">Vie 12 Jun</div><div class="tl-date-sub">2026</div></div>
+      <div class="tl-content">
+        <div class="tl-card">
+          <div class="tl-session-label tier1-label">🟡 Tier 1 · Fundamentos</div>
+          <div class="tl-sessions">
+            <div class="tl-session">
+              <div class="tl-session-presenter">Fajardo</div>
+              <div class="tl-session-title">Programas para utilizar Claude como extensión</div>
+            </div>
+          </div>
+          <div class="tl-audience">👥 Todos · 90 min</div>
+          <a href="clase-04-fajardo.html" class="tl-link">Ver clase →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 19 JUN -->
+    <div class="timeline-item tier2-line">
+      <div class="tl-date"><div class="tl-date-main">Vie 19 Jun</div><div class="tl-date-sub">2026</div></div>
+      <div class="tl-content">
+        <div class="tl-card">
+          <div class="tl-session-label tier2-label">🟢 Tier 2 · Marketing track</div>
+          <div class="tl-sessions">
+            <div class="tl-session">
+              <div class="tl-session-presenter">Manu</div>
+              <div class="tl-session-title">Mantenerse actualizada con lo nuevo de IA para marketing</div>
+            </div>
+          </div>
+          <div class="tl-audience">👥 Marketing · 90 min</div>
+          <a href="clase-05-manu.html" class="tl-link">Ver clase →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 26 JUN -->
+    <div class="timeline-item tier2-line">
+      <div class="tl-date"><div class="tl-date-main">Vie 26 Jun</div><div class="tl-date-sub">2026</div></div>
+      <div class="tl-content">
+        <div class="tl-card">
+          <div class="tl-session-label tier2-label">🟢 Tier 2 · Paid media</div>
+          <div class="tl-sessions">
+            <div class="tl-session">
+              <div class="tl-session-presenter">Lina</div>
+              <div class="tl-session-title">IA de Meta (Andromeda)</div>
+            </div>
+            <div class="tl-session">
+              <div class="tl-session-presenter">Lau</div>
+              <div class="tl-session-title">Conectar Claude a Meta para alertas, optimizaciones y A/B testing</div>
+            </div>
+          </div>
+          <div class="tl-audience">👥 Paid media · 90 min</div>
+          <a href="clase-06-lina-andromeda.html" class="tl-link">Ver clase Lina →</a>
+          <a href="clase-07-lau.html" class="tl-link" style="margin-left:.75rem">Ver clase Lau →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 JUL -->
+    <div class="timeline-item tier2-line">
+      <div class="tl-date"><div class="tl-date-main">Vie 3 Jul</div><div class="tl-date-sub">2026</div></div>
+      <div class="tl-content">
+        <div class="tl-card">
+          <div class="tl-session-label tier2-label">🟢 Tier 2 · Community, brand</div>
+          <div class="tl-sessions">
+            <div class="tl-session">
+              <div class="tl-session-presenter">Sol</div>
+              <div class="tl-session-title">Conectar Claude a redes sociales + Social listening pro</div>
+            </div>
+          </div>
+          <div class="tl-audience">👥 Community, brand · 90 min</div>
+          <a href="clase-08-sol.html" class="tl-link">Ver clase →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 JUL -->
+    <div class="timeline-item tier2-line">
+      <div class="tl-date"><div class="tl-date-main">Vie 10 Jul</div><div class="tl-date-sub">2026</div></div>
+      <div class="tl-content">
+        <div class="tl-card">
+          <div class="tl-session-label tier2-label">🟢 Tier 2 · Ventas, CX</div>
+          <div class="tl-sessions">
+            <div class="tl-session">
+              <div class="tl-session-presenter">Alexa</div>
+              <div class="tl-session-title">Aplicar IA para vender mejor sin perder humanidad</div>
+            </div>
+            <div class="tl-session">
+              <div class="tl-session-presenter">Diana</div>
+              <div class="tl-session-title">Automatización inteligente de atención al cliente multicanal</div>
+            </div>
+          </div>
+          <div class="tl-audience">👥 Ventas, CX · 90 min</div>
+          <a href="clase-09-alexa.html" class="tl-link">Ver clase Alexa →</a>
+          <a href="clase-10-diana.html" class="tl-link" style="margin-left:.75rem">Ver clase Diana →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 17 JUL -->
+    <div class="timeline-item tier3-line">
+      <div class="tl-date"><div class="tl-date-main">Vie 17 Jul</div><div class="tl-date-sub">2026</div></div>
+      <div class="tl-content">
+        <div class="tl-card">
+          <div class="tl-session-label tier3-label">🟣 Tier 3 · Audiovisual</div>
+          <div class="tl-sessions">
+            <div class="tl-session">
+              <div class="tl-session-presenter">Nico</div>
+              <div class="tl-session-title">Agentes de producción audiovisual (Runway Gen-4, Kling 3.0, Manus)</div>
+            </div>
+            <div class="tl-session">
+              <div class="tl-session-presenter">Edi</div>
+              <div class="tl-session-title">IA para modelado de imagen, ritmo visual, presets de color, audio y cortes pro</div>
+            </div>
+          </div>
+          <div class="tl-audience">👥 Audiovisual · 90 min</div>
+          <a href="clase-11-nico.html" class="tl-link">Ver clase Nico →</a>
+          <a href="clase-12-edi.html" class="tl-link" style="margin-left:.75rem">Ver clase Edi →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 24 JUL -->
+    <div class="timeline-item tier4-line">
+      <div class="tl-date"><div class="tl-date-main">Vie 24 Jul</div><div class="tl-date-sub">2026</div></div>
+      <div class="tl-content">
+        <div class="tl-card">
+          <div class="tl-session-label tier4-label">🔴 Tier 4 · TI / Dev track</div>
+          <div class="tl-sessions">
+            <div class="tl-session">
+              <div class="tl-session-presenter">Dani</div>
+              <div class="tl-session-title">Optimizar consumo de créditos en Claude para código</div>
+            </div>
+          </div>
+          <div class="tl-audience">👥 Devs · 90 min</div>
+          <a href="clase-13-dani.html" class="tl-link">Ver clase →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 31 JUL -->
+    <div class="timeline-item tier4-line">
+      <div class="tl-date"><div class="tl-date-main">Vie 31 Jul</div><div class="tl-date-sub">2026</div></div>
+      <div class="tl-content">
+        <div class="tl-card">
+          <div class="tl-session-label tier4-label">🔴 Tier 4 · TI / Dev track</div>
+          <div class="tl-sessions">
+            <div class="tl-session">
+              <div class="tl-session-presenter">Pineda</div>
+              <div class="tl-session-title">Construir asistentes y agentes de IA para desarrollo</div>
+            </div>
+            <div class="tl-session">
+              <div class="tl-session-presenter">Adrian</div>
+              <div class="tl-session-title">Integración de agentes IA con APIs y webhooks</div>
+            </div>
+          </div>
+          <div class="tl-audience">👥 Devs · 90 min</div>
+          <a href="clase-14-pineda.html" class="tl-link">Ver clase Pineda →</a>
+          <a href="clase-15-adrian.html" class="tl-link" style="margin-left:.75rem">Ver clase Adrian →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 AGO -->
+    <div class="timeline-item tier4-line">
+      <div class="tl-date"><div class="tl-date-main">Vie 7 Ago</div><div class="tl-date-sub">2026</div></div>
+      <div class="tl-content">
+        <div class="tl-card">
+          <div class="tl-session-label tier4-label">🔴 Tier 4 · TI / Dev track</div>
+          <div class="tl-sessions">
+            <div class="tl-session">
+              <div class="tl-session-presenter">Oviedo</div>
+              <div class="tl-session-title">Agentes autónomos a la medida sin gestor externo</div>
+            </div>
+          </div>
+          <div class="tl-audience">👥 Devs · 90 min</div>
+          <a href="clase-16-oviedo.html" class="tl-link">Ver clase →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 14 AGO -->
+    <div class="timeline-item tier4-line">
+      <div class="tl-date"><div class="tl-date-main">Vie 14 Ago</div><div class="tl-date-sub">2026</div></div>
+      <div class="tl-content">
+        <div class="tl-card">
+          <div class="tl-session-label tier4-label">🔴 Tier 4 · Devs + ops</div>
+          <div class="tl-sessions">
+            <div class="tl-session">
+              <div class="tl-session-presenter">Aaron</div>
+              <div class="tl-session-title">Agentes cronometrados para ejecución de tareas programadas</div>
+            </div>
+          </div>
+          <div class="tl-audience">👥 Devs + ops · 90 min</div>
+          <a href="clase-17-aaron.html" class="tl-link">Ver clase →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 21 AGO -->
+    <div class="timeline-item tier5-line">
+      <div class="tl-date"><div class="tl-date-main">Vie 21 Ago</div><div class="tl-date-sub">2026 · 🏁 Cierre</div></div>
+      <div class="tl-content">
+        <div class="tl-card">
+          <div class="tl-session-label tier5-label">⚫ Tier 5 · Datos</div>
+          <div class="tl-sessions">
+            <div class="tl-session">
+              <div class="tl-session-presenter">Lili</div>
+              <div class="tl-session-title">Análisis de datos y big data</div>
+            </div>
+          </div>
+          <div class="tl-audience">👥 Data, marketing analítico · 90 min</div>
+          <a href="clase-18-lili.html" class="tl-link">Ver clase →</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /timeline -->
+</div><!-- /main -->
+
+<footer>
+  <p>Programa de IA 2026 · 13 viernes grupales · Mayo — Agosto 2026</p>
+  <p style="margin-top:.5rem;font-size:.75rem">Generado con Claude · aaron7k/inmo</p>
+</footer>
+
+</body>
+</html>

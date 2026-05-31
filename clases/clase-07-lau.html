@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 07 · Conectar Claude a Meta — Alertas, Optimizaciones y A/B Testing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#10B981 0%,#059669 100%);padding:3rem 2rem;color:white}
+    .hero-inner{max-width:900px;margin:0 auto}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-sub{font-size:1rem;opacity:.88;margin-top:.6rem;font-weight:500}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.88rem;margin-top:1.2rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .hero-meta svg{flex-shrink:0}
+
+    /* LAYOUT */
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+
+    /* CARDS */
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#0f172a}
+    .card-title .icon{font-size:1.3rem}
+
+    /* OBJETIVOS */
+    .objetivo-list{list-style:none;display:flex;flex-direction:column;gap:.75rem}
+    .objetivo-list li{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 1rem;border-radius:.5rem;background:#f0fdf4;border:1px solid #bbf7d0}
+    .objetivo-list li .num{background:#10B981;color:white;border-radius:999px;width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+
+    /* CONCEPTOS */
+    .concepto{border-left:3px solid #10B981;padding-left:1rem;margin-bottom:1.25rem}
+    .concepto h4{font-weight:700;color:#059669;font-size:.95rem;margin-bottom:.25rem}
+    .concepto p{font-size:.9rem;color:#475569}
+
+    /* TOOL GRID */
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;background:#fafafa;display:flex;flex-direction:column;gap:.5rem;transition:box-shadow .2s}
+    .tool-card:hover{box-shadow:0 4px 16px rgba(16,185,129,.15);border-color:#10B981}
+    .tool-card-header{display:flex;align-items:center;justify-content:space-between}
+    .tool-name{font-weight:700;font-size:.9rem;color:#0f172a}
+    .tool-role{font-size:.8rem;color:#64748b}
+    .tool-link{font-size:.75rem;color:#10B981;text-decoration:none;font-weight:600}
+    .tool-link:hover{text-decoration:underline}
+
+    /* BADGES */
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+
+    /* MÓDULOS */
+    .module{border-left:3px solid #10B981;padding-left:1.25rem;margin-bottom:2rem}
+    .module-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+    .module-num{background:#10B981;color:white;font-weight:800;font-size:.8rem;border-radius:.4rem;padding:.2rem .55rem}
+    .module-title{font-size:1.05rem;font-weight:700;color:#0f172a}
+    .module-time{font-size:.8rem;color:#94a3b8;margin-left:auto}
+    .module p{font-size:.9rem;color:#475569;margin-bottom:.75rem}
+
+    /* ALERTAS TABLE */
+    .table-wrap{overflow-x:auto;margin:.75rem 0}
+    table{width:100%;border-collapse:collapse;font-size:.85rem}
+    th{background:#f0fdf4;color:#059669;font-weight:700;padding:.6rem .9rem;text-align:left;border-bottom:2px solid #bbf7d0}
+    td{padding:.55rem .9rem;border-bottom:1px solid #f1f5f9;color:#374151}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#f8fafc}
+
+    /* FLOW DIAGRAM */
+    .flow{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}
+    .flow-step{background:#f0fdf4;border:1px solid #86efac;border-radius:.5rem;padding:.4rem .85rem;font-size:.82rem;font-weight:600;color:#15803d}
+    .flow-arrow{color:#10B981;font-weight:700;font-size:1rem}
+
+    /* PROMPT BOX */
+    .prompt-box{background:#0f172a;border-radius:.75rem;padding:1.25rem 1.5rem;margin:.75rem 0;font-family:'Courier New',monospace;font-size:.8rem;color:#94a3b8;white-space:pre-wrap;line-height:1.7;overflow-x:auto}
+    .prompt-box .hl{color:#10B981}
+    .prompt-label{font-size:.75rem;font-weight:600;color:#64748b;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em}
+
+    /* EXERCISE BOX */
+    .exercise-box{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-box h3{color:#059669;font-size:1rem;font-weight:700;margin-bottom:.75rem}
+    .exercise-steps{list-style:none;counter-reset:step;display:flex;flex-direction:column;gap:.6rem}
+    .exercise-steps li{counter-increment:step;display:flex;gap:.75rem;font-size:.88rem;color:#374151}
+    .exercise-steps li::before{content:counter(step);background:#10B981;color:white;border-radius:999px;width:1.4rem;height:1.4rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+
+    /* RECURSOS */
+    .resource-section{margin-bottom:1.25rem}
+    .resource-section h4{font-size:.85rem;font-weight:700;color:#10B981;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem}
+    .resource-list{list-style:none;display:flex;flex-direction:column;gap:.4rem}
+    .resource-list a{font-size:.88rem;color:#0f172a;text-decoration:none;display:flex;align-items:center;gap:.5rem}
+    .resource-list a:hover{color:#10B981}
+    .resource-list a::before{content:'→';color:#10B981;font-weight:700}
+
+    /* ACCIONES */
+    .action-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+    .action-list li{display:flex;align-items:flex-start;gap:.75rem;font-size:.9rem;color:#374151}
+    .action-list li .checkbox{width:1.1rem;height:1.1rem;border:2px solid #10B981;border-radius:.25rem;flex-shrink:0;margin-top:.15rem}
+
+    /* SECTION DIVIDER */
+    .section-label{font-size:.75rem;font-weight:700;color:#10B981;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem}
+
+    /* UTILS */
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem}
+    a{color:#10B981}
+
+    /* FOOTER */
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem;border-top:1px solid #e2e8f0;margin-top:1rem}
+    footer strong{color:#10B981}
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="tier-badge">Tier 2 · Paid media · Marketing track</div>
+    <h1>🔗 Conectar Claude a Meta para alertas,<br>optimizaciones y A/B testing</h1>
+    <p class="hero-sub">Automatiza tu stack de paid media con la Meta Marketing API y Claude</p>
+    <div class="hero-meta">
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Presentadora: <strong>Lau</strong>
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Viernes 26 junio 2026
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        90 minutos
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Paid media
+      </span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ MAIN -->
+<main class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la clase</div>
+    <ul class="objetivo-list">
+      <li>
+        <span class="num">1</span>
+        <span>Conectar Claude con la <strong>Meta Ads API</strong> usando el MCP oficial de Meta o conectores como Make.com, Zapier y n8n, sin exponer credenciales ni arriesgar la cuenta publicitaria.</span>
+      </li>
+      <li>
+        <span class="num">2</span>
+        <span>Crear <strong>alertas automáticas de rendimiento</strong> que notifiquen por Slack o WhatsApp cuando el CPA, CPM o ROAS se salgan del rango objetivo.</span>
+      </li>
+      <li>
+        <span class="num">3</span>
+        <span>Automatizar el <strong>ciclo completo de A/B testing</strong>: generación de variantes → lanzamiento → monitoreo → pausa del perdedor → escalado del ganador.</span>
+      </li>
+      <li>
+        <span class="num">4</span>
+        <span>Implementar un <strong>bucle de optimización continua</strong> donde Claude analiza resultados, propone cambios y los ejecuta a través de la API con supervisión humana mínima.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+
+    <div class="concepto">
+      <h4>API (Application Programming Interface)</h4>
+      <p>Conjunto de endpoints que Meta expone para leer y escribir datos de campañas sin entrar al Ads Manager. La <strong>Meta Marketing API</strong> (rama de la Graph API v21+) es la que usamos en esta clase.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>MCP — Model Context Protocol</h4>
+      <p>Estándar abierto de Anthropic que permite a Claude comunicarse con servicios externos de forma segura. Meta lanzó su <strong>Meta Ads MCP Server</strong> en open beta (abril 2026): da a Claude acceso autenticado a 29 herramientas que cubren toda la Marketing API, sin generar tokens manualmente.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Webhooks</h4>
+      <p>Notificaciones HTTP que Meta (o Make/n8n) envía a tu sistema cuando ocurre un evento: gasto supera umbral, un ad cae a delivery limitado, ROAS baja del objetivo. Claude recibe el payload y decide la acción.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Alertas de rendimiento</h4>
+      <p>Reglas que disparan un mensaje automático cuando una métrica clave cruza un umbral. Ejemplos: CPA &gt; objetivo × 1.2, frecuencia &gt; 4, CTR &lt; 0.8 %. La alerta puede ir a Slack, WhatsApp Business o email.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>A/B testing con IA</h4>
+      <p>Proceso donde Claude genera variantes de copy/creatividad, las lanza como split test vía API, monitorea estadísticamente cuál gana, pausa los perdedores y escala el presupuesto del ganador de forma automática.</p>
+    </div>
+
+    <div class="concepto" style="margin-bottom:0">
+      <h4>Automatización de flujos (Make / Zapier / n8n)</h4>
+      <p>Plataformas de orquestación que actúan de pegamento entre la Meta Ads API, Claude y el resto del stack (Sheets, Slack, CRM). Permiten construir flujos visuales sin código profundo.</p>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Claude API</span>
+          <span class="badge badge-paid">Pago</span>
+        </div>
+        <span class="tool-role">Motor de razonamiento y decisiones</span>
+        <a class="tool-link" href="https://www.anthropic.com/api" target="_blank" rel="noopener">anthropic.com/api →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Meta Marketing API</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <span class="tool-role">Leer/escribir campañas y métricas</span>
+        <a class="tool-link" href="https://developers.facebook.com/docs/marketing-apis/" target="_blank" rel="noopener">developers.facebook.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Meta Ads MCP Server</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <span class="tool-role">Conector oficial Meta ↔ Claude (29 tools)</span>
+        <a class="tool-link" href="https://github.com/facebookresearch/meta-ads-mcp" target="_blank" rel="noopener">GitHub →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Make.com</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <span class="tool-role">Orquestación visual sin código</span>
+        <a class="tool-link" href="https://www.make.com/en/integrations/facebook-ads-cm/anthropic-claude" target="_blank" rel="noopener">make.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Zapier</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <span class="tool-role">Automatización simple, +8 000 apps</span>
+        <a class="tool-link" href="https://zapier.com/blog/automate-claude/" target="_blank" rel="noopener">zapier.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">n8n</span>
+          <span class="badge badge-free">Open source</span>
+        </div>
+        <span class="tool-role">Orquestación self-hosted, sin límites</span>
+        <a class="tool-link" href="https://n8n.io" target="_blank" rel="noopener">n8n.io →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Slack / WhatsApp</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <span class="tool-role">Canal de alertas y notificaciones</span>
+        <a class="tool-link" href="https://slack.com" target="_blank" rel="noopener">slack.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Google Sheets</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <span class="tool-role">Dashboard de métricas y registro A/B</span>
+        <a class="tool-link" href="https://sheets.google.com" target="_blank" rel="noopener">sheets.google.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Composio / Ryze AI</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <span class="tool-role">Conectores MCP gestionados, OAuth auto</span>
+        <a class="tool-link" href="https://composio.dev/toolkits/metaads/framework/claude-code" target="_blank" rel="noopener">composio.dev →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MÓDULOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Contenido — 4 módulos</div>
+
+    <!-- MÓDULO 1 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">01</span>
+        <span class="module-title">Arquitectura de integración</span>
+        <span class="module-time">20 min</span>
+      </div>
+      <p>Cómo fluye la información entre Meta, Claude y tu stack. Opciones de conexión y principios de seguridad.</p>
+
+      <div class="flow">
+        <span class="flow-step">Meta Ads API</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">MCP / Make.com</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Claude</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Decisión</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Acción (API write)</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Opción</th><th>Perfil recomendado</th><th>Ventaja</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Meta Ads MCP oficial</strong></td><td>Equipos técnicos / Claude Code</td><td>Sin tokens manuales, OAuth nativo, 29 herramientas</td></tr>
+            <tr><td><strong>Make.com + Claude module</strong></td><td>Equipos sin perfil técnico</td><td>Visual, sin código, integración con Sheets/Slack</td></tr>
+            <tr><td><strong>Zapier</strong></td><td>Configuración rápida</td><td>Más fácil, 8 000 apps, menos flexible</td></tr>
+            <tr><td><strong>n8n self-hosted</strong></td><td>Agencias con datos sensibles</td><td>Control total, sin límites de operaciones</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MÓDULO 2 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">02</span>
+        <span class="module-title">Configurar alertas automáticas</span>
+        <span class="module-time">20 min</span>
+      </div>
+      <p>Construir reglas que detecten anomalías de rendimiento y envíen un análisis de Claude al equipo en tiempo real.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Alerta</th><th>Métrica</th><th>Umbral</th><th>Destino</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>CPA disparado</td><td>CPA actual vs. objetivo</td><td>&gt; 20 %</td><td>Slack #paid-media</td></tr>
+            <tr><td>Frecuencia alta</td><td>Frecuencia de ad set</td><td>&gt; 4.0</td><td>WhatsApp</td></tr>
+            <tr><td>Gasto sin conversiones</td><td>Conversiones 24 h</td><td>= 0 con gasto &gt; 50 €</td><td>Email</td></tr>
+            <tr><td>ROAS bajo</td><td>ROAS de campaña</td><td>&lt; objetivo × 0.8</td><td>Slack</td></tr>
+            <tr><td>Delivery limitado</td><td>Estado de entrega</td><td>"limited"</td><td>Slack + Notion</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prompt-label">Prompt de Claude para alertas</div>
+      <div class="prompt-box"><span class="hl">Eres un especialista en paid media.</span> Analiza los siguientes datos de Meta Ads de las últimas 24 horas:
+
+{{datos_json}}
+
+Métricas objetivo: CPA &lt; {{cpa_objetivo}} €, ROAS &gt; {{roas_objetivo}}, Frecuencia &lt; 4.
+
+Redacta:
+<span class="hl">1. Diagnóstico en 2 líneas</span> (qué está pasando y por qué)
+<span class="hl">2. Acción inmediata recomendada</span> (concreta, ejecutable hoy)
+<span class="hl">3. Nivel de urgencia:</span> ALTA / MEDIA / BAJA
+
+Tono: directo, sin rodeos, para un performance marketer.</div>
+    </div>
+
+    <!-- MÓDULO 3 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">03</span>
+        <span class="module-title">A/B testing automatizado</span>
+        <span class="module-time">25 min</span>
+      </div>
+      <p>El ciclo completo orquestado por Claude: de la generación de variantes al escalado del ganador.</p>
+
+      <div class="flow" style="flex-wrap:wrap">
+        <span class="flow-step">Briefing</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Claude genera variantes</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">API crea ads</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Split test Meta</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Claude monitorea</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Pausa perdedor</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Escala ganador</span>
+      </div>
+
+      <div class="prompt-label" style="margin-top:1rem">Prompt para generar variantes de copy</div>
+      <div class="prompt-box">Crea <span class="hl">4 variantes de copy</span> para un anuncio de Facebook/Instagram.
+
+Producto: {{producto}} | Público: {{audiencia}}
+Oferta: {{oferta}} | Tono de marca: {{tono}}
+
+Para cada variante genera:
+- Titular (máx 40 caracteres)
+- Texto principal (máx 125 caracteres)
+- CTA sugerido
+
+Cada variante prueba un ángulo diferente:
+<span class="hl">A)</span> Beneficio principal
+<span class="hl">B)</span> Urgencia / escasez
+<span class="hl">C)</span> Prueba social
+<span class="hl">D)</span> Pregunta / curiosidad</div>
+
+      <p style="margin-top:.75rem;font-size:.88rem;color:#475569"><strong>Reglas de pausa automática:</strong> Si CPA &gt; objetivo × 1.5 tras gastar 50 € → pausar. Si CTR &lt; promedio × 0.6 → pausar. Al llegar al 95 % de significancia estadística → declarar ganador y registrar aprendizajes en Sheets.</p>
+    </div>
+
+    <!-- MÓDULO 4 -->
+    <div class="module" style="margin-bottom:0">
+      <div class="module-header">
+        <span class="module-num">04</span>
+        <span class="module-title">Optimización continua</span>
+        <span class="module-time">25 min</span>
+      </div>
+      <p>El bucle semanal de optimización: Claude descarga métricas, identifica oportunidades, el equipo aprueba en Slack y Make ejecuta los cambios vía API.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Estrategia</th><th>Qué hace Claude</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Bid management</strong></td><td>Ajusta puja objetivo ±10-15 % según tendencia de CPA</td></tr>
+            <tr><td><strong>Budget shifting</strong></td><td>Mueve presupuesto de ad sets con ROAS bajo a los de ROAS alto</td></tr>
+            <tr><td><strong>Audience refresh</strong></td><td>Detecta fatiga (frecuencia &gt; 4) y sugiere nuevas audiencias lookalike</td></tr>
+            <tr><td><strong>Creative rotation</strong></td><td>Identifica creatividades agotadas y solicita nuevas al equipo</td></tr>
+            <tr><td><strong>Dayparting</strong></td><td>Analiza rendimiento por hora y ajusta programación de anuncios</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <h3>La alerta del CPA — Flujo en Make.com</h3>
+      <p style="font-size:.88rem;color:#374151;margin-bottom:1rem">Crea un flujo que detecte cuándo el CPA sube más del <strong>20 %</strong> respecto al objetivo y envíe un análisis de Claude a Slack.</p>
+      <ol class="exercise-steps">
+        <li>Crear cuenta en <strong>Make.com</strong> (gratis) y conectar tu cuenta de Meta Ads mediante OAuth</li>
+        <li>Nuevo escenario → <strong>Scheduled trigger</strong> cada día a las 9 am</li>
+        <li>Módulo <strong>Meta Ads → Get Ad Insights</strong> (últimas 24 h): métricas spend, actions, cost_per_action</li>
+        <li>Módulo <strong>Tools → Set variable</strong>: calcular <code>cpa_actual = spend / conversiones</code></li>
+        <li><strong>Router</strong>: condición <code>cpa_actual &gt; cpa_objetivo * 1.20</code> — Rama SÍ continúa, Rama NO termina</li>
+        <li>Módulo <strong>Anthropic Claude</strong>: enviar el prompt de análisis con los datos reales de Meta</li>
+        <li>Módulo <strong>Slack</strong>: enviar mensaje al canal #alertas-paid con el output de Claude</li>
+      </ol>
+      <p style="font-size:.82rem;color:#059669;margin-top:1rem;font-weight:600">Entregable: Screenshot del escenario activo + ejemplo de alerta recibida en Slack</p>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos</div>
+
+    <div class="resource-section">
+      <h4>Documentación oficial</h4>
+      <ul class="resource-list">
+        <li><a href="https://developers.facebook.com/docs/marketing-apis/" target="_blank" rel="noopener">Meta Marketing API — Guía oficial</a></li>
+        <li><a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener">Meta Graph API Explorer</a></li>
+        <li><a href="https://github.com/facebookresearch/meta-ads-mcp" target="_blank" rel="noopener">Meta Ads MCP Server — GitHub</a></li>
+        <li><a href="https://docs.anthropic.com" target="_blank" rel="noopener">Anthropic API Docs</a></li>
+        <li><a href="https://docs.anthropic.com/en/api/messages" target="_blank" rel="noopener">Claude API — Referencia de mensajes</a></li>
+      </ul>
+    </div>
+
+    <div class="resource-section">
+      <h4>Conectores y herramientas</h4>
+      <ul class="resource-list">
+        <li><a href="https://www.make.com/en/integrations/facebook-ads-cm/anthropic-claude" target="_blank" rel="noopener">Make.com · Integración Facebook Ads + Claude</a></li>
+        <li><a href="https://zapier.com/blog/automate-claude/" target="_blank" rel="noopener">Zapier · 7 formas de automatizar Claude</a></li>
+        <li><a href="https://composio.dev/toolkits/metaads/framework/claude-code" target="_blank" rel="noopener">Composio · Meta Ads + Claude Code</a></li>
+        <li><a href="https://adzviser.com/connect/meta-ads-to-claude-integration" target="_blank" rel="noopener">Adzviser · Conectar Meta Ads a Claude vía MCP</a></li>
+      </ul>
+    </div>
+
+    <div class="resource-section" style="margin-bottom:0">
+      <h4>Lecturas recomendadas</h4>
+      <ul class="resource-list">
+        <li><a href="https://ppc.land/meta-opens-its-ad-system-to-claude-and-chatgpt-with-new-ai-connectors/" target="_blank" rel="noopener">Meta abre su sistema de ads a Claude y ChatGPT (PPC Land)</a></li>
+        <li><a href="https://www.adstellar.ai/blog/facebook-ads-a-b-testing-automation" target="_blank" rel="noopener">Guía completa de A/B testing automatizado en Facebook Ads (AdStellar)</a></li>
+        <li><a href="https://madgicx.com/blog/connect-meta-ads-to-claude" target="_blank" rel="noopener">Cómo conectar Meta Ads a Claude AI (Madgicx)</a></li>
+        <li><a href="https://www.jonloomer.com/meta-ads-ai-connectors-claude/" target="_blank" rel="noopener">Meta Ads AI Connectors y Claude — riesgos y usos (Jon Loomer)</a></li>
+        <li><a href="https://portermetrics.com/en/tutorial/claude/chat-meta-ads/" target="_blank" rel="noopener">4 formas gratuitas de conectar Meta Ads a Claude (PorterMetrics)</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-clase</div>
+    <ul class="action-list">
+      <li><span class="checkbox"></span><span>Crear cuenta en <a href="https://make.com" target="_blank">Make.com</a> y conectar Meta Ads mediante OAuth</span></li>
+      <li><span class="checkbox"></span><span>Instalar el Meta Ads MCP Server en Claude Desktop si usas Claude localmente</span></li>
+      <li><span class="checkbox"></span><span>Definir los 3 KPIs objetivo de tu cuenta (CPA, ROAS, CPM) y documentarlos en Sheets</span></li>
+      <li><span class="checkbox"></span><span>Construir el flujo del ejercicio práctico (alerta de CPA +20 %) en Make.com</span></li>
+      <li><span class="checkbox"></span><span>Compartir screenshot del flujo activo en el canal #clase-07 de la comunidad</span></li>
+      <li><span class="checkbox"></span><span>Proponer un segundo flujo de automatización para tu cuenta específica en el foro</span></li>
+    </ul>
+  </div>
+
+</main>
+
+<footer>
+  <strong>Clase 07 · Tier 2 · Marketing track</strong> &nbsp;·&nbsp; Inmo Academy 2026 &nbsp;·&nbsp; Presentadora: Lau &nbsp;·&nbsp; Viernes 26 junio 2026
+</footer>
+
+</body>
+</html>

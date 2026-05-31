@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 17 · Agentes cronometrados para ejecución de tareas programadas · Aaron</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+
+    /* Hero */
+    .hero{background:linear-gradient(135deg,#EF4444 0%,#DC2626 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-sub{font-size:1rem;opacity:.85;margin-top:.5rem;font-weight:500}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.35rem}
+
+    /* Layout */
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+
+    /* Cards */
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+
+    /* Tool grid */
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;transition:box-shadow .2s,border-color .2s}
+    .tool-card:hover{box-shadow:0 4px 12px rgba(239,68,68,.15);border-color:#EF4444}
+    .tool-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+    .tool-name{font-weight:700;font-size:.95rem;color:#1e293b}
+    .tool-desc{font-size:.82rem;color:#64748b;margin-bottom:.5rem;line-height:1.4}
+    .tool-link{font-size:.78rem;color:#EF4444;text-decoration:none;font-weight:600}
+    .tool-link:hover{text-decoration:underline}
+
+    /* Badges */
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600;white-space:nowrap}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+
+    /* Modules */
+    .module{border-left:3px solid #EF4444;padding-left:1.25rem;margin-bottom:1.75rem}
+    .module:last-child{margin-bottom:0}
+    .module-header{display:flex;align-items:baseline;gap:.75rem;margin-bottom:.5rem}
+    .module-title{font-weight:700;font-size:1rem;color:#1e293b}
+    .module-time{font-size:.78rem;background:#fee2e2;color:#DC2626;padding:.1rem .6rem;border-radius:999px;font-weight:600}
+    .module-body{color:#475569;font-size:.92rem}
+    .module-body ul{padding-left:1.25rem;margin-top:.5rem}
+    .module-body li{margin-bottom:.35rem}
+
+    /* Exercise */
+    .exercise-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:.75rem;padding:1.5rem;margin-bottom:1.25rem}
+    .exercise-box h3{font-weight:700;color:#991b1b;margin-bottom:.75rem;font-size:1rem}
+
+    /* Code blocks */
+    .code-block{background:#1e293b;color:#e2e8f0;border-radius:.75rem;padding:1.25rem;font-family:'Courier New',monospace;font-size:.8rem;line-height:1.6;overflow-x:auto;margin:.75rem 0}
+    .code-block .comment{color:#64748b}
+    .code-block .keyword{color:#f472b6}
+    .code-block .string{color:#86efac}
+    .code-block .func{color:#93c5fd}
+
+    /* Objectives */
+    .objectives-list{list-style:none;padding:0}
+    .objectives-list li{display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.85rem;font-size:.95rem;color:#334155}
+    .obj-num{background:linear-gradient(135deg,#EF4444,#DC2626);color:white;width:1.6rem;height:1.6rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0;margin-top:.1rem}
+
+    /* Concepts table */
+    .concepts-table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:.5rem}
+    .concepts-table th{background:#fee2e2;color:#991b1b;font-weight:700;padding:.6rem .85rem;text-align:left;border-bottom:2px solid #EF4444}
+    .concepts-table td{padding:.6rem .85rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    .concepts-table tr:hover td{background:#fff5f5}
+    .concepts-table code{background:#fee2e2;color:#991b1b;padding:.1rem .35rem;border-radius:.25rem;font-size:.83rem;font-family:monospace}
+
+    /* Cron table */
+    .cron-table{width:100%;border-collapse:collapse;font-size:.85rem;margin:.75rem 0}
+    .cron-table th{background:#1e293b;color:#e2e8f0;font-weight:600;padding:.5rem .75rem;text-align:left}
+    .cron-table td{padding:.5rem .75rem;border-bottom:1px solid #f1f5f9;font-family:monospace}
+    .cron-table tr:nth-child(even) td{background:#f8fafc}
+    .cron-table td:last-child{font-family:'Inter',sans-serif;color:#475569}
+
+    /* Comparison table */
+    .compare-table{width:100%;border-collapse:collapse;font-size:.83rem;margin:.75rem 0}
+    .compare-table th{background:#fee2e2;color:#991b1b;font-weight:700;padding:.55rem .75rem;text-align:left;border-bottom:2px solid #EF4444}
+    .compare-table td{padding:.55rem .75rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    .compare-table tr:hover td{background:#fff5f5}
+    .compare-table .check{color:#16a34a;font-weight:700}
+    .compare-table .cross{color:#dc2626}
+
+    /* Pattern cards */
+    .pattern-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:.75rem}
+    .pattern-card{background:#fff5f5;border:1px solid #fecaca;border-radius:.75rem;padding:1rem}
+    .pattern-card-title{font-weight:700;font-size:.88rem;color:#991b1b;margin-bottom:.35rem}
+    .pattern-card-body{font-size:.8rem;color:#64748b;line-height:1.4}
+
+    /* Checklist */
+    .checklist{list-style:none;padding:0}
+    .checklist li{display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.6rem;font-size:.9rem;color:#334155}
+    .checklist li::before{content:"✓";background:#EF4444;color:white;width:1.2rem;height:1.2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0;margin-top:.15rem}
+
+    /* Alert box */
+    .alert-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:.75rem;padding:1rem 1.25rem;margin:.75rem 0;font-size:.88rem;color:#92400e}
+    .alert-box strong{color:#c2410c}
+
+    /* Metrics grid */
+    .metrics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-top:.75rem}
+    .metric-card{background:white;border:1px solid #fecaca;border-radius:.75rem;padding:1rem;text-align:center}
+    .metric-value{font-size:1.5rem;font-weight:800;color:#EF4444}
+    .metric-label{font-size:.75rem;color:#64748b;margin-top:.25rem}
+
+    /* Resources */
+    .resource-list{list-style:none;padding:0}
+    .resource-list li{display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.6rem;padding:.6rem;border-radius:.5rem;transition:background .15s}
+    .resource-list li:hover{background:#f8fafc}
+    .resource-list a{color:#EF4444;font-weight:600;text-decoration:none;font-size:.9rem}
+    .resource-list a:hover{text-decoration:underline}
+    .resource-list p{font-size:.8rem;color:#64748b;margin-top:.15rem}
+    .res-icon{font-size:1rem;flex-shrink:0;margin-top:.1rem}
+
+    /* Architecture diagram */
+    .arch-diagram{background:#1e293b;border-radius:.75rem;padding:1.5rem;margin:.75rem 0;font-family:monospace;font-size:.8rem;color:#e2e8f0;line-height:1.8;overflow-x:auto}
+    .arch-diagram .arrow{color:#EF4444}
+    .arch-diagram .label{color:#93c5fd}
+    .arch-diagram .comment{color:#64748b}
+
+    /* Post-class actions */
+    .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+    @media(max-width:600px){.action-grid{grid-template-columns:1fr}}
+    .action-card{background:#fff5f5;border:1px solid #fecaca;border-radius:.75rem;padding:1.25rem}
+    .action-card h4{font-weight:700;color:#991b1b;margin-bottom:.75rem;font-size:.95rem}
+    .action-list{list-style:none;padding:0}
+    .action-list li{display:flex;align-items:flex-start;gap:.5rem;font-size:.85rem;color:#334155;margin-bottom:.5rem}
+    .action-list li::before{content:"□";color:#EF4444;font-weight:700;flex-shrink:0}
+
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="tier-badge">Tier 4 · TI / Dev track</div>
+    <h1>⏰ Agentes cronometrados para ejecución de tareas programadas</h1>
+    <p class="hero-sub">Construye pipelines de IA que se ejecutan solos, fallan de forma segura y se monitorean en tiempo real</p>
+    <div class="hero-meta">
+      <span>👤 Aaron</span>
+      <span>📅 Viernes 14 agosto 2026</span>
+      <span>👥 Devs + Ops</span>
+      <span>⏱ 90 minutos</span>
+      <span>🏷 Clase 17</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos</div>
+    <ul class="objectives-list">
+      <li>
+        <div class="obj-num">1</div>
+        <div><strong>Diseñar agentes que se ejecuten solos</strong> en horarios definidos con expresiones cron, sin requerir intervención humana en cada ciclo.</div>
+      </li>
+      <li>
+        <div class="obj-num">2</div>
+        <div><strong>Elegir la herramienta de scheduling correcta</strong> según el contexto: schedule library, APScheduler, Celery Beat, GitHub Actions o AWS EventBridge.</div>
+      </li>
+      <li>
+        <div class="obj-num">3</div>
+        <div><strong>Integrar la API de Claude</strong> en pipelines cronometrados para que el agente analice datos, tome decisiones y actúe de forma autónoma.</div>
+      </li>
+      <li>
+        <div class="obj-num">4</div>
+        <div><strong>Implementar idempotencia y manejo de fallos</strong> para que el agente sea seguro de re-ejecutar sin efectos secundarios duplicados.</div>
+      </li>
+      <li>
+        <div class="obj-num">5</div>
+        <div><strong>Instrumentar observabilidad completa</strong>: logs estructurados, métricas en Grafana y alertas que detecten fallos silenciosos antes de que impacten al negocio.</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+    <table class="concepts-table">
+      <thead>
+        <tr><th>Término</th><th>Definición</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Cron Job</strong></td><td>Tarea programada que se dispara según una expresión de tiempo estándar (5 campos). El estándar POSIX adoptado por casi todas las plataformas modernas.</td></tr>
+        <tr><td><strong>Expresión cron</strong></td><td>Cadena de texto que define el horario: <code>0 9 * * 1-5</code> = "cada día hábil a las 9 am". Soporta wildcards (<code>*</code>), rangos, pasos y listas.</td></tr>
+        <tr><td><strong>Agente cronometrado</strong></td><td>Agente de IA que recibe un disparador temporal, ejecuta un workflow autónomo (consultar → razonar → actuar → reportar) y termina limpiamente hasta el próximo ciclo.</td></tr>
+        <tr><td><strong>Idempotencia</strong></td><td>Propiedad que garantiza que ejecutar la misma tarea múltiples veces produce el mismo resultado que ejecutarla una sola vez. Crítico cuando hay reintentos.</td></tr>
+        <tr><td><strong>At-least-once delivery</strong></td><td>Garantía de los brokers de mensajes: el mensaje se entrega como mínimo una vez, pero podría entregarse más. Requiere que el consumidor sea idempotente.</td></tr>
+        <tr><td><strong>Dead Letter Queue (DLQ)</strong></td><td>Cola donde van las tareas que fallaron todos sus reintentos. Permite inspección post-mortem sin perder datos.</td></tr>
+        <tr><td><strong>Event-driven scheduling</strong></td><td>El agente se dispara por un evento (nuevo archivo, webhook, mensaje en cola) en lugar de por tiempo. Complementa al cron cuando la cadencia es irregular.</td></tr>
+        <tr><td><strong>Jitter</strong></td><td>Desplazamiento aleatorio añadido al horario para evitar que miles de workers arranquen exactamente al mismo segundo (thundering herd problem).</td></tr>
+        <tr><td><strong>Backfill / Catch-up</strong></td><td>Capacidad de re-ejecutar todas las ejecuciones perdidas durante un período de downtime. Algunos schedulers lo hacen automáticamente al reiniciar.</td></tr>
+        <tr><td><strong>Observabilidad</strong></td><td>Capacidad de entender el estado interno de un sistema a partir de sus salidas externas: logs, métricas y trazas distribuidas (los tres pilares).</td></tr>
+        <tr><td><strong>Scheduler persistence</strong></td><td>El estado del scheduler se guarda en base de datos o Redis, sobreviviendo reinicios de la aplicación sin perder jobs programados.</td></tr>
+        <tr><td><strong>Tarea huérfana</strong></td><td>Job que quedó corriendo pero sin worker activo que lo supervise. Requiere TTL y monitoreo de heartbeat para detectarlos.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- STACK TECNOLOGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Claude API</div>
+          <span class="badge badge-paid">De pago</span>
+        </div>
+        <div class="tool-desc">Motor de razonamiento del agente: analiza datos, genera resúmenes, decide acciones y redacta reportes. Tool use y structured outputs nativos.</div>
+        <a href="https://www.anthropic.com/api" target="_blank" class="tool-link">anthropic.com/api →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Python schedule</div>
+          <span class="badge badge-free">Gratis / OSS</span>
+        </div>
+        <div class="tool-desc">Librería minimalista de scheduling in-process. <code>schedule.every().hour.do(job)</code>. Ideal para scripts simples sin worker distribuido.</div>
+        <a href="https://schedule.readthedocs.io" target="_blank" class="tool-link">schedule.readthedocs.io →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">APScheduler 4.x</div>
+          <span class="badge badge-free">Gratis / OSS</span>
+        </div>
+        <div class="tool-desc">Scheduler de producción con asyncio nativo. Tres modos: cron, intervalo, one-shot. Backends: SQLAlchemy, Redis, MongoDB, ZooKeeper.</div>
+        <a href="https://apscheduler.readthedocs.io" target="_blank" class="tool-link">apscheduler.readthedocs.io →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Celery + Celery Beat</div>
+          <span class="badge badge-free">Gratis / OSS</span>
+        </div>
+        <div class="tool-desc">Cola de tareas distribuidas + scheduler. Beat lanza las tareas según el calendario y workers las ejecutan en paralelo. Escala horizontalmente.</div>
+        <a href="https://docs.celeryq.dev" target="_blank" class="tool-link">docs.celeryq.dev →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Redis</div>
+          <span class="badge badge-free">Gratis / OSS</span>
+        </div>
+        <div class="tool-desc">Broker de mensajes y backend de resultados para Celery/APScheduler. También usado para locks de idempotencia distribuida con <code>SET NX EX</code>.</div>
+        <a href="https://redis.io" target="_blank" class="tool-link">redis.io →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">GitHub Actions</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">CI/CD con cron nativo: <code>on: schedule: cron</code>. Ejecuta el agente en contenedores efímeros sin servidor propio. Mínimo: 5 minutos entre runs (UTC).</div>
+        <a href="https://github.com/features/actions" target="_blank" class="tool-link">github.com/features/actions →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">AWS EventBridge</div>
+          <span class="badge badge-paid">De pago</span>
+        </div>
+        <div class="tool-desc">Scheduler serverless totalmente gestionado. Expresiones cron y rate, DLQ automática, reintentos configurables, invocación de Lambda/ECS/SQS y más.</div>
+        <a href="https://aws.amazon.com/eventbridge/" target="_blank" class="tool-link">aws.amazon.com/eventbridge →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Grafana + Prometheus</div>
+          <span class="badge badge-free">Gratis / OSS</span>
+        </div>
+        <div class="tool-desc">Stack de observabilidad: Prometheus recolecta métricas del agente (ejecuciones, latencia, tokens) y Grafana las visualiza con alertas en tiempo real.</div>
+        <a href="https://grafana.com" target="_blank" class="tool-link">grafana.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Flower</div>
+          <span class="badge badge-free">Gratis / OSS</span>
+        </div>
+        <div class="tool-desc">Dashboard web de monitoreo para Celery. Workers activos, tareas en curso, historial de ejecuciones, reintentos y fallos en tiempo real.</div>
+        <a href="https://flower.readthedocs.io" target="_blank" class="tool-link">flower.readthedocs.io →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Claude Code Routines</div>
+          <span class="badge badge-paid">Pro / Max plan</span>
+        </div>
+        <div class="tool-desc">Scheduling gestionado por Anthropic: el agente corre en infraestructura cloud sin máquina propia. Disparadores: horario, API call o webhook de GitHub.</div>
+        <a href="https://code.claude.com/docs/en/routines" target="_blank" class="tool-link">code.claude.com/docs →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTENIDO: 4 MODULOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Contenido — 4 módulos</div>
+
+    <!-- Modulo 1 -->
+    <div class="module">
+      <div class="module-header">
+        <div class="module-title">Módulo 1: Fundamentos de cron</div>
+        <span class="module-time">0 – 20 min</span>
+      </div>
+      <div class="module-body">
+        <p>Anatomía de una expresión cron y los patrones de scheduling para sistemas de IA. Por qué el cron es el contrato más simple y confiable entre el tiempo y el código.</p>
+
+        <div class="arch-diagram">
+          <span class="comment"># Anatomía de una expresión cron (5 campos)</span><br>
+          ┌──── <span class="label">minuto</span>   (0-59)<br>
+          │  ┌─── <span class="label">hora</span>     (0-23)<br>
+          │  │  ┌── <span class="label">día/mes</span>  (1-31)<br>
+          │  │  │  ┌─ <span class="label">mes</span>     (1-12)<br>
+          │  │  │  │  ┌ <span class="label">día/sem</span> (0-7)<br>
+          │  │  │  │  │<br>
+          *  *  *  *  *
+        </div>
+
+        <table class="cron-table">
+          <thead><tr><th>Expresión</th><th>Significado</th></tr></thead>
+          <tbody>
+            <tr><td>*/5 * * * *</td><td>Cada 5 minutos</td></tr>
+            <tr><td>0 * * * *</td><td>Cada hora en punto</td></tr>
+            <tr><td>0 9 * * 1-5</td><td>Días hábiles a las 9 am</td></tr>
+            <tr><td>0 0 1 * *</td><td>Primer día de cada mes</td></tr>
+            <tr><td>30 14 * * 3</td><td>Miércoles a las 14:30</td></tr>
+          </tbody>
+        </table>
+
+        <div class="alert-box">
+          <strong>Reglas de oro:</strong> GitHub Actions siempre corre en UTC. El mínimo en GitHub Actions es 5 minutos; en Claude Code Routines es 1 hora. Nunca usar <code>* * * * *</code> con agentes de IA — los costos de API se disparan. Siempre agregar jitter en producción.
+        </div>
+
+        <ul>
+          <li>Cron vs. event-driven: cuándo usar cada patrón</li>
+          <li>Diferencias entre cron del sistema operativo, APScheduler y servicios cloud</li>
+          <li>El problema del thundering herd y cómo el jitter lo resuelve</li>
+          <li>Herramienta recomendada: <a href="https://crontab.guru" target="_blank" style="color:#EF4444;font-weight:600">crontab.guru</a> para validar expresiones</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Modulo 2 -->
+    <div class="module">
+      <div class="module-header">
+        <div class="module-title">Módulo 2: Agentes programados con Python y Claude API</div>
+        <span class="module-time">20 – 50 min</span>
+      </div>
+      <div class="module-body">
+        <p>Arquitectura de un agente cronometrado end-to-end: desde el disparo del cron hasta el log de resultado. Integración real con la API de Claude.</p>
+
+        <div class="arch-diagram">
+SCHEDULER<br>
+   <span class="arrow">│</span><br>
+   <span class="arrow">▼</span> (disparo temporal)<br>
+<span class="label">AGENTE WRAPPER</span><br>
+   ├── 1. Verificar idempotencia (¿ya corrió hoy?)<br>
+   ├── 2. Recolectar datos (API / DB / archivos)<br>
+   ├── 3. Llamar Claude API → análisis + decisión<br>
+   ├── 4. Ejecutar acciones (email, Slack, DB write)<br>
+   ├── 5. Guardar estado de ejecución<br>
+   └── 6. Emitir métricas y logs estructurados
+        </div>
+
+        <div style="margin-top:1rem">
+          <strong style="font-size:.9rem;color:#1e293b">Patrones de scheduling para agentes:</strong>
+          <div class="pattern-grid">
+            <div class="pattern-card">
+              <div class="pattern-card-title">Cron fijo</div>
+              <div class="pattern-card-body">Reportes diarios, resúmenes nocturnos. Herramienta: APScheduler, GitHub Actions.</div>
+            </div>
+            <div class="pattern-card">
+              <div class="pattern-card-title">Intervalo adaptivo</div>
+              <div class="pattern-card-body">Monitoreo que duerme más cuando hay calma. Claude elige el intervalo dinámicamente.</div>
+            </div>
+            <div class="pattern-card">
+              <div class="pattern-card-title">Event-driven</div>
+              <div class="pattern-card-body">Procesar al instante cuando llega nuevo dato. EventBridge + Lambda.</div>
+            </div>
+            <div class="pattern-card">
+              <div class="pattern-card-title">Daisy-chain</div>
+              <div class="pattern-card-body">Agente A pasa resultado a Agente B. Celery chains, Step Functions.</div>
+            </div>
+            <div class="pattern-card">
+              <div class="pattern-card-title">One-shot diferido</div>
+              <div class="pattern-card-body">Recordatorios, acciones retrasadas. APScheduler one-shot, CronCreate.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block" style="margin-top:1rem">
+<span class="comment"># APScheduler 4.x + Claude API — patrón base</span><br>
+<span class="keyword">from</span> apscheduler.schedulers.asyncio <span class="keyword">import</span> AsyncIOScheduler<br>
+<span class="keyword">from</span> apscheduler.triggers.cron <span class="keyword">import</span> CronTrigger<br>
+<span class="keyword">import</span> anthropic<br>
+<br>
+cliente = anthropic.Anthropic()<br>
+<br>
+<span class="keyword">async def</span> <span class="func">agente_metricas</span>():<br>
+&nbsp;&nbsp;run_id = datetime.utcnow().strftime(<span class="string">"%Y%m%d-%H"</span>)<br>
+&nbsp;&nbsp;<span class="keyword">if</span> ya_ejecutado(run_id): <span class="keyword">return</span><br>
+&nbsp;&nbsp;metricas = obtener_metricas()<br>
+&nbsp;&nbsp;respuesta = cliente.messages.create(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;model=<span class="string">"claude-sonnet-4-5"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;max_tokens=1024,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;messages=[{<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: f<span class="string">"Analiza: {metricas}"</span>}]<br>
+&nbsp;&nbsp;)<br>
+&nbsp;&nbsp;analisis = json.loads(respuesta.content[0].text)<br>
+&nbsp;&nbsp;<span class="keyword">if</span> analisis[<span class="string">"anomalia"</span>]: enviar_alerta(analisis)<br>
+&nbsp;&nbsp;marcar_ejecutado(run_id, analisis)<br>
+<br>
+scheduler = AsyncIOScheduler()<br>
+scheduler.add_job(agente_metricas, CronTrigger(minute=0),<br>
+&nbsp;&nbsp;misfire_grace_time=300, coalesce=True)
+        </div>
+      </div>
+    </div>
+
+    <!-- Modulo 3 -->
+    <div class="module">
+      <div class="module-header">
+        <div class="module-title">Módulo 3: Manejo de fallos y resiliencia</div>
+        <span class="module-time">50 – 70 min</span>
+      </div>
+      <div class="module-body">
+        <p>Los 5 modos de fallo de un agente cronometrado y cómo blindar cada uno. Idempotencia distribuida con Redis, retry con backoff, DLQ con Celery.</p>
+
+        <ul>
+          <li><strong>Fallo silencioso:</strong> el agente termina sin error pero no hizo nada. Requiere heartbeat y validación de salida.</li>
+          <li><strong>Timeout:</strong> la llamada a Claude demora más de lo esperado. Envolver siempre con <code>asyncio.wait_for()</code>.</li>
+          <li><strong>Fallo de idempotencia:</strong> el agente se ejecuta dos veces y duplica envíos. Usar lock Redis (<code>SET NX EX</code>).</li>
+          <li><strong>Rate limit de API:</strong> Claude rechaza la petición. Implementar retry con exponential backoff + jitter.</li>
+          <li><strong>Fallo de la máquina:</strong> el servidor cae a mitad de la tarea. Requiere persistencia de estado y catch-up.</li>
+        </ul>
+
+        <div class="code-block" style="margin-top:.75rem">
+<span class="comment"># Idempotencia con Redis — patrón lock distribuido</span><br>
+r = redis.Redis(host=<span class="string">"localhost"</span>, port=6379)<br>
+<br>
+<span class="keyword">def</span> <span class="func">ejecutar_si_no_fue</span>(run_id: str, ttl: int = 3600):<br>
+&nbsp;&nbsp;lock_key = f<span class="string">"agente:lock:{run_id}"</span><br>
+&nbsp;&nbsp;<span class="keyword">return</span> r.set(lock_key, <span class="string">"1"</span>, nx=True, ex=ttl)<br>
+<br>
+<span class="comment"># Celery con DLQ y reintentos</span><br>
+@app.task(max_retries=3, acks_late=True,<br>
+&nbsp;&nbsp;dead_letter_exchange=<span class="string">"agentes-dlq"</span>)<br>
+<span class="keyword">def</span> <span class="func">tarea_agente</span>(self, run_id):<br>
+&nbsp;&nbsp;<span class="keyword">try</span>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ejecutar_agente(run_id)<br>
+&nbsp;&nbsp;<span class="keyword">except</span> Exception <span class="keyword">as</span> exc:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">raise</span> self.retry(exc=exc,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;countdown=2 ** self.request.retries)
+        </div>
+
+        <strong style="font-size:.9rem;color:#1e293b;display:block;margin-top:1rem;margin-bottom:.5rem">Checklist de resiliencia:</strong>
+        <ul class="checklist">
+          <li>Timeout en todas las llamadas externas (Claude, APIs, DB)</li>
+          <li>Retry con backoff exponencial + jitter en rate limits</li>
+          <li>Idempotencia via Redis NX o unique constraint en DB</li>
+          <li>DLQ para inspección de fallos permanentes</li>
+          <li>Heartbeat: el agente emite "estoy vivo" cada N minutos</li>
+          <li>Alerta si no hay heartbeat en 2x el intervalo esperado</li>
+          <li>Coalesce habilitado: si se perdieron varios disparos, ejecutar solo uno</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Modulo 4 -->
+    <div class="module">
+      <div class="module-header">
+        <div class="module-title">Módulo 4: Observabilidad completa</div>
+        <span class="module-time">70 – 90 min</span>
+      </div>
+      <div class="module-body">
+        <p>Los tres pilares aplicados a agentes cronometrados: logs estructurados, métricas con Prometheus y dashboards en Grafana. Las alertas que detectan fallos silenciosos.</p>
+
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-value">3</div>
+            <div class="metric-label">Pilares de observabilidad: Logs · Métricas · Trazas</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">&lt;5%</div>
+            <div class="metric-label">Tasa de error máxima aceptable por agente</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">2x</div>
+            <div class="metric-label">Intervalo sin heartbeat antes de disparar alerta</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">p95</div>
+            <div class="metric-label">Percentil de latencia a monitorear (no solo el promedio)</div>
+          </div>
+        </div>
+
+        <div class="code-block" style="margin-top:1rem">
+<span class="comment"># Métricas con Prometheus</span><br>
+runs_total = Counter(<span class="string">"agente_runs_total"</span>, <span class="string">"Ejecuciones"</span>, [<span class="string">"status"</span>])<br>
+duracion = Histogram(<span class="string">"agente_duracion_segundos"</span>, <span class="string">"Duración"</span>)<br>
+tokens = Counter(<span class="string">"agente_tokens_total"</span>, <span class="string">"Tokens Claude"</span>)<br>
+<br>
+<span class="keyword">with</span> duracion.time():<br>
+&nbsp;&nbsp;resultado = ejecutar_pipeline()<br>
+&nbsp;&nbsp;runs_total.labels(status=<span class="string">"ok"</span>).inc()<br>
+&nbsp;&nbsp;tokens.inc(resultado.tokens_usados)
+        </div>
+
+        <table class="compare-table" style="margin-top:1rem">
+          <thead><tr><th>Criterio</th><th>schedule</th><th>APScheduler</th><th>Celery Beat</th><th>GitHub Actions</th><th>EventBridge</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Persistencia</td>
+              <td class="cross">No</td>
+              <td class="check">Si</td>
+              <td class="check">Si</td>
+              <td class="cross">Efímero</td>
+              <td class="check">Si</td>
+            </tr>
+            <tr>
+              <td>Workers distribuidos</td>
+              <td class="cross">No</td>
+              <td class="check">Si (v4)</td>
+              <td class="check">Si</td>
+              <td class="cross">No</td>
+              <td class="check">Si</td>
+            </tr>
+            <tr>
+              <td>Catch-up missed jobs</td>
+              <td class="cross">No</td>
+              <td class="check">Si</td>
+              <td class="check">Si</td>
+              <td class="cross">No</td>
+              <td class="check">Si</td>
+            </tr>
+            <tr>
+              <td>Costo operativo</td>
+              <td>Mínimo</td>
+              <td>Bajo</td>
+              <td>Medio</td>
+              <td>Bajo</td>
+              <td>Pay-per-use</td>
+            </tr>
+            <tr>
+              <td>Mejor para</td>
+              <td>Scripts simples</td>
+              <td>Apps Python</td>
+              <td>Microservicios</td>
+              <td>CI/CD sin servidor</td>
+              <td>Serverless AWS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <h3>Agente de análisis horario con reporte por email</h3>
+      <p style="color:#475569;font-size:.9rem;margin-bottom:1rem">Construye un agente Python que corra cada hora, analice métricas simuladas usando Claude API, y genere un reporte cuando detecte una anomalía.</p>
+
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem">
+        <span class="badge badge-paid" style="font-size:.8rem;padding:.25rem .75rem">30 min · En parejas</span>
+        <span class="badge badge-free" style="font-size:.8rem;padding:.25rem .75rem">Python 3.10+</span>
+        <span class="badge badge-free" style="font-size:.8rem;padding:.25rem .75rem">anthropic + schedule</span>
+      </div>
+
+      <strong style="font-size:.88rem;color:#991b1b">Paso 1 — Instalar dependencias:</strong>
+      <div class="code-block" style="margin:.5rem 0">pip install anthropic schedule</div>
+
+      <strong style="font-size:.88rem;color:#991b1b">Paso 2 — Agente base:</strong>
+      <div class="code-block" style="margin:.5rem 0">
+<span class="keyword">import</span> anthropic, json, random, schedule, time<br>
+<span class="keyword">from</span> datetime <span class="keyword">import</span> datetime<br>
+<br>
+cliente = anthropic.Anthropic()<br>
+<br>
+<span class="keyword">def</span> <span class="func">simular_metricas</span>():<br>
+&nbsp;&nbsp;<span class="keyword">return</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"cpu_pct"</span>: random.uniform(20, 95),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"memoria_pct"</span>: random.uniform(40, 92),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"latencia_ms"</span>: random.uniform(80, 800),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"errores_por_min"</span>: random.randint(0, 15)<br>
+&nbsp;&nbsp;}<br>
+<br>
+<span class="keyword">def</span> <span class="func">analizar_con_claude</span>(metricas):<br>
+&nbsp;&nbsp;r = cliente.messages.create(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;model=<span class="string">"claude-sonnet-4-5"</span>, max_tokens=512,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;messages=[{<span class="string">"role"</span>: <span class="string">"user"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"content"</span>: f<span class="string">"Analiza en JSON {{'anomalia': bool, 'severidad': str, 'resumen': str}}: {metricas}"</span>}]<br>
+&nbsp;&nbsp;)<br>
+&nbsp;&nbsp;<span class="keyword">return</span> json.loads(r.content[0].text)<br>
+<br>
+<span class="keyword">def</span> <span class="func">ejecutar_ciclo</span>():<br>
+&nbsp;&nbsp;m = simular_metricas()<br>
+&nbsp;&nbsp;a = analizar_con_claude(m)<br>
+&nbsp;&nbsp;<span class="keyword">if</span> a[<span class="string">"anomalia"</span>]: print(f<span class="string">"ALERTA: {a['resumen']}"</span>)<br>
+<br>
+schedule.every().hour.do(ejecutar_ciclo)<br>
+ejecutar_ciclo()  <span class="comment"># Primera ejecución</span><br>
+<span class="keyword">while True</span>: schedule.run_pending(); time.sleep(30)
+      </div>
+
+      <strong style="font-size:.88rem;color:#991b1b">Criterios de evaluación:</strong>
+      <ul style="margin-top:.5rem;font-size:.88rem;color:#334155">
+        <li>El agente corre sin errores y produce output estructurado</li>
+        <li>Claude responde con JSON válido y análisis coherente</li>
+        <li>El agente detecta correctamente el caso de alerta vs. normal</li>
+        <li>Los logs incluyen timestamp, run_id y duración del ciclo</li>
+      </ul>
+
+      <div style="margin-top:1rem;padding:.75rem;background:white;border-radius:.5rem;border:1px solid #fecaca">
+        <strong style="font-size:.83rem;color:#991b1b">Extensiones para los más rápidos:</strong>
+        <ul style="font-size:.83rem;color:#475569;margin-top:.35rem">
+          <li>Agregar persistencia del historial en un archivo JSON</li>
+          <li>Implementar idempotencia con un set de run_ids ya ejecutados</li>
+          <li>Migrar de <code>schedule</code> a APScheduler con persistencia SQLite</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos</div>
+
+    <p style="font-weight:600;font-size:.9rem;color:#64748b;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.75rem">Documentación oficial</p>
+    <ul class="resource-list">
+      <li>
+        <span class="res-icon">📖</span>
+        <div>
+          <a href="https://apscheduler.readthedocs.io" target="_blank">APScheduler 4.x Docs</a>
+          <p>Referencia completa con ejemplos async/await para producción</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">📖</span>
+        <div>
+          <a href="https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html" target="_blank">Celery Beat — Periodic Tasks</a>
+          <p>Tareas periódicas en producción con Celery y Redis</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">📖</span>
+        <div>
+          <a href="https://code.claude.com/docs/en/scheduled-tasks" target="_blank">Claude Code — Scheduled Tasks</a>
+          <p>Documentación oficial de /loop, CronCreate, CronList y CronDelete</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">📖</span>
+        <div>
+          <a href="https://code.claude.com/docs/en/routines" target="_blank">Claude Code Routines</a>
+          <p>Scheduling cloud gestionado por Anthropic sin servidor propio</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">📖</span>
+        <div>
+          <a href="https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#schedule" target="_blank">GitHub Actions — Schedule Trigger</a>
+          <p>Referencia oficial para cron en workflows de GitHub</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">📖</span>
+        <div>
+          <a href="https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html" target="_blank">AWS EventBridge Scheduler</a>
+          <p>Scheduler serverless con DLQ, reintentos y expresiones cron</p>
+        </div>
+      </li>
+    </ul>
+
+    <p style="font-weight:600;font-size:.9rem;color:#64748b;text-transform:uppercase;letter-spacing:.04em;margin:.75rem 0">Herramientas de referencia</p>
+    <ul class="resource-list">
+      <li>
+        <span class="res-icon">🛠</span>
+        <div>
+          <a href="https://crontab.guru" target="_blank">crontab.guru</a>
+          <p>Editor visual de expresiones cron con explicación en tiempo real</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">🛠</span>
+        <div>
+          <a href="https://github.com/tonybentley/claude-mcp-scheduler" target="_blank">claude-mcp-scheduler (GitHub)</a>
+          <p>Ejemplo open-source de Claude API + cron + MCP servers en TypeScript</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">🛠</span>
+        <div>
+          <a href="https://github.com/prometheus/client_python" target="_blank">Prometheus Python Client</a>
+          <p>Exponer métricas de agentes con Counter, Histogram y Gauge</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">🛠</span>
+        <div>
+          <a href="https://redis-py.readthedocs.io" target="_blank">Redis Python Client</a>
+          <p>Locks de idempotencia distribuida y backend de estado</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-clase</div>
+    <div class="action-grid">
+      <div class="action-card">
+        <h4>Esta semana</h4>
+        <ul class="action-list">
+          <li>Instalar APScheduler y correr el ejemplo del ejercicio localmente</li>
+          <li>Crear un cron en GitHub Actions que llame a Claude y guarde el output como artifact</li>
+          <li>Implementar idempotencia básica con un archivo JSON de estado</li>
+          <li>Configurar al menos un log estructurado en tu agente existente</li>
+        </ul>
+      </div>
+      <div class="action-card">
+        <h4>Este mes</h4>
+        <ul class="action-list">
+          <li>Migrar de <code>schedule</code> a APScheduler con persistencia en SQLite</li>
+          <li>Añadir dashboard Grafana con al menos 3 paneles de métricas del agente</li>
+          <li>Configurar DLQ y simular un fallo para verificar que la alerta llega</li>
+          <li>Documentar el runbook del agente: qué hacer cuando falla cada componente</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top:1.25rem;padding:1rem;background:#f8fafc;border-radius:.75rem;border:1px solid #e2e8f0">
+      <p style="font-size:.88rem;color:#475569"><strong style="color:#1e293b">Continuar aprendiendo:</strong> Canal <code>#dev-agentes</code> en Slack del programa · Próxima clase: Agentes multimodales con visión · Tier 3 recomendado: orquestación multi-agente con LangGraph</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Clase 17 · Tier 4 · TI / Dev track &nbsp;·&nbsp; Aaron &nbsp;·&nbsp; Viernes 14 agosto 2026 &nbsp;·&nbsp; Programa IA Inmo
+</footer>
+
+</body>
+</html>

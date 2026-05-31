@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alcance y capacidad de IA — Cata</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+.hero{background:linear-gradient(135deg,#F59E0B 0%,#D97706 100%);padding:3rem 2rem;color:white;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;right:-5%;width:350px;height:350px;background:rgba(255,255,255,0.06);border-radius:50%}
+.hero::after{content:'';position:absolute;bottom:-30%;left:5%;width:200px;height:200px;background:rgba(255,255,255,0.04);border-radius:50%}
+.tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+.hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;margin-bottom:.5rem;line-height:1.2;position:relative;z-index:1}
+.hero-sub{font-size:1rem;opacity:.85;margin-top:.5rem;position:relative;z-index:1}
+.hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.875rem;margin-top:1.25rem;position:relative;z-index:1}
+.hero-meta-item{display:flex;align-items:center;gap:.4rem;background:rgba(255,255,255,0.15);padding:.3rem .8rem;border-radius:999px}
+.container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+.card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+.card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;color:#0f172a;margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:2px solid #fef3c7}
+.card-title .icon{font-size:1.4rem}
+/* Objectives */
+.obj-item{display:flex;gap:.75rem;align-items:flex-start;margin-bottom:.875rem;padding:.625rem;border-radius:.5rem;transition:background .15s}
+.obj-item:hover{background:#fffbeb}
+.obj-check{background:#F59E0B;color:white;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;flex-shrink:0;margin-top:.1rem}
+.obj-text strong{color:#0f172a}
+/* Concepts */
+.concepts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.875rem}
+.concept-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem}
+.concept-term{font-weight:700;color:#D97706;font-size:.9rem;margin-bottom:.35rem}
+.concept-def{font-size:.82rem;color:#475569;line-height:1.5}
+/* Tools */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+.tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1.1rem;transition:box-shadow .2s,transform .2s}
+.tool-card:hover{box-shadow:0 8px 24px rgba(245,158,11,.12);transform:translateY(-2px)}
+.tool-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.tool-name{font-weight:700;color:#0f172a;font-size:.95rem}
+.tool-desc{font-size:.82rem;color:#64748b;margin-bottom:.625rem;line-height:1.45}
+.tool-plan{font-size:.75rem;color:#94a3b8;margin-bottom:.5rem}
+.badge{display:inline-block;font-size:.7rem;padding:.18rem .55rem;border-radius:999px;font-weight:600;margin-right:.3rem}
+.badge-free{background:#dcfce7;color:#16a34a}
+.badge-paid{background:#fef3c7;color:#d97706}
+.badge-freemium{background:#e0f2fe;color:#0369a1}
+.badge-included{background:#f3e8ff;color:#7c3aed}
+.tool-link{display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;color:#F59E0B;text-decoration:none;font-weight:600;margin-top:.25rem}
+.tool-link:hover{text-decoration:underline}
+/* Modules */
+.module{border-left:3px solid #F59E0B;padding-left:1.25rem;margin-bottom:2rem}
+.module-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.module-title{font-weight:700;color:#0f172a;font-size:1.05rem}
+.module-time{font-size:.78rem;color:#64748b;background:#f1f5f9;padding:.25rem .75rem;border-radius:999px;white-space:nowrap}
+.module p{color:#374151;margin-bottom:.75rem;font-size:.9rem}
+.module ul,.module ol{padding-left:1.5rem;margin-bottom:.875rem}
+.module li{margin-bottom:.4rem;font-size:.9rem;color:#374151}
+.module strong{color:#0f172a}
+.prompt-box{background:#0f172a;border-radius:.75rem;padding:1.25rem 1.5rem;margin:1rem 0;font-family:'Courier New',monospace;font-size:.82rem;color:#e2e8f0;line-height:1.7;white-space:pre-wrap;border-left:3px solid #F59E0B}
+.prompt-label{font-size:.72rem;font-weight:600;color:#F59E0B;letter-spacing:.05em;text-transform:uppercase;margin-bottom:.5rem}
+.comparison-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.85rem}
+.comparison-table th{background:#fef3c7;color:#92400e;font-weight:700;padding:.6rem .875rem;text-align:left;border-bottom:2px solid #fde68a}
+.comparison-table td{padding:.6rem .875rem;border-bottom:1px solid #f1f5f9;color:#374151;vertical-align:top}
+.comparison-table tr:hover td{background:#fffbeb}
+.stat-row{display:flex;flex-wrap:wrap;gap:1rem;margin:1rem 0}
+.stat-box{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #fde68a;border-radius:.75rem;padding:1rem 1.25rem;flex:1;min-width:140px}
+.stat-num{font-size:1.8rem;font-weight:800;color:#D97706;line-height:1}
+.stat-desc{font-size:.78rem;color:#78350f;margin-top:.35rem;line-height:1.4}
+/* Areas grid */
+.areas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin:1rem 0}
+.area-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem}
+.area-title{font-weight:700;color:#0f172a;font-size:.88rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.area-card ul{padding-left:1.25rem}
+.area-card li{font-size:.8rem;color:#64748b;margin-bottom:.3rem}
+/* Exercise */
+.exercise-box{background:linear-gradient(135deg,rgba(245,158,11,.08) 0%,rgba(245,158,11,.03) 100%);border:1px solid rgba(245,158,11,.3);border-radius:.875rem;padding:1.75rem}
+.exercise-step{display:flex;gap:.875rem;margin-bottom:1rem;align-items:flex-start}
+.step-num{background:#F59E0B;color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;flex-shrink:0;margin-top:.1rem}
+.step-text{font-size:.9rem;color:#374151}
+.step-text strong{color:#0f172a}
+/* Resources */
+.resource-item{display:flex;gap:1rem;align-items:flex-start;padding:.875rem 0;border-bottom:1px solid #f1f5f9}
+.resource-item:last-child{border-bottom:none}
+.resource-num{background:#fef3c7;color:#D97706;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;margin-top:.1rem}
+.resource-content{}
+.resource-link{color:#D97706;font-weight:700;text-decoration:none;font-size:.9rem}
+.resource-link:hover{text-decoration:underline}
+.resource-desc{font-size:.82rem;color:#64748b;margin-top:.2rem;line-height:1.45}
+/* Actions */
+.action-item{display:flex;gap:.875rem;align-items:flex-start;margin-bottom:.875rem;padding:.875rem;background:#f8fafc;border-radius:.75rem;border:1px solid #e2e8f0}
+.action-num{background:#F59E0B;color:white;width:32px;height:32px;border-radius:.5rem;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0}
+.action-text{font-size:.9rem;color:#374151}
+.action-text strong{color:#0f172a}
+.action-tag{display:inline-block;font-size:.7rem;padding:.1rem .5rem;border-radius:999px;font-weight:600;margin-bottom:.25rem}
+.tag-week{background:#dcfce7;color:#15803d}
+.tag-biweek{background:#dbeafe;color:#1d4ed8}
+.tag-month{background:#f3e8ff;color:#7c3aed}
+.tag-always{background:#fef3c7;color:#d97706}
+/* Footer */
+footer{text-align:center;padding:2.5rem 1rem;color:#94a3b8;font-size:.85rem;border-top:1px solid #e2e8f0;margin-top:2rem}
+footer strong{color:#F59E0B}
+/* Section divider */
+.section-label{font-size:.72rem;font-weight:700;color:#F59E0B;text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.section-label::after{content:'';flex:1;height:1px;background:#fde68a}
+@media(max-width:640px){
+  .hero{padding:2rem 1rem}
+  .card{padding:1.25rem}
+  .comparison-table{font-size:.78rem}
+  .comparison-table th,.comparison-table td{padding:.5rem .625rem}
+  .stat-box{min-width:120px}
+  .hero-meta{gap:.5rem}
+}
+@media print{
+  .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto;position:relative;z-index:1">
+    <div class="tier-badge">⭐ Tier 1 · Fundamentos</div>
+    <h1>🌐 Alcance y capacidad de IA<br>para integrarla a tareas diarias</h1>
+    <div class="hero-sub">Aprende qué puede hacer la IA hoy, qué herramientas usar y cómo empezar desde el primer día.</div>
+    <div class="hero-meta">
+      <span class="hero-meta-item">👩‍💻 Cata</span>
+      <span class="hero-meta-item">📅 29 mayo 2026</span>
+      <span class="hero-meta-item">👥 Todos — equipo completo</span>
+      <span class="hero-meta-item">⏱ 90 minutos</span>
+      <span class="hero-meta-item">🎓 Grupal</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la clase</div>
+
+    <div class="obj-item">
+      <div class="obj-check">1</div>
+      <div class="obj-text"><strong>Comprender qué puede y qué no puede hacer la IA</strong> en el contexto laboral actual, diferenciando tareas donde agrega valor real de aquellas donde aún falla.</div>
+    </div>
+    <div class="obj-item">
+      <div class="obj-check">2</div>
+      <div class="obj-text"><strong>Identificar al menos 3 tareas propias del día a día</strong> que podrían delegarse o acelerarse con herramientas de IA disponibles hoy.</div>
+    </div>
+    <div class="obj-item">
+      <div class="obj-check">3</div>
+      <div class="obj-text"><strong>Distinguir las diferencias prácticas</strong> entre los principales asistentes de IA (Claude, ChatGPT, Gemini) y saber cuándo usar cada uno.</div>
+    </div>
+    <div class="obj-item">
+      <div class="obj-check">4</div>
+      <div class="obj-text"><strong>Escribir un prompt efectivo</strong> siguiendo la estructura Rol + Contexto + Tarea + Formato para obtener resultados concretos desde el primer intento.</div>
+    </div>
+    <div class="obj-item">
+      <div class="obj-check">5</div>
+      <div class="obj-text"><strong>Completar un ejercicio práctico en vivo</strong> usando al menos una herramienta de IA para resolver una tarea real del equipo.</div>
+    </div>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+    <div class="concepts-grid">
+      <div class="concept-card">
+        <div class="concept-term">IA Generativa</div>
+        <div class="concept-def">Sistemas de IA capaces de crear contenido nuevo — texto, imágenes, código, audio — a partir de patrones aprendidos en el entrenamiento.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">LLM (Large Language Model)</div>
+        <div class="concept-def">Modelo de lenguaje de gran escala; el motor detrás de ChatGPT, Claude y Gemini. Predice texto estadísticamente basado en contexto.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Prompt</div>
+        <div class="concept-def">Instrucción o entrada de texto que se le da a una IA. La calidad del prompt determina en gran medida la calidad de la respuesta.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Prompt Engineering</div>
+        <div class="concept-def">Arte y técnica de redactar instrucciones claras, específicas y estructuradas para obtener mejores resultados de cualquier IA.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Alucinación (Hallucination)</div>
+        <div class="concept-def">Fenómeno donde la IA genera información falsa con aparente seguridad. Requiere verificación humana siempre — ningún modelo es infalible.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Contexto (Context Window)</div>
+        <div class="concept-def">Cantidad máxima de texto que un modelo puede leer y recordar en una conversación. Claude maneja hasta 200 000 tokens (~150 000 palabras).</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Agente de IA</div>
+        <div class="concept-def">IA que planifica y ejecuta acciones de forma autónoma: busca en la web, escribe código, lee archivos, envía correos, etc.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Multimodalidad</div>
+        <div class="concept-def">Capacidad de un modelo para procesar y generar diferentes tipos de datos: texto, imágenes, audio, video y código en una sola interfaz.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">Token</div>
+        <div class="concept-def">Unidad básica de procesamiento de un LLM. Aproximadamente 1 token ≈ 4 caracteres en inglés, 3 en español. Los modelos cobran y miden por tokens.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">RAG</div>
+        <div class="concept-def">Retrieval-Augmented Generation: combina búsqueda en bases de datos propias con generación de texto para responder con información actualizada.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-name">Claude</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Redacción avanzada, análisis de documentos largos, código y razonamiento complejo. El mejor siguiendo instrucciones detalladas y manteniendo coherencia en textos extensos. Contexto de 200K tokens.</div>
+        <div class="tool-plan">Free · Pro $20/mes · Team $25/usuario/mes</div>
+        <a class="tool-link" href="https://claude.ai" target="_blank">↗ claude.ai</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-name">ChatGPT</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Asistente general para correos, resúmenes, brainstorming y explicaciones. GPT-4o con búsqueda web integrada. Excelente para conversaciones cotidianas y uso de plugins.</div>
+        <div class="tool-plan">Free · Plus $20/mes · Team $25/usuario/mes</div>
+        <a class="tool-link" href="https://chatgpt.com" target="_blank">↗ chatgpt.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-name">Gemini</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Búsqueda en tiempo real e integración nativa con Gmail, Drive, Docs y Calendar. El más rápido para información actual. Integrado en todo el ecosistema Google.</div>
+        <div class="tool-plan">Free · Advanced $20/mes (incluye 2TB Google One)</div>
+        <a class="tool-link" href="https://gemini.google.com" target="_blank">↗ gemini.google.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-name">Microsoft Copilot</div>
+          <span class="badge badge-included">Incluido en M365</span>
+        </div>
+        <div class="tool-desc">IA integrada en Word, Excel, PowerPoint, Outlook y Teams. Automatiza tareas directamente dentro de los documentos de Office. Resume reuniones en Teams automáticamente.</div>
+        <div class="tool-plan">Incluido en M365 Business / $30/usuario/mes adicional</div>
+        <a class="tool-link" href="https://copilot.microsoft.com" target="_blank">↗ copilot.microsoft.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-name">Notion AI</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Resumen de notas, generación de contenido estructurado y bases de conocimiento inteligentes. Permite preguntar sobre toda tu base de datos de Notion en lenguaje natural.</div>
+        <div class="tool-plan">Gratis con límites · AI add-on $10/mes</div>
+        <a class="tool-link" href="https://www.notion.so" target="_blank">↗ notion.so</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-name">Perplexity AI</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Motor de búsqueda potenciado con IA: responde preguntas citando fuentes verificables en tiempo real. Ideal para investigación rápida con trazabilidad de fuentes.</div>
+        <div class="tool-plan">Free · Pro $20/mes</div>
+        <a class="tool-link" href="https://www.perplexity.ai" target="_blank">↗ perplexity.ai</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-name">Gamma</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Crea presentaciones, documentos y sitios web desde un prompt o un párrafo de texto en menos de 5 minutos. Alternativa rápida a PowerPoint impulsada por IA generativa.</div>
+        <div class="tool-plan">Free (créditos limitados) · Plus $10/mes</div>
+        <a class="tool-link" href="https://gamma.app" target="_blank">↗ gamma.app</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-name">Otter.ai</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Transcripción y resumen automático de reuniones. Se conecta con Zoom, Teams y Google Meet. Genera actas con puntos de acción en segundos después de cada llamada.</div>
+        <div class="tool-plan">Free (300 min/mes) · Pro $16.99/mes</div>
+        <a class="tool-link" href="https://otter.ai" target="_blank">↗ otter.ai</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-name">Grammarly</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Corrección gramatical, mejora de tono y claridad en escritura profesional. Se integra con Gmail, Slack, Docs, Word y cualquier campo de texto en el navegador.</div>
+        <div class="tool-plan">Free · Premium $12/mes · Business $15/usuario/mes</div>
+        <a class="tool-link" href="https://www.grammarly.com" target="_blank">↗ grammarly.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-name">Canva AI</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Diseño gráfico asistido por IA: imágenes, presentaciones, videos y posts para redes desde prompts de texto. Magic Studio incluye generación de imágenes, fondo y texto.</div>
+        <div class="tool-plan">Free · Pro $14.99/mes · Teams $29.99/mes</div>
+        <a class="tool-link" href="https://www.canva.com" target="_blank">↗ canva.com</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTENIDO DE LA CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Contenido de la clase</div>
+
+    <!-- Módulo 1 -->
+    <div class="module">
+      <div class="module-header">
+        <div class="module-title">Módulo 1 — ¿Qué puede hacer la IA hoy?</div>
+        <div class="module-time">⏱ ~20 min</div>
+      </div>
+      <p><strong>Desmitificando la IA: de la fantasía a la herramienta práctica</strong></p>
+
+      <div class="stat-row">
+        <div class="stat-box">
+          <div class="stat-num">91%</div>
+          <div class="stat-desc">de empresas usan IA en alguna capacidad en 2026</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">40%</div>
+          <div class="stat-desc">de mejora en productividad reportada por usuarios diarios</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">9+ hrs</div>
+          <div class="stat-desc">ahorradas por semana para el 27% de usuarios activos</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">77%</div>
+          <div class="stat-desc">más rápido completan tareas los equipos que usan IA</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0">
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.75rem;padding:1rem">
+          <div style="font-weight:700;color:#15803d;margin-bottom:.5rem;font-size:.9rem">✅ Lo que SÍ hace bien hoy</div>
+          <ul style="padding-left:1.25rem;font-size:.83rem;color:#374151">
+            <li>Redactar y editar textos (correos, reportes, propuestas)</li>
+            <li>Resumir documentos largos en segundos</li>
+            <li>Generar ideas y hacer lluvia de conceptos</li>
+            <li>Escribir y depurar código</li>
+            <li>Explicar conceptos complejos con claridad</li>
+            <li>Traducir y adaptar tono de comunicación</li>
+            <li>Analizar datos y estructurar información</li>
+            <li>Crear borradores de presentaciones</li>
+          </ul>
+        </div>
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:.75rem;padding:1rem">
+          <div style="font-weight:700;color:#dc2626;margin-bottom:.5rem;font-size:.9rem">❌ Lo que NO hace bien (aún)</div>
+          <ul style="padding-left:1.25rem;font-size:.83rem;color:#374151">
+            <li>Recordar conversaciones pasadas sin herramientas</li>
+            <li>Matemáticas complejas con precisión total</li>
+            <li>Acceder a información en tiempo real (sin plugins)</li>
+            <li>Verificar sus propios datos — puede "alucinar"</li>
+            <li>Reemplazar el juicio humano en decisiones críticas</li>
+            <li>Operar dentro de sistemas internos sin integración</li>
+            <li>Garantizar confidencialidad sin configuración adecuada</li>
+          </ul>
+        </div>
+      </div>
+
+      <p style="font-size:.85rem;color:#64748b;font-style:italic">💡 Actividad rápida (5 min): Escribe en el chat 1 tarea de tu semana que podrías potencialmente delegar a IA.</p>
+    </div>
+
+    <!-- Módulo 2 -->
+    <div class="module">
+      <div class="module-header">
+        <div class="module-title">Módulo 2 — Las herramientas principales y cuándo usarlas</div>
+        <div class="module-time">⏱ ~25 min</div>
+      </div>
+      <p><strong>Claude vs ChatGPT vs Gemini — guía práctica de cuándo usar cada uno</strong></p>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Situación</th>
+            <th>Herramienta</th>
+            <th>Por qué</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Redactar un informe o propuesta larga</td>
+            <td><strong>Claude</strong></td>
+            <td>Sigue instrucciones detalladas; coherencia en textos extensos; 200K tokens de contexto</td>
+          </tr>
+          <tr>
+            <td>Responder correos rápidos</td>
+            <td><strong>ChatGPT / Gemini</strong></td>
+            <td>Rápido, fluido, integración con Gmail (Gemini) o navegador (ChatGPT)</td>
+          </tr>
+          <tr>
+            <td>Buscar información reciente</td>
+            <td><strong>Gemini / Perplexity</strong></td>
+            <td>Acceso en tiempo real a la web con citas verificables</td>
+          </tr>
+          <tr>
+            <td>Preparar una presentación</td>
+            <td><strong>Gamma + ChatGPT</strong></td>
+            <td>Gamma genera slides desde texto; ChatGPT crea la estructura narrativa</td>
+          </tr>
+          <tr>
+            <td>Transcribir y resumir reuniones</td>
+            <td><strong>Otter.ai</strong></td>
+            <td>Especializado en voz, genera actas con puntos de acción automáticamente</td>
+          </tr>
+          <tr>
+            <td>Corregir redacción y tono</td>
+            <td><strong>Grammarly</strong></td>
+            <td>Integrado en cualquier app; detecta tono, claridad y errores en tiempo real</td>
+          </tr>
+          <tr>
+            <td>Analizar un contrato o documento PDF</td>
+            <td><strong>Claude</strong></td>
+            <td>Ventana de contexto más grande; entiende instrucciones complejas sobre el documento</td>
+          </tr>
+          <tr>
+            <td>Diseñar materiales visuales</td>
+            <td><strong>Canva AI</strong></td>
+            <td>Magic Studio genera imágenes y diseños desde prompts sin necesidad de diseñador</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top:1.25rem"><strong>La anatomía de un buen prompt — estructura ROL + CONTEXTO + TAREA + FORMATO:</strong></p>
+      <div class="prompt-label">Ejemplo de prompt estructurado</div>
+      <div class="prompt-box">ROL: "Actúa como un agente inmobiliario experto con 10 años de experiencia en el mercado mexicano de lujo."
+
+CONTEXTO: "Tenemos una nueva propiedad en Polanco, piso 12, 2 recámaras, 120 m², precio $8.5 MDP. El cliente la visitó ayer y mostró interés pero menciona que le parece caro."
+
+TAREA: "Escribe un correo de seguimiento que refuerce el valor de la propiedad sin presionar al cliente."
+
+FORMATO: "Máximo 150 palabras. Tono cálido y profesional. Termina con una llamada a la acción clara."</div>
+
+      <p style="font-size:.85rem;color:#64748b;font-style:italic">🎬 Demo en vivo: Cata abre Claude y ChatGPT con el mismo prompt para mostrar las diferencias de respuesta en tiempo real.</p>
+    </div>
+
+    <!-- Módulo 3 -->
+    <div class="module">
+      <div class="module-header">
+        <div class="module-title">Módulo 3 — Integración práctica en el trabajo diario</div>
+        <div class="module-time">⏱ ~25 min</div>
+      </div>
+      <p><strong>Casos de uso concretos por área del equipo</strong></p>
+
+      <div class="areas-grid">
+        <div class="area-card">
+          <div class="area-title">🏠 Ventas</div>
+          <ul>
+            <li>Seguimientos post-visita personalizados</li>
+            <li>Respuestas a objeciones frecuentes</li>
+            <li>Scripts de llamada por perfil</li>
+            <li>Resumen de notas de reuniones</li>
+          </ul>
+        </div>
+        <div class="area-card">
+          <div class="area-title">📢 Marketing</div>
+          <ul>
+            <li>Copy para anuncios Meta/Google</li>
+            <li>Descripciones de propiedades</li>
+            <li>Ideas de contenido para redes</li>
+            <li>Traducción de materiales</li>
+          </ul>
+        </div>
+        <div class="area-card">
+          <div class="area-title">⚙️ Operaciones</div>
+          <ul>
+            <li>Políticas y procedimientos internos</li>
+            <li>Plantillas de correo frecuentes</li>
+            <li>Resumen de reportes extensos</li>
+            <li>Agendas estructuradas</li>
+          </ul>
+        </div>
+        <div class="area-card">
+          <div class="area-title">📊 Estrategia</div>
+          <ul>
+            <li>Análisis de tendencias de mercado</li>
+            <li>Comparación de opciones (pros/contras)</li>
+            <li>Investigación de mercado</li>
+            <li>Síntesis de feedback de clientes</li>
+          </ul>
+        </div>
+      </div>
+
+      <p style="margin-top:1.25rem"><strong>El flujo ideal de trabajo con IA en 5 pasos:</strong></p>
+      <ol style="padding-left:1.5rem;margin-top:.5rem">
+        <li style="margin-bottom:.5rem;font-size:.9rem"><strong>Identifica</strong> la tarea repetitiva o que más tiempo consume</li>
+        <li style="margin-bottom:.5rem;font-size:.9rem"><strong>Elige</strong> la herramienta adecuada para ese tipo de tarea</li>
+        <li style="margin-bottom:.5rem;font-size:.9rem"><strong>Escribe</strong> un prompt con contexto específico (ROL + CONTEXTO + TAREA + FORMATO)</li>
+        <li style="margin-bottom:.5rem;font-size:.9rem"><strong>Revisa y ajusta</strong> la salida — siempre con criterio humano</li>
+        <li style="margin-bottom:.5rem;font-size:.9rem"><strong>Guarda</strong> los prompts que funcionan en tu biblioteca personal</li>
+      </ol>
+
+      <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:.75rem;padding:1rem;margin-top:1rem">
+        <div style="font-weight:700;color:#92400e;margin-bottom:.5rem;font-size:.85rem">📊 Datos que importan (2025–2026)</div>
+        <ul style="padding-left:1.25rem;font-size:.83rem;color:#374151">
+          <li>Los equipos con IA completan tareas un <strong>77% más rápido</strong> (McKinsey)</li>
+          <li>Ahorro promedio de <strong>5.4% del tiempo laboral semanal</strong> (EY Survey 2025)</li>
+          <li>El <strong>96% de organizaciones</strong> que invirtieron en IA reportan ganancias de productividad</li>
+          <li>Las empresas pierden hasta <strong>40% de las ganancias potenciales</strong> por falta de capacitación del equipo</li>
+          <li>Los usuarios que adoptan IA diariamente reportan ganancias de productividad de <strong>23–33%</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Cierre -->
+    <div class="module">
+      <div class="module-header">
+        <div class="module-title">Cierre y Q&amp;A — Reflexión final</div>
+        <div class="module-time">⏱ ~20 min</div>
+      </div>
+      <p><strong>La IA como amplificador, no como reemplazo</strong></p>
+      <ul>
+        <li>La IA no reemplaza el criterio, la experiencia ni las relaciones humanas — las potencia</li>
+        <li>El mayor riesgo hoy no es que la IA te quite el trabajo, es que alguien que sabe usarla sea más competitivo que tú</li>
+        <li>Curva de aprendizaje real: <strong>2–3 semanas</strong> de uso diario para sentirse cómodo; <strong>2–3 meses</strong> para ser power user</li>
+        <li>El 72% de los managers teme que sus equipos vean la IA como amenaza — úsala como ventaja competitiva</li>
+      </ul>
+      <p style="margin-top:1rem;font-size:.88rem;color:#64748b"><strong>Preguntas guía para Q&amp;A:</strong> ¿Qué barreras sienten para empezar? · ¿Qué tarea les gustaría automatizar primero? · ¿Tienen preocupaciones de privacidad?</p>
+    </div>
+  </div>
+
+  <!-- EJERCICIO PRÁCTICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico — "Mi primer prompt de trabajo"</div>
+    <div class="exercise-box">
+      <p style="font-size:.9rem;color:#374151;margin-bottom:1.25rem">Durante <strong>15 minutos</strong>, cada participante resuelve una tarea real de su semana usando IA. Al final, 2–3 personas muestran su prompt y resultado al grupo.</p>
+
+      <div class="exercise-step">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>Elige una tarea real</strong> de tu semana actual: un correo pendiente, una descripción de propiedad, el resumen de una reunión, una respuesta a un cliente difícil o cualquier texto que necesites redactar.</div>
+      </div>
+      <div class="exercise-step">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>Abre Claude o ChatGPT</strong> (cualquiera funciona — usa el que prefieras o el que ya tienes cuenta).</div>
+      </div>
+      <div class="exercise-step">
+        <div class="step-num">3</div>
+        <div class="step-text"><strong>Escribe tu prompt usando la estructura:</strong><br>
+          <span style="color:#D97706">Rol</span> → "Actúa como [experto en X]…"<br>
+          <span style="color:#D97706">Contexto</span> → Explica brevemente la situación real<br>
+          <span style="color:#D97706">Tarea</span> → Describe exactamente qué necesitas<br>
+          <span style="color:#D97706">Formato</span> → Largo, tono, estructura esperada
+        </div>
+      </div>
+      <div class="exercise-step">
+        <div class="step-num">4</div>
+        <div class="step-text"><strong>Evalúa la respuesta:</strong> ¿Resolvió tu necesidad en el primer intento? ¿Qué ajustarías del prompt? ¿Cuánto tiempo te tomó vs. hacerlo sin IA?</div>
+      </div>
+      <div class="exercise-step">
+        <div class="step-num">5</div>
+        <div class="step-text"><strong>Comparte con el equipo:</strong> muestra tu prompt, la respuesta obtenida y qué tan útil fue. Sin respuesta perfecta — solo aprendizaje.</div>
+      </div>
+
+      <div style="margin-top:1.25rem">
+        <div class="prompt-label">Prompt de ejemplo para arrancar</div>
+        <div class="prompt-box" style="font-size:.8rem">"Actúa como un agente inmobiliario experto con 10 años en el mercado mexicano de lujo. Necesito escribir un correo de seguimiento para un cliente que visitó ayer el departamento en Reforma 180, piso 12, 2 recámaras, 120 m², precio $8.5 MDP. El cliente mostró interés pero mencionó que le parece caro. Escribe un correo de máximo 150 palabras, tono cálido y profesional, que refuerce el valor de la propiedad sin presionar. Termina con una llamada a la acción clara."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos y lecturas</div>
+
+    <div class="resource-item">
+      <div class="resource-num">1</div>
+      <div class="resource-content">
+        <a class="resource-link" href="https://www.mckinsey.com/capabilities/tech-and-ai/our-insights/superagency-in-the-workplace-empowering-people-to-unlock-ais-full-potential-at-work" target="_blank">Superagency in the Workplace — McKinsey 2025</a>
+        <div class="resource-desc">Reporte anual de McKinsey sobre IA en el trabajo. Datos duros sobre adopción, productividad y brechas de habilidades en más de 1 000 organizaciones globales.</div>
+      </div>
+    </div>
+
+    <div class="resource-item">
+      <div class="resource-num">2</div>
+      <div class="resource-content">
+        <a class="resource-link" href="https://www.anthropic.com/" target="_blank">Anthropic — Guías oficiales de Claude</a>
+        <div class="resource-desc">Guías de uso, mejores prácticas y actualizaciones del modelo Claude. Referencia directa del equipo que lo construyó, incluyendo tips de prompt engineering.</div>
+      </div>
+    </div>
+
+    <div class="resource-item">
+      <div class="resource-num">3</div>
+      <div class="resource-content">
+        <a class="resource-link" href="https://platform.openai.com/docs/guides/prompt-engineering" target="_blank">OpenAI — Guía de Prompt Engineering</a>
+        <div class="resource-desc">Guía oficial de OpenAI con principios y tácticas de prompt engineering, con ejemplos prácticos aplicables a cualquier tarea de trabajo.</div>
+      </div>
+    </div>
+
+    <div class="resource-item">
+      <div class="resource-num">4</div>
+      <div class="resource-content">
+        <a class="resource-link" href="https://www.microsoft.com/en-us/worklab/work-trend-index/agents-human-agency-and-the-opportunity-for-every-organization" target="_blank">Work Trend Index 2026 — Microsoft WorkLab</a>
+        <div class="resource-desc">Investigación anual de Microsoft sobre el futuro del trabajo con IA. Datos de más de 30 000 trabajadores en 31 países, con insights sobre agentes y productividad.</div>
+      </div>
+    </div>
+
+    <div class="resource-item">
+      <div class="resource-num">5</div>
+      <div class="resource-content">
+        <a class="resource-link" href="https://learnprompting.org/" target="_blank">Learn Prompting — Guía gratuita de Prompt Engineering</a>
+        <div class="resource-desc">Recurso educativo gratuito y de código abierto para aprender prompt engineering de cero a avanzado. Disponible en múltiples idiomas incluido español.</div>
+      </div>
+    </div>
+
+    <div class="resource-item">
+      <div class="resource-num">6</div>
+      <div class="resource-content">
+        <a class="resource-link" href="https://www.perplexity.ai/" target="_blank">Perplexity AI — búsqueda con IA</a>
+        <div class="resource-desc">Herramienta directa para comenzar a buscar con IA y ver cómo se citan fuentes reales. Ideal para practicar investigación asistida por IA desde el primer día.</div>
+      </div>
+    </div>
+
+    <div class="resource-item">
+      <div class="resource-num">7</div>
+      <div class="resource-content">
+        <a class="resource-link" href="https://gamma.app/" target="_blank">Gamma.app — presentaciones con IA</a>
+        <div class="resource-desc">Prueba directa: en menos de 5 minutos puedes tener una presentación completa generada desde un párrafo de texto. Sin necesidad de saber diseño.</div>
+      </div>
+    </div>
+
+    <div class="resource-item">
+      <div class="resource-num">8</div>
+      <div class="resource-content">
+        <a class="resource-link" href="https://otter.ai/" target="_blank">Otter.ai — transcripción de reuniones</a>
+        <div class="resource-desc">Conecta con Zoom, Teams o Google Meet para grabar, transcribir y resumir reuniones automáticamente. Genera actas con puntos de acción sin esfuerzo manual.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-clase</div>
+
+    <div class="action-item">
+      <div class="action-num">1</div>
+      <div class="action-text">
+        <div><span class="action-tag tag-week">Esta semana</span></div>
+        <strong>Completa una tarea real de trabajo usando IA.</strong> Abre Claude o ChatGPT, escribe un prompt con la estructura aprendida hoy y guarda el resultado. El objetivo: demostrar a ti mismo que funciona en tu contexto específico.
+      </div>
+    </div>
+
+    <div class="action-item">
+      <div class="action-num">2</div>
+      <div class="action-text">
+        <div><span class="action-tag tag-week">Esta semana</span></div>
+        <strong>Instala Grammarly en tu navegador</strong> y úsalo para pulir al menos un correo o documento importante antes de enviarlo. Observa qué sugerencias hace sobre tono y claridad.
+      </div>
+    </div>
+
+    <div class="action-item">
+      <div class="action-num">3</div>
+      <div class="action-text">
+        <div><span class="action-tag tag-biweek">Próximos 15 días</span></div>
+        <strong>Identifica 3 tareas repetitivas de tu rol</strong> y documenta un prompt que funcione bien para cada una. Comparte tus mejores prompts con el equipo en el canal de comunicación del grupo.
+      </div>
+    </div>
+
+    <div class="action-item">
+      <div class="action-num">4</div>
+      <div class="action-text">
+        <div><span class="action-tag tag-month">Próximos 30 días</span></div>
+        <strong>Crea tu biblioteca de prompts personal:</strong> un documento en Notion o Google Docs donde guardes los prompts que funcionan para tus tareas más frecuentes. Es tu activo más valioso al usar IA.
+      </div>
+    </div>
+
+    <div class="action-item">
+      <div class="action-num">5</div>
+      <div class="action-text">
+        <div><span class="action-tag tag-always">Antes del lunes</span></div>
+        <strong>Completa el formulario de retroalimentación de la clase.</strong> Cuéntanos qué temas quieres profundizar y qué casos de uso son más relevantes para tu área. Personalizamos las próximas sesiones con tus respuestas.
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  <strong>Programa de IA · Tier 1 · Fundamentos</strong><br>
+  Clase 01 · Presentado por Catalina · Viernes 29 mayo 2026<br>
+  <span style="font-size:.78rem;margin-top:.35rem;display:block">Audiencia: Equipo completo · Tipo: Grupal · Duración: 90 minutos</span>
+</footer>
+
+</body>
+</html>

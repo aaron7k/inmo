@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IA de Social Selling — Lina | Asesoría 1-on-1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#6366F1 0%,#4F46E5 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+
+    /* Tool Grid */
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1.2rem;transition:box-shadow .2s,border-color .2s}
+    .tool-card:hover{box-shadow:0 4px 20px rgba(99,102,241,.12);border-color:#a5b4fc}
+    .tool-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.6rem}
+    .tool-name{font-weight:700;font-size:.95rem;color:#1e293b}
+    .tool-desc{font-size:.83rem;color:#64748b;line-height:1.5;margin-bottom:.75rem}
+    .tool-footer{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+    .tool-price{font-size:.78rem;color:#475569;font-weight:600}
+    .tool-link{font-size:.78rem;color:#6366F1;font-weight:600;text-decoration:none}
+    .tool-link:hover{text-decoration:underline}
+
+    /* Badges */
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600;white-space:nowrap}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+
+    /* Concepts table */
+    .concepts-table{width:100%;border-collapse:collapse}
+    .concepts-table th{text-align:left;padding:.6rem .8rem;font-size:.8rem;font-weight:700;color:#6366F1;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #e2e8f0}
+    .concepts-table td{padding:.75rem .8rem;font-size:.88rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    .concepts-table tr:last-child td{border-bottom:none}
+    .concepts-table tr:hover td{background:#f8fafc}
+    .term{font-weight:700;color:#4F46E5;white-space:nowrap}
+
+    /* Objectives */
+    .objective-list{list-style:none;padding:0}
+    .objective-list li{display:flex;gap:1rem;padding:.9rem 0;border-bottom:1px solid #f1f5f9;align-items:flex-start}
+    .objective-list li:last-child{border-bottom:none}
+    .obj-num{background:linear-gradient(135deg,#6366F1,#4F46E5);color:white;font-weight:800;font-size:.85rem;width:2rem;height:2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+    .obj-text strong{display:block;font-weight:700;margin-bottom:.2rem;font-size:.95rem}
+    .obj-text span{font-size:.87rem;color:#64748b}
+
+    /* Plan blocks */
+    .module{border-left:3px solid #6366F1;padding-left:1rem;margin-bottom:1.5rem}
+    .module:last-child{margin-bottom:0}
+    .module-title{font-weight:700;font-size:.95rem;color:#4F46E5;margin-bottom:.5rem}
+    .module-time{display:inline-block;background:#ede9fe;color:#6366F1;font-size:.75rem;font-weight:700;padding:.15rem .6rem;border-radius:999px;margin-bottom:.5rem}
+    .module ul{padding-left:1.2rem}
+    .module li{margin-bottom:.3rem;font-size:.88rem;color:#475569}
+
+    /* Exercise box */
+    .exercise-box{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-step{margin-bottom:1.5rem}
+    .exercise-step:last-child{margin-bottom:0}
+    .step-label{font-weight:700;font-size:.85rem;color:#6366F1;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+    .step-title{font-weight:700;font-size:.95rem;margin-bottom:.5rem;color:#1e293b}
+    .code-block{background:#1e293b;color:#e2e8f0;padding:1rem;border-radius:.5rem;font-family:'Courier New',monospace;font-size:.78rem;line-height:1.7;overflow-x:auto;white-space:pre-wrap;margin-top:.5rem}
+    .icp-template{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:.5rem;padding:1rem;font-size:.85rem;font-family:'Courier New',monospace;line-height:1.8;margin-top:.5rem;color:#475569}
+
+    /* Stats */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem}
+    .stat-card{background:linear-gradient(135deg,#6366F1,#4F46E5);border-radius:.75rem;padding:1.2rem;color:white;text-align:center}
+    .stat-num{font-size:1.8rem;font-weight:800;line-height:1}
+    .stat-label{font-size:.78rem;opacity:.9;margin-top:.4rem;line-height:1.4}
+
+    /* Actions */
+    .action-week{margin-bottom:1.5rem}
+    .action-week:last-child{margin-bottom:0}
+    .week-label{font-weight:700;font-size:.88rem;color:#6366F1;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem}
+    .action-list{list-style:none;padding:0}
+    .action-list li{display:flex;align-items:flex-start;gap:.6rem;padding:.4rem 0;font-size:.87rem;color:#475569}
+    .action-list li::before{content:'☐';color:#6366F1;font-size:1rem;flex-shrink:0;line-height:1.4}
+
+    /* Resources */
+    .resource-list{list-style:none;padding:0}
+    .resource-list li{padding:.6rem 0;border-bottom:1px solid #f1f5f9;font-size:.88rem}
+    .resource-list li:last-child{border-bottom:none}
+    .resource-list a{color:#6366F1;font-weight:600;text-decoration:none}
+    .resource-list a:hover{text-decoration:underline}
+    .resource-source{font-size:.78rem;color:#94a3b8;display:block;margin-top:.1rem}
+
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    .accent{color:#6366F1;font-weight:700}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="tier-badge">Asesoría 1-on-1</div>
+    <h1>🤝 IA de Social Selling</h1>
+    <div class="hero-meta">
+      <span>👤 <strong>Lina</strong></span>
+      <span>⏱️ 90 minutos</span>
+      <span>📍 Sesión individual estratégica</span>
+      <span>🎯 Ventas &amp; Marketing B2B</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la sesión</div>
+    <ul class="objective-list">
+      <li>
+        <div class="obj-num">1</div>
+        <div class="obj-text">
+          <strong>Implementar social selling con IA en LinkedIn</strong>
+          <span>Desarrollar una estrategia completa que combine automatización inteligente y personalización auténtica para generar prospectos calificados de forma consistente.</span>
+        </div>
+      </li>
+      <li>
+        <div class="obj-num">2</div>
+        <div class="obj-text">
+          <strong>Personalizar outreach masivo sin perder la voz humana</strong>
+          <span>Usar Claude para redactar mensajes que suenen genuinos, referenciando publicaciones recientes, cambios de rol y noticias de empresa del prospecto.</span>
+        </div>
+      </li>
+      <li>
+        <div class="obj-num">3</div>
+        <div class="obj-text">
+          <strong>Calificar prospectos automáticamente con IA</strong>
+          <span>Definir filtros de ICP en LinkedIn Sales Navigator y usar criterios de scoring para priorizar esfuerzo comercial en los leads con mayor probabilidad de cierre.</span>
+        </div>
+      </li>
+      <li>
+        <div class="obj-num">4</div>
+        <div class="obj-text">
+          <strong>Elevar el Social Selling Index (SSI)</strong>
+          <span>Entender los 4 pilares del SSI y ejecutar acciones diarias medibles para posicionarte como referente en tu nicho antes de vender.</span>
+        </div>
+      </li>
+      <li>
+        <div class="obj-num">5</div>
+        <div class="obj-text">
+          <strong>Construir secuencias de nurturing semi-automatizadas</strong>
+          <span>Convertir conexiones frías en conversaciones cálidas a través de múltiples touchpoints orquestados con Dripify o Phantombuster.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>Término</th>
+          <th>Definición</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="term">Social Selling Index (SSI)</td>
+          <td>Métrica de LinkedIn de 0 a 100 que mide tu efectividad comercial. Se divide en 4 pilares de 25 pts: marca profesional, encontrar personas correctas, interactuar con insights y construir relaciones. Promedio de industria: 35. Líderes: 75+. Accesible gratis en linkedin.com/sales/ssi.</td>
+        </tr>
+        <tr>
+          <td class="term">Warm Outreach</td>
+          <td>Estrategia donde generas visibilidad previa (likes, comentarios relevantes, contenido) antes del primer mensaje directo. La tasa de respuesta es 3–5× mayor que el cold outreach porque el prospecto ya te reconoce.</td>
+        </tr>
+        <tr>
+          <td class="term">ICP (Ideal Customer Profile)</td>
+          <td>Descripción detallada del tipo de empresa o persona que con mayor probabilidad comprará tu producto. Incluye atributos firmográficos (industria, tamaño, ingresos) y psicográficos (pain points, objetivos). Un ICP documentado genera 20–40% más win rate.</td>
+        </tr>
+        <tr>
+          <td class="term">Personalización con IA</td>
+          <td>Uso de Claude para generar mensajes únicos por prospecto basándose en datos reales de su perfil, publicaciones recientes, cambios de rol y noticias de empresa. El resultado es outreach que suena humano aunque se genere a escala.</td>
+        </tr>
+        <tr>
+          <td class="term">Nurturing Automatizado</td>
+          <td>Secuencia programada de touchpoints (conexión → bienvenida → valor → prueba social → CTA) ejecutada con herramientas de automatización con delays aleatorios que simulan comportamiento humano.</td>
+        </tr>
+        <tr>
+          <td class="term">Account IQ / Lead IQ</td>
+          <td>Funciones de IA generativa de LinkedIn Sales Navigator. Account IQ crea resúmenes automáticos de cuentas para reuniones de ventas. Lead IQ proporciona insights y recomendaciones de engagement por prospecto.</td>
+        </tr>
+        <tr>
+          <td class="term">Message Assist</td>
+          <td>IA nativa de Sales Navigator que convierte datos del perfil del prospecto en InMails personalizados listos para enviar. Los InMails tienen una tasa de apertura del 57% vs. 21% del email tradicional.</td>
+        </tr>
+        <tr>
+          <td class="term">Touchpoint</td>
+          <td>Cada punto de contacto entre tú y un prospecto: visitar su perfil, reaccionar a una publicación, comentar, enviar conexión, mandar mensaje. Una secuencia efectiva requiere 5–8 touchpoints antes de una respuesta comercial.</td>
+        </tr>
+        <tr>
+          <td class="term">Social Proof Selling</td>
+          <td>Técnica donde se menciona en el outreach un caso de éxito, estadística o cliente similar al prospecto para generar credibilidad inmediata sin sonar arrogante.</td>
+        </tr>
+        <tr>
+          <td class="term">SSI como diagnóstico</td>
+          <td>El SSI no debe perseguirse como fin en sí mismo, sino usarse como chequeo de salud semanal junto con métricas reales del pipeline: mensajes enviados, tasas de respuesta y reuniones agendadas.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">LinkedIn Sales Navigator</div>
+          <span class="badge badge-paid">De pago</span>
+        </div>
+        <div class="tool-desc">Motor principal de prospección: búsqueda avanzada con 40+ filtros, Account IQ, Lead IQ, Message Assist (IA generativa), alertas de cambio de rol y noticias de empresa. Integración nativa con HubSpot, Salesforce y más.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Desde $99/mes</span>
+          <a href="https://business.linkedin.com/sales-solutions/sales-navigator" target="_blank" class="tool-link">→ business.linkedin.com</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Dripify</div>
+          <span class="badge badge-paid">De pago</span>
+        </div>
+        <div class="tool-desc">Automatización de secuencias en LinkedIn con interfaz visual drag-and-drop: solicitudes de conexión, mensajes, follow-ups, visitas de perfil. Delays aleatorios para simular comportamiento humano. Dashboard de analytics incluido.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Desde $39/mes (anual)</span>
+          <a href="https://dripify.io" target="_blank" class="tool-link">→ dripify.io</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Phantombuster</div>
+          <span class="badge badge-paid">De pago</span>
+        </div>
+        <div class="tool-desc">Scraping y automatización multi-plataforma (LinkedIn, Instagram, Google Maps): extracción de leads, enrichment de datos, ejecución de flujos en la nube. Ideal para construir listas de prospectos enriquecidas combinando múltiples fuentes.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Desde $69/mes</span>
+          <a href="https://phantombuster.com" target="_blank" class="tool-link">→ phantombuster.com</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Claude (Anthropic)</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Generación de mensajes de outreach hiperpersonalizados, redacción de comentarios estratégicos, análisis de perfiles y creación de secuencias completas. Contexto de 200K tokens permite procesar listas de prospectos enteras en una sola sesión.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Gratis / Pro $20/mes</span>
+          <a href="https://claude.ai" target="_blank" class="tool-link">→ claude.ai</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Taplio</div>
+          <span class="badge badge-paid">De pago</span>
+        </div>
+        <div class="tool-desc">Creación, programación y análisis de contenido de LinkedIn con IA: generador de posts virales, calendario editorial, análisis de engagement, base de datos de posts top de tu nicho y tracking de leads que interactúan con tu contenido.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Desde $49/mes</span>
+          <a href="https://taplio.com" target="_blank" class="tool-link">→ taplio.com</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Shield Analytics</div>
+          <span class="badge badge-paid">De pago</span>
+        </div>
+        <div class="tool-desc">Analytics avanzado de LinkedIn para creadores y equipos: métricas detalladas de contenido, crecimiento de audiencia, análisis de competencia y predicción de contenido con IA. Complementa a Taplio enfocándose en datos puros de performance.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Desde $25/mes</span>
+          <a href="https://shieldapp.ai" target="_blank" class="tool-link">→ shieldapp.ai</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">HubSpot CRM</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">CRM con integración nativa a LinkedIn Sales Navigator (plan Advanced Plus): sincroniza contactos, actividades de outreach y crea workflows de seguimiento automático. El plan gratuito cubre necesidades básicas de gestión de pipeline.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Gratis / Starter $20/mes</span>
+          <a href="https://hubspot.com" target="_blank" class="tool-link">→ hubspot.com</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Notion + IA</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Gestión de plantillas de mensajes por ICP, tracking de secuencias, base de conocimiento de objeciones comunes y respuestas optimizadas. La IA nativa de Notion ayuda a refinar mensajes e iterar sobre lo que mejor funciona.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Gratis / Plus $10/mes</span>
+          <a href="https://notion.so" target="_blank" class="tool-link">→ notion.so</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ESTADÍSTICAS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📊</span> Datos clave del social selling con IA</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num">3.5×</div>
+        <div class="stat-label">más tasa de respuesta con automatización de social selling vs. esfuerzo manual (Gartner, 2025)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">45%</div>
+        <div class="stat-label">más oportunidades generan los vendedores con SSI alto en LinkedIn</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">57%</div>
+        <div class="stat-label">tasa de apertura de InMails de Sales Navigator vs. 21% del email tradicional</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">40%</div>
+        <div class="stat-label">más win rate reportan equipos con ICP documentado y bien definido</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">75+</div>
+        <div class="stat-label">SSI que te posiciona en el top de líderes de pensamiento de tu industria</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAN DE LA SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Plan de la sesión</div>
+
+    <div class="module">
+      <div class="module-time">Bloque 1 — 20 min</div>
+      <div class="module-title">Diagnóstico y estrategia</div>
+      <ul>
+        <li>Revisar perfil de LinkedIn de Lina y calcular SSI actual en linkedin.com/sales/ssi</li>
+        <li>Identificar el ICP prioritario: industria, cargo, tamaño de empresa, pain points</li>
+        <li>Definir la propuesta de valor en una sola oración ("Para [ICP], ayudo a [resultado] sin [fricción]")</li>
+        <li>Auditar el stack actual y detectar gaps tecnológicos</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-time">Bloque 2 — 20 min</div>
+      <div class="module-title">LinkedIn Sales Navigator con IA</div>
+      <ul>
+        <li>Configurar filtros de búsqueda avanzada según el ICP definido (40+ filtros disponibles)</li>
+        <li>Explorar Account IQ y Lead IQ en 5 cuentas objetivo y analizar insights</li>
+        <li>Usar Message Assist para generar InMails con IA nativa de LinkedIn</li>
+        <li>Guardar listas y configurar alertas de señales de compra (cambio de rol, financiamiento, nueva contratación)</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-time">Bloque 3 — 25 min</div>
+      <div class="module-title">Secuencia de outreach con Claude</div>
+      <ul>
+        <li>Escribir el prompt maestro para generar mensajes personalizados con Claude</li>
+        <li>Crear secuencia completa de 5 mensajes (conexión → valor → prueba social → seguimiento → CTA)</li>
+        <li>Automatizar con Dripify: configurar delays, límites diarios y variaciones de mensajes</li>
+        <li>Revisar mejores prácticas de seguridad para evitar restricción de cuenta (máx. 100 conexiones/semana)</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-time">Bloque 4 — 25 min</div>
+      <div class="module-title">Contenido y métricas</div>
+      <ul>
+        <li>Configurar Taplio para crear contenido que caliente prospectos antes del outreach directo</li>
+        <li>Revisar Shield Analytics: qué métricas importan (impresiones, comentarios, crecimiento SSI)</li>
+        <li>Definir KPIs del programa: mensajes enviados, tasa de aceptación, tasa de respuesta, reuniones agendadas</li>
+        <li>Plan de acción para los próximos 30 días con hitos semanales medibles</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div style="margin-bottom:1.2rem">
+      <strong>Objetivo:</strong> Construir en vivo una secuencia de 5 mensajes lista para ejecutar en Dripify, generada con Claude a partir del ICP de Lina.
+    </div>
+    <div class="exercise-box">
+
+      <div class="exercise-step">
+        <div class="step-label">Paso 1</div>
+        <div class="step-title">Definir el ICP antes de abrir Claude</div>
+        <p style="font-size:.88rem;color:#475569;margin-bottom:.5rem">Completa esta plantilla. Sin un ICP claro, la IA genera mensajes genéricos que no convierten.</p>
+        <div class="icp-template">ICP: [Cargo] en empresas [industria] de [tamaño] en [mercado geográfico]
+Pain point principal: [problema que tu servicio resuelve]
+Resultado que ofreces: [beneficio concreto y medible]
+Señales de compra: [cambio de rol / expansión / post reciente sobre X]</div>
+      </div>
+
+      <div class="exercise-step">
+        <div class="step-label">Paso 2</div>
+        <div class="step-title">Prompt para Claude — Mensaje de conexión (día 1)</div>
+        <div class="code-block">Eres un experto en social selling B2B. Crea un mensaje de solicitud
+de conexión en LinkedIn para esta persona: [pegar datos del perfil].
+
+Mi ICP: [cargo] en [industria], enfrenta el desafío de [pain point].
+Yo ofrezco: [propuesta de valor en una oración].
+
+Reglas:
+- Máximo 300 caracteres (límite de LinkedIn)
+- Sin pitch de venta
+- Menciona algo específico de su perfil o publicación reciente
+- Tono conversacional, no corporativo
+- Termina con una pregunta que invite a responder</div>
+      </div>
+
+      <div class="exercise-step">
+        <div class="step-label">Paso 3</div>
+        <div class="step-title">Prompt — Mensaje de bienvenida (día 3)</div>
+        <div class="code-block">Genera un mensaje de bienvenida para enviar después de que acepten
+mi conexión en LinkedIn.
+
+Prospecto: [nombre, cargo, empresa]
+Publicación reciente o dato de su perfil: [detalle específico]
+Recurso de valor que quiero compartir: [artículo, estadística, herramienta]
+
+Reglas:
+- Máximo 4 líneas
+- Agradece la conexión con referencia específica (no genérico)
+- Comparte el recurso como algo útil, sin contexto de venta
+- Sin CTA comercial todavía — solo valor puro</div>
+      </div>
+
+      <div class="exercise-step">
+        <div class="step-label">Pasos 4 y 5</div>
+        <div class="step-title">Mensajes de profundización y cierre</div>
+        <ul style="font-size:.87rem;color:#475569;padding-left:1.2rem">
+          <li><strong>Día 7 — Valor:</strong> Compartir insight o dato de industria relevante para su rol específico</li>
+          <li><strong>Día 14 — Prueba social:</strong> Caso de éxito de un cliente similar al ICP con resultado concreto</li>
+          <li><strong>Día 21 — CTA:</strong> Invitación a conversación de 15 min con agenda clara y enlace de Calendly</li>
+        </ul>
+      </div>
+
+      <div class="exercise-step">
+        <div class="step-label">Paso 6</div>
+        <div class="step-title">Cargar en Dripify y métricas</div>
+        <ul style="font-size:.87rem;color:#475569;padding-left:1.2rem">
+          <li>Crear campaña nueva → secuencia personalizada → importar lista de Sales Navigator</li>
+          <li>Máximo 80–100 solicitudes de conexión por semana (límite seguro de LinkedIn)</li>
+          <li>Configurar delays de 2–4 días entre mensajes con variación aleatoria</li>
+          <li><strong>Tasa de aceptación objetivo:</strong> &gt;40% | <strong>Tasa de respuesta:</strong> &gt;15% | <strong>Reuniones por 100 prospectos:</strong> 3–8</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos</div>
+    <ul class="resource-list">
+      <li>
+        <a href="https://www.linkedin.com/sales/ssi" target="_blank">LinkedIn Social Selling Index — Revisa tu score</a>
+        <span class="resource-source">linkedin.com/sales/ssi — Gratis, se actualiza diariamente</span>
+      </li>
+      <li>
+        <a href="https://www.linkedin.com/help/sales-navigator/answer/a7101400" target="_blank">Generative AI in Sales Navigator — Guía oficial de LinkedIn</a>
+        <span class="resource-source">linkedin.com — Account IQ, Lead IQ, Message Assist, Sales Assistant</span>
+      </li>
+      <li>
+        <a href="https://phantombuster.com/blog/ai-automation/phantombuster-vs-dripify/" target="_blank">Phantombuster vs Dripify: comparativa completa 2025</a>
+        <span class="resource-source">phantombuster.com — Análisis de pricing, features y casos de uso</span>
+      </li>
+      <li>
+        <a href="https://www.gramfunnels.com/blog/how-to-use-claude-to-linkedin-outreach-1" target="_blank">Cómo usar Claude para LinkedIn outreach (guía paso a paso)</a>
+        <span class="resource-source">gramfunnels.com — Prompts, workflow y ejemplos de mensajes</span>
+      </li>
+      <li>
+        <a href="https://authoredup.com/blog/taplio-vs-shield" target="_blank">Taplio vs Shield Analytics — ¿Cuál elegir para tu estrategia?</a>
+        <span class="resource-source">authoredup.com — Comparativa de features, pricing y casos de uso</span>
+      </li>
+      <li>
+        <a href="https://lagrowthmachine.com/linkedin-ssi-score-guide/" target="_blank">LinkedIn SSI Score: Guía completa para mejorar tu puntuación 2025</a>
+        <span class="resource-source">lagrowthmachine.com — Los 4 pilares del SSI con acciones concretas</span>
+      </li>
+      <li>
+        <a href="https://phantombuster.com/blog/sales-prospecting/icp-sales/" target="_blank">Cómo construir tu ICP para social selling en LinkedIn</a>
+        <span class="resource-source">phantombuster.com — Plantillas de ICP + integración con Sales Navigator</span>
+      </li>
+      <li>
+        <a href="https://business.linkedin.com/sales-solutions/sales-navigator" target="_blank">LinkedIn Sales Navigator — Planes y características</a>
+        <span class="resource-source">business.linkedin.com — Core desde $99/mes | Advanced Plus con CRM integrado</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ACCIONES POST-SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-sesión</div>
+
+    <div class="action-week">
+      <div class="week-label">Semana 1 — Fundamentos</div>
+      <ul class="action-list">
+        <li>Revisar SSI actual en linkedin.com/sales/ssi y anotar el baseline de los 4 pilares</li>
+        <li>Completar perfil de LinkedIn al 100%: foto profesional, titular orientado al ICP, about con propuesta de valor</li>
+        <li>Documentar ICP con atributos firmográficos y psicográficos usando la plantilla de la sesión</li>
+        <li>Activar prueba gratuita de 30 días de LinkedIn Sales Navigator</li>
+      </ul>
+    </div>
+
+    <div class="action-week">
+      <div class="week-label">Semana 2 — Configuración técnica</div>
+      <ul class="action-list">
+        <li>Configurar búsqueda guardada en Sales Navigator con filtros del ICP (40+ filtros disponibles)</li>
+        <li>Explorar Account IQ en 5 cuentas objetivo y tomar notas de insights estratégicos</li>
+        <li>Crear prompt maestro para Claude y generar 5 variantes de mensajes de conexión</li>
+        <li>Configurar cuenta de Dripify y crear la primera campaña con secuencia de 5 pasos</li>
+      </ul>
+    </div>
+
+    <div class="action-week">
+      <div class="week-label">Semana 3 — Lanzamiento</div>
+      <ul class="action-list">
+        <li>Iniciar envío de 15–20 solicitudes de conexión diarias (límite seguro recomendado)</li>
+        <li>Publicar 3 posts de contenido de valor en LinkedIn usando Taplio con IA</li>
+        <li>Comentar estratégicamente en 5 publicaciones diarias de prospectos del ICP</li>
+        <li>Conectar Shield Analytics y revisar métricas de contenido por primera vez</li>
+      </ul>
+    </div>
+
+    <div class="action-week">
+      <div class="week-label">Semana 4 — Optimización</div>
+      <ul class="action-list">
+        <li>Revisar métricas de la secuencia: tasa de aceptación (&gt;40%), respuesta (&gt;15%), reuniones agendadas</li>
+        <li>Iterar mensajes con peor desempeño usando Claude con nuevas variaciones</li>
+        <li>Presentar reporte de primeros 30 días con pipeline generado y aprendizajes</li>
+        <li>Planificar escala: aumentar volumen, explorar nuevos ICPs o abrir canal de email como complemento</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Sesión 06 &mdash; <span class="accent">Lina</span> &mdash; IA de Social Selling</p>
+  <p style="margin-top:.3rem">Asesoría 1-on-1 · 90 min · Ventas &amp; Marketing B2B en LinkedIn</p>
+</footer>
+
+</body>
+</html>

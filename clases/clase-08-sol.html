@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 08 · Conectar Claude a redes sociales + Social listening pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#10B981 0%,#059669 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.35rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;transition:box-shadow .2s}
+    .tool-card:hover{box-shadow:0 4px 16px rgba(16,185,129,.12);border-color:#10B981}
+    .tool-name{font-weight:700;font-size:.95rem;margin-bottom:.25rem;color:#1e293b}
+    .tool-desc{font-size:.82rem;color:#64748b;margin-bottom:.5rem;line-height:1.4}
+    .tool-price{font-size:.78rem;color:#94a3b8;margin-bottom:.5rem}
+    .tool-link{font-size:.78rem;color:#10B981;text-decoration:none;font-weight:600}
+    .tool-link:hover{text-decoration:underline}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600;display:inline-block;margin-bottom:.5rem}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .badge-enterprise{background:#f3e8ff;color:#7c3aed}
+    .module{border-left:3px solid #10B981;padding-left:1rem;margin-bottom:1.5rem}
+    .module-title{font-weight:700;font-size:1rem;color:#059669;margin-bottom:.5rem}
+    .module-content{font-size:.9rem;color:#475569}
+    .module-content ul{padding-left:1.2rem;margin-top:.5rem}
+    .module-content li{margin-bottom:.35rem}
+    .exercise-box{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-title{font-weight:700;color:#059669;font-size:1rem;margin-bottom:.75rem}
+    .step{background:white;border-radius:.5rem;padding:1rem;margin-bottom:.75rem;border:1px solid #e2e8f0}
+    .step-num{display:inline-flex;align-items:center;justify-content:center;width:1.5rem;height:1.5rem;background:#10B981;color:white;border-radius:999px;font-size:.75rem;font-weight:700;margin-right:.5rem;flex-shrink:0}
+    .step-header{display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.5rem}
+    .step-header strong{font-size:.9rem;color:#1e293b}
+    .step p,.step ul{font-size:.85rem;color:#475569;padding-left:2rem}
+    .step ul{padding-left:3rem;margin-top:.35rem}
+    .step li{margin-bottom:.25rem}
+    .code-block{background:#0f172a;color:#e2e8f0;border-radius:.75rem;padding:1.25rem;font-family:'Courier New',monospace;font-size:.8rem;line-height:1.6;overflow-x:auto;margin:.75rem 0}
+    .code-block .comment{color:#64748b}
+    .code-block .string{color:#86efac}
+    .code-block .keyword{color:#7dd3fc}
+    table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.75rem}
+    th{background:#f1fdf8;color:#059669;font-weight:700;padding:.6rem .75rem;text-align:left;border-bottom:2px solid #bbf7d0}
+    td{padding:.6rem .75rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#f8fffe}
+    .objectives-list{counter-reset:obj;list-style:none;padding:0}
+    .objectives-list li{counter-increment:obj;display:flex;gap:.75rem;margin-bottom:.9rem;align-items:flex-start}
+    .objectives-list li::before{content:counter(obj);display:inline-flex;align-items:center;justify-content:center;min-width:1.75rem;height:1.75rem;background:linear-gradient(135deg,#10B981,#059669);color:white;border-radius:999px;font-size:.8rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+    .objectives-list li strong{color:#059669}
+    .concept-table-wrap{overflow-x:auto}
+    .resources-list{list-style:none;padding:0}
+    .resources-list li{display:flex;gap:.75rem;padding:.75rem 0;border-bottom:1px solid #f1f5f9;align-items:flex-start}
+    .resources-list li:last-child{border-bottom:none}
+    .res-num{display:inline-flex;align-items:center;justify-content:center;min-width:1.5rem;height:1.5rem;background:#dcfce7;color:#16a34a;border-radius:999px;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.2rem}
+    .resources-list a{color:#10B981;font-weight:600;text-decoration:none}
+    .resources-list a:hover{text-decoration:underline}
+    .resources-list p{font-size:.85rem;color:#64748b;margin-top:.15rem}
+    .actions-list{list-style:none;padding:0}
+    .actions-list li{display:flex;gap:.75rem;padding:.6rem 0;border-bottom:1px solid #f1f5f9;font-size:.9rem;align-items:flex-start}
+    .actions-list li:last-child{border-bottom:none}
+    .action-dot{width:.5rem;height:.5rem;background:#10B981;border-radius:999px;flex-shrink:0;margin-top:.55rem}
+    .level-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;margin-top:.75rem}
+    .level-card{background:#f8fffe;border:1px solid #bbf7d0;border-radius:.75rem;padding:.75rem}
+    .level-label{font-size:.72rem;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem}
+    .level-title{font-size:.9rem;font-weight:700;color:#1e293b;margin-bottom:.25rem}
+    .level-desc{font-size:.78rem;color:#64748b;line-height:1.4}
+    .highlight-box{background:#f0fdf4;border-left:3px solid #10B981;padding:1rem 1.25rem;border-radius:0 .5rem .5rem 0;margin:.75rem 0;font-size:.88rem;color:#065f46}
+    .highlight-box strong{color:#059669}
+    .flow-step{display:flex;gap:.5rem;margin-bottom:.5rem;align-items:flex-start;font-size:.85rem}
+    .flow-arrow{color:#10B981;font-weight:700;flex-shrink:0;margin-top:.05rem}
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem;border-top:1px solid #e2e8f0;margin-top:1rem}
+    footer span{color:#10B981;font-weight:600}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto;">
+    <div class="tier-badge">Tier 2 · Marketing track · Community &amp; Brand</div>
+    <h1>📱 Conectar Claude a redes sociales<br>+ Social listening pro</h1>
+    <div class="hero-meta">
+      <span>👩‍💻 <strong>Sol</strong></span>
+      <span>📅 Viernes 3 julio 2026</span>
+      <span>⏱ 90 minutos</span>
+      <span>🎯 Community managers · Brand teams</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la clase</div>
+    <ol class="objectives-list">
+      <li><strong>Conectar Claude a las principales plataformas de redes sociales</strong> mediante APIs, MCP servers y herramientas de automatización como Make.com e IFTTT, para publicar y gestionar contenido desde flujos agentivos.</li>
+      <li><strong>Automatizar la creación y publicación de contenido</strong> usando Claude como motor de redacción integrado en pipelines de scheduling (Buffer, Hootsuite, Postiz), eliminando cuellos de botella manuales.</li>
+      <li><strong>Implementar un sistema de social listening profesional con IA</strong> que monitorice menciones, analice sentimiento en tiempo real y genere alertas automáticas ante picos de conversación.</li>
+      <li><strong>Diseñar respuestas automáticas con capa humana de revisión</strong>, entendiendo cuándo automatizar completamente y cuándo insertar un punto de aprobación manual para proteger la voz de marca.</li>
+      <li><strong>Medir el impacto del social listening con IA</strong> usando métricas de share of voice, sentimiento neto y tiempo de respuesta ante crisis, para justificar la inversión en herramientas.</li>
+    </ol>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+    <div class="concept-table-wrap">
+      <table>
+        <thead>
+          <tr><th>Término</th><th>Definición</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Social Listening</strong></td><td>Proceso de monitorizar en tiempo real las conversaciones en redes sociales sobre una marca, competidores o industria. Va más allá de las notificaciones: analiza volumen, sentimiento, tendencias y contexto.</td></tr>
+          <tr><td><strong>Brand Monitoring</strong></td><td>Seguimiento sistemático de todas las menciones de una marca en canales digitales: redes sociales, foros, blogs, noticias y ahora también respuestas de LLMs como ChatGPT o Perplexity.</td></tr>
+          <tr><td><strong>Análisis de sentimiento</strong></td><td>Técnica de NLP que clasifica automáticamente el tono de un texto como positivo, negativo o neutro. Los modelos modernos detectan ironía, sarcasmo y emociones complejas.</td></tr>
+          <tr><td><strong>Share of Voice (SoV)</strong></td><td>Porcentaje de conversación online que ocupa una marca vs. sus competidores dentro de una categoría. Métrica clave para medir visibilidad relativa.</td></tr>
+          <tr><td><strong>MCP (Model Context Protocol)</strong></td><td>Estándar abierto creado por Anthropic que permite a Claude conectarse directamente con herramientas externas. Meta lanzó su MCP oficial el 29 de abril de 2026 — el primero de una plataforma social mayor.</td></tr>
+          <tr><td><strong>Automatización agentiva</strong></td><td>Flujos donde Claude no solo genera texto sino que ejecuta acciones: publica posts, responde menciones, crea reportes y escala alertas de forma autónoma con intervención humana mínima.</td></tr>
+          <tr><td><strong>Human-in-the-loop</strong></td><td>Diseño de flujo que inserta un punto de aprobación humana antes de ejecutar acciones sensibles: publicar una respuesta a una crisis, escalar un comentario viral.</td></tr>
+          <tr><td><strong>Pipeline de contenido</strong></td><td>Secuencia automatizada: idea → redacción → revisión → programación → publicación → reporte, donde cada paso puede ser asistido o ejecutado por IA.</td></tr>
+          <tr><td><strong>Spike de menciones</strong></td><td>Incremento anómalo en el volumen de menciones en un período corto. Puede indicar crisis de reputación, viralización positiva o evento mediático relevante.</td></tr>
+          <tr><td><strong>LLM Monitoring</strong></td><td>Tendencia 2025-2026: rastrear cómo ChatGPT, Perplexity y Gemini describen y recomiendan una marca cuando los usuarios les preguntan directamente. El nuevo SEO.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <span class="badge badge-paid">API / Pay-as-you-go</span>
+        <div class="tool-name">Claude API (Anthropic)</div>
+        <div class="tool-desc">Motor principal de IA: redacta posts, analiza sentimiento, genera respuestas de comunidad y extrae insights de conversaciones en escala.</div>
+        <div class="tool-price">Free tier · Pro $20/mes · API desde $3/M tokens</div>
+        <a href="https://www.anthropic.com/api" target="_blank" class="tool-link">anthropic.com/api →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-free">Gratuito (beta)</span>
+        <div class="tool-name">Meta Ads MCP</div>
+        <div class="tool-desc">MCP oficial de Meta (lanzado 29 abr 2026). Conecta Claude a Meta Ads via OAuth. 29 herramientas: campañas, audiencias, catálogos, diagnósticos.</div>
+        <div class="tool-price">Gratis durante beta pública</div>
+        <a href="https://www.facebook.com/business/news/meta-ads-ai-connectors" target="_blank" class="tool-link">Meta for Business →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <div class="tool-name">Buffer</div>
+        <div class="tool-desc">Scheduling y publicación en Instagram, X, LinkedIn, TikTok, Pinterest y Facebook. AI Assistant para generar ideas de caption. Ideal para equipos pequeños.</div>
+        <div class="tool-price">Free (3 canales) · Essentials $6/canal/mes</div>
+        <a href="https://buffer.com" target="_blank" class="tool-link">buffer.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-paid">De pago</span>
+        <div class="tool-name">Hootsuite + OwlyWriter AI</div>
+        <div class="tool-desc">Gestión multicanal avanzada. OwlyWriter AI genera captions por plataforma, repropone posts exitosos y sugiere calendarios basados en engagement histórico. OwlyGPT disponible desde 2025.</div>
+        <div class="tool-price">Standard $99/usuario/mes · Advanced $149/usuario/mes</div>
+        <a href="https://hootsuite.com" target="_blank" class="tool-link">hootsuite.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-enterprise">Enterprise</span>
+        <div class="tool-name">Brandwatch</div>
+        <div class="tool-desc">Plataforma de consumer intelligence para social listening profundo. Monitoriza 100M+ fuentes, análisis de sentimiento con NLP avanzado, benchmarks competitivos y detección de influencers.</div>
+        <div class="tool-price">Custom (desde ~$800/mes)</div>
+        <a href="https://brandwatch.com" target="_blank" class="tool-link">brandwatch.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-paid">De pago</span>
+        <div class="tool-name">Sprout Social</div>
+        <div class="tool-desc">Suite all-in-one: publicación, Smart Inbox unificado, social listening con Smart Categories, análisis de sentimiento por mensaje y respuestas sugeridas con AI Assist.</div>
+        <div class="tool-price">Essentials $79/mes · Professional $299/mes · Advanced $399/mes</div>
+        <a href="https://sproutsocial.com" target="_blank" class="tool-link">sproutsocial.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <div class="tool-name">Mention</div>
+        <div class="tool-desc">Monitoreo de menciones en redes sociales, blogs, foros y noticias. Alertas por email y Slack ante spikes de actividad. Más accesible que Brandwatch para equipos medianos.</div>
+        <div class="tool-price">Solo $49/mes · Pro $99/mes · ProPlus $179/mes</div>
+        <a href="https://mention.com" target="_blank" class="tool-link">mention.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <div class="tool-name">Make.com</div>
+        <div class="tool-desc">Automatización visual no-code con integración nativa de Claude API. Crea pipelines: monitoreo → análisis con Claude → respuesta → reporte. Soporta 1,500+ apps.</div>
+        <div class="tool-price">Free (1,000 ops/mes) · Core $9/mes · Pro $16/mes</div>
+        <a href="https://make.com" target="_blank" class="tool-link">make.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <div class="tool-name">IFTTT</div>
+        <div class="tool-desc">Automatizaciones "si X entonces Y" con Claude integrado. MCP nativo disponible. Útil para flujos básicos: nueva mención → Claude analiza → envía resumen por Slack.</div>
+        <div class="tool-price">Free · Pro $3.99/mes · Pro+ $14.99/mes</div>
+        <a href="https://ifttt.com" target="_blank" class="tool-link">ifttt.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Open source / Cloud</span>
+        <div class="tool-name">Postiz Agent</div>
+        <div class="tool-desc">CLI y API para publicación en 30+ plataformas, diseñado para agentes de IA como Claude. Soporta scheduling, gestión de múltiples cuentas y métricas desde terminal.</div>
+        <div class="tool-price">Open source · Cloud desde $9/mes</div>
+        <a href="https://postiz.com/agent" target="_blank" class="tool-link">postiz.com/agent →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MÓDULOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Contenido de la clase</div>
+
+    <!-- Módulo 1 -->
+    <div class="module">
+      <div class="module-title">Módulo 1 — Arquitectura de integración: Claude + redes sociales (~20 min)</div>
+      <div class="module-content">
+        <p>La IA ya no es solo asistente de redacción: es un agente que puede publicar, responder y reportar de forma autónoma. El 56% de los marketers ya integran IA en sus flujos de trabajo de redes sociales.</p>
+
+        <div class="level-grid" style="margin-top:.75rem">
+          <div class="level-card">
+            <div class="level-label">Nivel 1</div>
+            <div class="level-title">Asistido</div>
+            <div class="level-desc">Claude genera borrador. Humano revisa cada post antes de publicar.</div>
+          </div>
+          <div class="level-card">
+            <div class="level-label">Nivel 2</div>
+            <div class="level-title">Semi-automático</div>
+            <div class="level-desc">Claude genera y programa. Aprobación en batch diario.</div>
+          </div>
+          <div class="level-card">
+            <div class="level-label">Nivel 3</div>
+            <div class="level-title">Automático</div>
+            <div class="level-desc">Claude genera, publica y reporta. Humano revisa alertas.</div>
+          </div>
+          <div class="level-card">
+            <div class="level-label">Nivel 4</div>
+            <div class="level-title">Agentivo</div>
+            <div class="level-desc">Claude monitoriza, responde y escala. Intervención solo en excepciones.</div>
+          </div>
+        </div>
+
+        <div class="highlight-box" style="margin-top:1rem">
+          <strong>Meta MCP oficial (29 abr 2026):</strong> El primer MCP nativo de una plataforma social mayor. Claude se conecta a tu cuenta de Meta Ads via OAuth y gestiona campañas, audiencias y diagnósticos en lenguaje natural — sin exportar CSVs ni entrar a Ads Manager.
+        </div>
+
+        <p style="margin-top:.75rem"><strong>Flujo ejemplo: Claude + Make.com + Buffer</strong></p>
+        <div class="code-block">
+<span class="comment"># Trigger: nuevo artículo en RSS del blog</span>
+Trigger → Make.com extrae [título + resumen + URL]
+  → <span class="keyword">Claude API</span> (prompt):
+    <span class="string">"Convierte este artículo en 3 posts:
+    - LinkedIn: formal, 150 palabras
+    - X: máx 280 caracteres + hashtags
+    - Instagram: emojis, 5 bullets + CTA"</span>
+  → Make.com formatea las 3 versiones
+  → Buffer programa en horarios óptimos por plataforma
+  → Slack recibe confirmación con preview
+        </div>
+      </div>
+    </div>
+
+    <!-- Módulo 2 -->
+    <div class="module">
+      <div class="module-title">Módulo 2 — Social listening con IA: de las menciones a los insights (~25 min)</div>
+      <div class="module-content">
+        <p>Una marca mediana recibe entre 500 y 5,000 menciones semanales. Sin IA, el equipo procesa menos del 10%. Con social listening automatizado, se procesa el 100% y se actúa en el 15-20% más crítico.</p>
+
+        <div style="margin-top:.75rem">
+          <table>
+            <thead>
+              <tr><th>Criterio</th><th>Brandwatch</th><th>Sprout Social</th><th>Mention</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Fuentes</strong></td><td>100M+ (históricos)</td><td>RRSS + reviews</td><td>RRSS + blogs + noticias</td></tr>
+              <tr><td><strong>IA de sentimiento</strong></td><td>NLP avanzado, detecta sarcasmo</td><td>Por mensaje + intención</td><td>Básico, binario</td></tr>
+              <tr><td><strong>Facilidad de uso</strong></td><td>Complejo, con onboarding</td><td>Amigable, all-in-one</td><td>Setup en minutos</td></tr>
+              <tr><td><strong>Precio</strong></td><td>Desde $800/mes</td><td>$79–$399/usuario/mes</td><td>$49–$179/mes</td></tr>
+              <tr><td><strong>Ideal para</strong></td><td>Marcas globales e investigación profunda</td><td>Equipos de marketing integrados</td><td>Startups y marcas medianas</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="highlight-box" style="margin-top:.75rem">
+          <strong>LLM Monitoring (tendencia 2026):</strong> Además de redes sociales, las marcas ya rastrean cómo ChatGPT, Perplexity y Google AIO responden cuando un usuario pregunta sobre ellas. Herramientas como Otterly.ai y Visiblie mapean visibilidad de marca en LLMs — el nuevo SEO de los chatbots.
+        </div>
+
+        <p style="margin-top:.75rem"><strong>Métricas clave de social listening:</strong></p>
+        <table>
+          <thead><tr><th>Métrica</th><th>Definición</th><th>Alerta si...</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Share of Voice</strong></td><td>% de conversación de tu marca vs. competidores</td><td>Caída &gt;5% en 7 días</td></tr>
+            <tr><td><strong>Sentimiento neto</strong></td><td>(Positivo − Negativo) / Total menciones</td><td>Por debajo del 60% positivo</td></tr>
+            <tr><td><strong>Tiempo de respuesta</strong></td><td>Minutos entre mención y primera respuesta</td><td>&gt;60 min en horario laboral</td></tr>
+            <tr><td><strong>Tasa de crisis</strong></td><td>Menciones negativas / Total menciones</td><td>&gt;20% en 24 horas</td></tr>
+            <tr><td><strong>Alcance potencial</strong></td><td>Suma de seguidores de quien te menciona</td><td>Pico súbito = viralización</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Módulo 3 -->
+    <div class="module">
+      <div class="module-title">Módulo 3 — Automatización de respuestas con Claude (~25 min)</div>
+      <div class="module-content">
+        <p>Una cuenta activa puede recibir 200–1,000 comentarios y DMs por semana. Responder a todos manualmente es inviable; no responder daña el engagement y los algoritmos.</p>
+
+        <p style="margin-top:.75rem"><strong>El flujo de respuesta automática:</strong></p>
+        <div class="code-block">
+Mención detectada por Brandwatch/Mention
+  → Webhook a Make.com
+  → <span class="keyword">Claude recibe:</span> [texto] + [historial cliente] + [guía de tono] + [FAQs]
+  → Claude clasifica: ¿urgente? ¿negativa? ¿requiere humano?
+
+  <span class="comment">→ Si es estándar:</span>
+    Claude redacta respuesta → Buffer/Hootsuite publica
+
+  <span class="comment">→ Si es crítica:</span>
+    Claude redacta borrador → Alerta en Slack al community manager
+
+  <span class="comment">→ Si es una crisis:</span>
+    Protocolo de escalado + pausa automática de publicaciones
+        </div>
+
+        <p style="margin-top:.75rem"><strong>Reglas de oro para automatizar sin riesgos:</strong></p>
+        <ul>
+          <li>Insertar "human checkpoint" para respuestas a comentarios negativos con &gt;500 likes</li>
+          <li>Configurar palabras clave de pausa automática (términos legales, nombres de crisis)</li>
+          <li>Revisar en batch diario todas las respuestas publicadas automáticamente</li>
+          <li>Nunca automatizar DMs en primera instancia — mantener la percepción de contacto humano</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Módulo 4 -->
+    <div class="module">
+      <div class="module-title">Módulo 4 — Medición, reportes y optimización continua (~20 min)</div>
+      <div class="module-content">
+        <p><strong>El reporte automático semanal:</strong> Make.com extrae datos de Brandwatch + Buffer + Hootsuite cada domingo a las 23:00. Claude genera un reporte ejecutivo en español con rendimiento por plataforma, top posts, análisis de sentimiento y recomendaciones. Llega al equipo por email y Slack cada lunes a las 8:00.</p>
+
+        <p style="margin-top:.75rem"><strong>Flujo de crisis con IA:</strong></p>
+        <div class="flow-step"><span class="flow-arrow">①</span> Spike detectado por Brandwatch (&gt;200% del promedio en 2 horas)</div>
+        <div class="flow-step"><span class="flow-arrow">②</span> Alerta a Slack con resumen de Claude: qué pasa, quién lo inició, alcance, sentimiento</div>
+        <div class="flow-step"><span class="flow-arrow">③</span> Pausa automática de todos los posts programados</div>
+        <div class="flow-step"><span class="flow-arrow">④</span> Claude genera 3 opciones de respuesta oficial para que el equipo elija</div>
+        <div class="flow-step"><span class="flow-arrow">⑤</span> Community manager aprueba y publica</div>
+        <div class="flow-step"><span class="flow-arrow">⑥</span> Monitoreo intensivo cada 15 min con resumen automático hasta que el spike ceda</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <div class="exercise-title">Construye tu flujo de alerta de menciones + respuesta automática con Claude</div>
+      <p style="font-size:.88rem;color:#064e3b;margin-bottom:1rem"><strong>Duración:</strong> 25 min &nbsp;|&nbsp; <strong>Herramientas:</strong> Make.com (cuenta gratuita) + Claude API + Mention (prueba gratis)</p>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-num">1</span>
+          <strong>Configurar el monitoreo de menciones (8 min)</strong>
+        </div>
+        <ul>
+          <li>Crea una cuenta gratuita en <a href="https://mention.com" target="_blank" style="color:#059669;font-weight:600">Mention.com</a> o usa la cuenta compartida en la clase.</li>
+          <li>Configura una alerta para el nombre de tu marca (o usa "inmo" como ejemplo).</li>
+          <li>Añade variantes: nombre con y sin tildes, hashtags propios, nombres de competidores.</li>
+          <li>Conecta la alerta al webhook de Make.com que crearás en el siguiente paso.</li>
+        </ul>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-num">2</span>
+          <strong>Crear el flujo en Make.com (10 min)</strong>
+        </div>
+        <div class="code-block" style="margin-top:.5rem">
+[Trigger: Webhook] recibe la mención
+→ [HTTP Request → Claude API]
+  Prompt: <span class="string">"Analiza esta mención de marca:
+  Texto: {{mención}}
+  Plataforma: {{plataforma}}
+
+  Responde en JSON:
+  {
+    'sentimiento': 'positivo/negativo/neutro',
+    'urgencia': 'alta/media/baja',
+    'requiere_humano': true/false,
+    'respuesta_sugerida': '...',
+    'razon': '...'
+  }"</span>
+→ [Router: si urgencia = alta]
+  → Rama A: Enviar alerta a Slack/Email al equipo
+  → Rama B: Registrar en Google Sheets para revisión
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-num">3</span>
+          <strong>Probar con menciones reales (7 min)</strong>
+        </div>
+        <p>Envía 3 menciones de prueba al webhook con diferentes tonos:</p>
+        <ul>
+          <li><strong>Positiva:</strong> "¡Excelente servicio de [tu marca], totalmente recomendado!"</li>
+          <li><strong>Negativa:</strong> "[Tu marca] tardó 3 días en responder, pésimo soporte."</li>
+          <li><strong>Neutral:</strong> "¿Alguien sabe si [tu marca] tiene oficina en Monterrey?"</li>
+        </ul>
+        <p style="margin-top:.5rem">Evalúa: ¿coincide la clasificación de Claude con tu criterio humano? ¿Cambiarías algo del prompt?</p>
+      </div>
+
+      <div style="background:white;border-radius:.5rem;padding:1rem;border:1px dashed #10B981;margin-top:.5rem">
+        <p style="font-size:.85rem;color:#059669;font-weight:600">📤 Entregable</p>
+        <p style="font-size:.85rem;color:#475569;margin-top:.25rem">Screenshot del flujo funcionando + la respuesta más interesante que generó Claude para una de las menciones. Comparte en el chat del grupo.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos y lecturas</div>
+    <ul class="resources-list">
+      <li>
+        <span class="res-num">1</span>
+        <div>
+          <a href="https://docs.anthropic.com" target="_blank">Anthropic API — Documentación oficial de Claude</a>
+          <p>Punto de entrada para integrar Claude: autenticación, modelos, límites de tokens y ejemplos de código en Python y JavaScript.</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-num">2</span>
+        <div>
+          <a href="https://www.facebook.com/business/news/meta-ads-ai-connectors" target="_blank">Meta Ads AI Connectors — Meta for Business</a>
+          <p>Comunicado oficial del Meta MCP (abril 2026). Explica las 29 herramientas disponibles y cómo conectar Claude a tu cuenta publicitaria de Meta.</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-num">3</span>
+        <div>
+          <a href="https://www.make.com/en/integrations/ifttt/anthropic-claude" target="_blank">Make.com — Integración con Claude API</a>
+          <p>Guía paso a paso para conectar la API de Anthropic con Make.com, con plantillas de escenarios listos para social media.</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-num">4</span>
+        <div>
+          <a href="https://ifttt.com/explore/how-to-use-ifttt-mcp-with-claude" target="_blank">IFTTT MCP con Claude — Guía oficial</a>
+          <p>Cómo usar el MCP de IFTTT directamente desde Claude para crear automatizaciones de social media sin código.</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-num">5</span>
+        <div>
+          <a href="https://www.brandwatch.com/blog/social-listening-tools/" target="_blank">Brandwatch — Mejores herramientas de social listening 2026</a>
+          <p>Comparativa actualizada de las 12 mejores plataformas de social listening con análisis de IA, features y precios.</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-num">6</span>
+        <div>
+          <a href="https://sproutsocial.com/product-updates/2025-q1/" target="_blank">Sprout Social — Product Updates Q1 2025</a>
+          <p>Notas de release con los nuevos features de IA: Smart Categories, AI Assist y análisis de sentimiento por mensaje.</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-num">7</span>
+        <div>
+          <a href="https://www.hootsuite.com/platform/owly-writer-ai" target="_blank">Hootsuite OwlyWriter AI — Página oficial</a>
+          <p>Overview completo de OwlyWriter AI: generación de captions, repropósito de contenido y el nuevo OwlyGPT lanzado en 2025.</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-num">8</span>
+        <div>
+          <a href="https://postiz.com/agent" target="_blank">Postiz Agent — CLI para agentes de IA</a>
+          <p>Herramienta open-source para publicación automatizada en 30+ plataformas, diseñada para flujos agentivos con Claude y otros LLMs.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-clase</div>
+    <ul class="actions-list">
+      <li>
+        <span class="action-dot"></span>
+        <div><strong>Esta semana:</strong> Configura una alerta gratuita en Mention.com para tu marca. Deja que corra 7 días y trae los resultados a la próxima sesión: ¿cuántas menciones tuviste? ¿De qué tono? ¿En qué plataformas?</div>
+      </li>
+      <li>
+        <span class="action-dot"></span>
+        <div><strong>Esta semana:</strong> Crea una cuenta en Make.com y construye el flujo básico del ejercicio: Webhook → Claude API → Slack. Documenta el prompt que usaste y comparte los resultados en el canal del equipo.</div>
+      </li>
+      <li>
+        <span class="action-dot"></span>
+        <div><strong>Próximos 15 días:</strong> Usa Claude para generar el calendario de contenido de la siguiente semana para al menos una de tus redes sociales. Mide si la tasa de engagement del contenido generado difiere del habitual.</div>
+      </li>
+      <li>
+        <span class="action-dot"></span>
+        <div><strong>Próximos 30 días:</strong> Implementa el reporte semanal automático: conecta tus analytics de Buffer, Meta Business Suite o Hootsuite a Make.com y usa Claude para generar el resumen ejecutivo cada lunes. Comparte el template con el equipo.</div>
+      </li>
+      <li>
+        <span class="action-dot"></span>
+        <div><strong>Feedback:</strong> Completa el formulario de la clase antes del domingo para que Sol pueda personalizar el contenido del próximo módulo según los flujos reales de cada equipo.</div>
+      </li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  <p>Clase 08 · <span>Sol</span> · Programa de IA para el equipo · <span>Tier 2 · Marketing track</span> · Viernes 3 julio 2026</p>
+</footer>
+
+</body>
+</html>

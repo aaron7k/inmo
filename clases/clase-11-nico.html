@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 11 · Agentes de producción audiovisual — Runway Gen-4, Kling 3.0, Manus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#8B5CF6 0%,#7C3AED 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;transition:box-shadow .2s}
+    .tool-card:hover{box-shadow:0 4px 16px rgba(139,92,246,.12)}
+    .tool-name{font-weight:700;font-size:.95rem;margin-bottom:.25rem;color:#1e293b}
+    .tool-desc{font-size:.82rem;color:#64748b;margin-bottom:.6rem;line-height:1.4}
+    .tool-meta{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+    .tool-price{font-size:.8rem;color:#475569;font-weight:500}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .module{border-left:3px solid #8B5CF6;padding-left:1.25rem;margin-bottom:2rem}
+    .module-title{font-weight:700;font-size:1rem;margin-bottom:.5rem;color:#7C3AED}
+    .module-time{font-size:.8rem;color:#8B5CF6;font-weight:600;margin-bottom:.75rem;display:inline-block;background:rgba(139,92,246,.08);padding:.15rem .6rem;border-radius:999px}
+    .module p{color:#374151;font-size:.92rem;margin-bottom:.6rem}
+    .module ul{padding-left:1.5rem;color:#374151;font-size:.92rem}
+    .module ul li{margin-bottom:.35rem}
+    .exercise-box{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-box h3{color:#7C3AED;font-weight:700;margin-bottom:1rem;font-size:1rem}
+    .exercise-step{background:white;border-radius:.5rem;padding:1rem;margin-bottom:.75rem;border:1px solid #e2e8f0}
+    .exercise-step-num{display:inline-block;background:#8B5CF6;color:white;width:1.5rem;height:1.5rem;border-radius:50%;text-align:center;line-height:1.5rem;font-size:.75rem;font-weight:700;margin-right:.5rem}
+    .exercise-step strong{color:#1e293b;font-size:.92rem}
+    .exercise-step p{font-size:.87rem;color:#475569;margin-top:.35rem}
+    ul{padding-left:1.5rem}li{margin-bottom:.4rem}
+    .objective-list{counter-reset:obj;list-style:none;padding-left:0}
+    .objective-list li{counter-increment:obj;display:flex;gap:.75rem;margin-bottom:.85rem;align-items:flex-start}
+    .objective-list li::before{content:counter(obj);background:linear-gradient(135deg,#8B5CF6,#7C3AED);color:white;min-width:1.6rem;height:1.6rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;margin-top:.1rem}
+    .objective-text{font-size:.92rem;color:#374151}
+    .objective-text strong{color:#1e293b}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+    .concept-card{background:#fafafa;border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem}
+    .concept-title{font-weight:700;font-size:.9rem;color:#7C3AED;margin-bottom:.4rem}
+    .concept-body{font-size:.85rem;color:#475569;line-height:1.5}
+    .compare-table{width:100%;border-collapse:collapse;font-size:.85rem}
+    .compare-table th{background:linear-gradient(135deg,#8B5CF6,#7C3AED);color:white;padding:.6rem .8rem;text-align:left;font-weight:600}
+    .compare-table th:first-child{border-radius:.4rem 0 0 0}
+    .compare-table th:last-child{border-radius:0 .4rem 0 0}
+    .compare-table td{padding:.55rem .8rem;border-bottom:1px solid #f1f5f9;color:#374151;vertical-align:top}
+    .compare-table tr:nth-child(even) td{background:#f8fafc}
+    .compare-table tr:last-child td{border-bottom:none}
+    .compare-table td:first-child{font-weight:600;color:#1e293b}
+    .highlight-box{background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(124,58,237,.04));border:1px solid rgba(139,92,246,.2);border-radius:.75rem;padding:1.2rem;margin:1rem 0}
+    .highlight-box p{font-size:.88rem;color:#374151;margin:0}
+    .highlight-box strong{color:#7C3AED}
+    .resource-link{display:flex;align-items:center;gap:.5rem;padding:.5rem 0;border-bottom:1px solid #f1f5f9;text-decoration:none;color:#374151;font-size:.88rem;transition:color .2s}
+    .resource-link:last-child{border-bottom:none}
+    .resource-link:hover{color:#7C3AED}
+    .resource-link::before{content:"→";color:#8B5CF6;font-weight:700}
+    .checklist{list-style:none;padding-left:0}
+    .checklist li{display:flex;align-items:flex-start;gap:.6rem;padding:.4rem 0;font-size:.9rem;color:#374151}
+    .checklist li::before{content:"☐";color:#8B5CF6;font-size:1rem;line-height:1.2;flex-shrink:0}
+    .flow-steps{display:flex;flex-direction:column;gap:.5rem}
+    .flow-step{display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;background:#f8fafc;border-radius:.5rem;border:1px solid #e2e8f0;font-size:.87rem;color:#374151}
+    .flow-step .arrow{color:#8B5CF6;font-weight:700;font-size:1rem}
+    .flow-step strong{color:#1e293b}
+    .pricing-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.75rem}
+    .pricing-table th{background:#f1f5f9;color:#475569;padding:.5rem .7rem;text-align:left;font-weight:600;font-size:.8rem}
+    .pricing-table td{padding:.5rem .7rem;border-bottom:1px solid #f8fafc;color:#374151}
+    .pricing-table tr:last-child td{border-bottom:none}
+    .pricing-table td:first-child{font-weight:600;color:#1e293b}
+    .section-divider{height:2px;background:linear-gradient(90deg,#8B5CF6,transparent);margin:1.5rem 0;border:none}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    .platform-hero{display:flex;align-items:center;gap:1rem;padding:1rem;background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(124,58,237,.04));border-radius:.75rem;margin-bottom:1.25rem}
+    .platform-icon{font-size:2rem}
+    .platform-hero h3{font-size:1.05rem;font-weight:700;color:#1e293b;margin-bottom:.2rem}
+    .platform-hero p{font-size:.82rem;color:#64748b}
+    @media(max-width:600px){.hero{padding:2rem 1rem}.tool-grid{grid-template-columns:1fr}.concept-grid{grid-template-columns:1fr}.compare-table{font-size:.78rem}}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="tier-badge">Tier 3 · Audiovisual</div>
+    <h1>🎬 Agentes de producción audiovisual<br>Runway Gen-4 · Kling 3.0 · Manus</h1>
+    <div class="hero-meta">
+      <span>👤 Nico</span>
+      <span>📅 Viernes 17 julio 2026</span>
+      <span>👥 Audiencia: Audiovisual</span>
+      <span>⏱ 90 minutos</span>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la clase</div>
+    <ol class="objective-list">
+      <li><span class="objective-text"><strong>Dominar Runway Gen-4 y Gen-4.5</strong> para generar clips cinematográficos con consistencia de personajes, Motion Brush y control de cámara avanzado.</span></li>
+      <li><span class="objective-text"><strong>Usar Kling 3.0</strong> para producir videos de hasta 15 segundos en 4K nativo con audio y lip-sync multilingüe generado directamente desde el prompt.</span></li>
+      <li><span class="objective-text"><strong>Orquestar Manus AI como agente de producción</strong> para automatizar flujos completos: brief → storyboard → generación → ensamblado → exportación.</span></li>
+      <li><span class="objective-text"><strong>Comparar las plataformas</strong> de forma objetiva y elegir la herramienta correcta según tipo de proyecto, presupuesto y nivel de control creativo.</span></li>
+      <li><span class="objective-text"><strong>Construir un flujo de producción audiovisual con IA</strong> integrando generación de video, audio sintético (ElevenLabs) y edición asistida (CapCut AI).</span></li>
+    </ol>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-title">Video generation</div>
+        <div class="concept-body">Proceso por el que un modelo de IA convierte texto o imágenes estáticas en clips de video con movimiento coherente, física de objetos e iluminación realista.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-title">Motion control</div>
+        <div class="concept-body">Capacidad de especificar movimientos de cámara (pan, zoom, dolly, tilt) y de objetos dentro del cuadro. Runway usa Motion Brush; Kling acepta instrucciones en lenguaje natural.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-title">Keyframes</div>
+        <div class="concept-body">Fotogramas clave que anclan el estado visual en un momento específico. Las imágenes de referencia actúan como keyframes para garantizar coherencia entre escenas.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-title">Consistencia de personajes</div>
+        <div class="concept-body">Capacidad de mantener los rasgos, ropa y estilo visual de un personaje a través de distintos planos, ángulos y condiciones de iluminación, clip tras clip.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-title">Agentes de producción</div>
+        <div class="concept-body">Sistemas de IA autónomos que ejecutan tareas completas de extremo a extremo: navegan la web, generan imágenes y videos, y entregan resultados finales sin intervención humana constante.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-title">Prompting para video</div>
+        <div class="concept-body">Escribir prompts efectivos para video requiere estructura: sujeto + acción + plano cinematográfico + iluminación + movimiento de cámara + atmósfera general.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-title">Multi-shot storyboard</div>
+        <div class="concept-body">Función de Kling 3.0 Omni que permite definir una secuencia de planos con duración, tamaño, perspectiva y movimiento para cada escena, generando el video completo en un solo pipeline.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-title">Audio sintético nativo</div>
+        <div class="concept-body">Generación de voz, música y efectos dentro del proceso de creación del video. Kling 3.0 produce audio lip-synced en 5 idiomas sin necesidad de post-producción externa.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-name">🎬 Runway Gen-4 / Gen-4.5</div>
+        <div class="tool-desc">Generación de video con control creativo avanzado, Motion Brush, consistencia de personajes y edición in-video con Aleph.</div>
+        <div class="tool-meta">
+          <span class="tool-price">Desde $15/mes · 625 créditos</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div style="margin-top:.6rem"><a href="https://runwayml.com" target="_blank" style="font-size:.78rem;color:#8B5CF6;text-decoration:none;font-weight:600">runwayml.com →</a></div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">⚡ Kling 3.0</div>
+        <div class="tool-desc">Video 4K nativo hasta 15 seg a 60fps con audio lip-sync en 5 idiomas, multi-shot storyboard y arquitectura de razonamiento visual.</div>
+        <div class="tool-meta">
+          <span class="tool-price">Desde $6.99/mes · API $0.084/s</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div style="margin-top:.6rem"><a href="https://klingai.com" target="_blank" style="font-size:.78rem;color:#8B5CF6;text-decoration:none;font-weight:600">klingai.com →</a></div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">🤖 Manus AI</div>
+        <div class="tool-desc">Agente autónomo de propósito general que opera un computador virtual. Orquesta todo el flujo de producción desde el brief hasta la entrega.</div>
+        <div class="tool-meta">
+          <span class="tool-price">Desde $20/mes · 4,000 créditos</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div style="margin-top:.6rem"><a href="https://manus.im" target="_blank" style="font-size:.78rem;color:#8B5CF6;text-decoration:none;font-weight:600">manus.im →</a></div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">🌐 Sora (OpenAI)</div>
+        <div class="tool-desc">Generación de video de alta fidelidad narrativa y coherencia temporal. Disponible vía ChatGPT Pro (el acceso API se discontinúa en sept. 2026).</div>
+        <div class="tool-meta">
+          <span class="tool-price">ChatGPT Pro $200/mes</span>
+          <span class="badge badge-paid">Pago</span>
+        </div>
+        <div style="margin-top:.6rem"><a href="https://openai.com/sora" target="_blank" style="font-size:.78rem;color:#8B5CF6;text-decoration:none;font-weight:600">openai.com/sora →</a></div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">🦋 Pika Labs</div>
+        <div class="tool-desc">Generación y animación de video, efectos especiales y loops estilizados. Ideal para contenido social y experimentación creativa.</div>
+        <div class="tool-meta">
+          <span class="tool-price">Gratis (con marca de agua)</span>
+          <span class="badge badge-free">Free</span>
+        </div>
+        <div style="margin-top:.6rem"><a href="https://pika.art" target="_blank" style="font-size:.78rem;color:#8B5CF6;text-decoration:none;font-weight:600">pika.art →</a></div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">✨ Luma Dream Machine</div>
+        <div class="tool-desc">Plataforma versátil con múltiples modelos de generación de video, especializada en movimiento 3D-style y transiciones fluidas.</div>
+        <div class="tool-meta">
+          <span class="tool-price">Gratis (acceso limitado)</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div style="margin-top:.6rem"><a href="https://lumalabs.ai/dream-machine" target="_blank" style="font-size:.78rem;color:#8B5CF6;text-decoration:none;font-weight:600">lumalabs.ai →</a></div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">🎙️ ElevenLabs</div>
+        <div class="tool-desc">Síntesis de voz ultrarrealista, clonación de voz, efectos de sonido y narración en múltiples idiomas y acentos para post-producción.</div>
+        <div class="tool-meta">
+          <span class="tool-price">Gratis · 10k chars/mes</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div style="margin-top:.6rem"><a href="https://elevenlabs.io" target="_blank" style="font-size:.78rem;color:#8B5CF6;text-decoration:none;font-weight:600">elevenlabs.io →</a></div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">✂️ CapCut AI</div>
+        <div class="tool-desc">Edición de video asistida por IA: subtítulos automáticos, text-to-speech, eliminación de objetos, B-roll y exportación optimizada para redes.</div>
+        <div class="tool-meta">
+          <span class="tool-price">Gratis (funciones básicas)</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div style="margin-top:.6rem"><a href="https://www.capcut.com" target="_blank" style="font-size:.78rem;color:#8B5CF6;text-decoration:none;font-weight:600">capcut.com →</a></div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">🔬 Veo 3 (Google)</div>
+        <div class="tool-desc">Modelo de Google DeepMind con video realista y audio nativo integrado. Disponible en Google AI Ultra con capacidades de generación de diálogos.</div>
+        <div class="tool-meta">
+          <span class="tool-price">Google AI Ultra $249/mes</span>
+          <span class="badge badge-paid">Pago</span>
+        </div>
+        <div style="margin-top:.6rem"><a href="https://deepmind.google/technologies/veo/" target="_blank" style="font-size:.78rem;color:#8B5CF6;text-decoration:none;font-weight:600">deepmind.google →</a></div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">🔮 Kling O1</div>
+        <div class="tool-desc">Primer modelo multimodal unificado del mundo. Combina texto, imagen, audio y video en un solo pipeline de generación sin cambiar de herramienta.</div>
+        <div class="tool-meta">
+          <span class="tool-price">API por segundo</span>
+          <span class="badge badge-paid">Pago</span>
+        </div>
+        <div style="margin-top:.6rem"><a href="https://klingai.com" target="_blank" style="font-size:.78rem;color:#8B5CF6;text-decoration:none;font-weight:600">klingai.com →</a></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTENIDO / MÓDULOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Contenido de la clase — 4 módulos</div>
+
+    <!-- Módulo 1 -->
+    <div class="module">
+      <div class="module-title">Módulo 1 — Comparativa de plataformas de generación de video</div>
+      <span class="module-time">20 minutos</span>
+      <p>Panorama del ecosistema en 2026: tres categorías claras de herramientas y cómo elegir según el tipo de proyecto.</p>
+
+      <table class="compare-table" style="margin-top:1rem">
+        <thead>
+          <tr>
+            <th>Criterio</th>
+            <th>Runway Gen-4</th>
+            <th>Kling 3.0</th>
+            <th>Manus AI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Duración máxima</td><td>10 segundos</td><td>15 segundos</td><td>N/A (orquestador)</td></tr>
+          <tr><td>Resolución</td><td>1080p</td><td>4K nativo</td><td>N/A</td></tr>
+          <tr><td>FPS</td><td>24 fps</td><td>60 fps</td><td>N/A</td></tr>
+          <tr><td>Audio integrado</td><td>No</td><td>Sí (5 idiomas)</td><td>Vía APIs terceros</td></tr>
+          <tr><td>Control de cámara</td><td>Motion Brush + prompts</td><td>Lenguaje natural</td><td>Vía agente</td></tr>
+          <tr><td>Consistencia personajes</td><td>Alta (reference images)</td><td>Alta (reasoning visual)</td><td>Depende del modelo</td></tr>
+          <tr><td>Precio entrada</td><td>$15/mes</td><td>$6.99/mes</td><td>$20/mes</td></tr>
+          <tr><td>Costo por segundo (API)</td><td>~$0.10/s</td><td>~$0.084/s</td><td>Por créditos de tarea</td></tr>
+          <tr><td>Mejor para</td><td>Ads, branded content</td><td>Cine, comerciales 4K</td><td>Flujos end-to-end</td></tr>
+        </tbody>
+      </table>
+
+      <div class="highlight-box" style="margin-top:1rem">
+        <p><strong>Dato clave:</strong> Kling 3.0 es un 65% más barato que Sora y un 44% más barato que Runway en costo por segundo de video, manteniendo calidad de producción comercial.</p>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Módulo 2 -->
+    <div class="module">
+      <div class="module-title">Módulo 2 — Runway Gen-4 en profundidad</div>
+      <span class="module-time">25 minutos</span>
+
+      <div class="platform-hero">
+        <div class="platform-icon">🎬</div>
+        <div>
+          <h3>Runway Gen-4 y Gen-4.5</h3>
+          <p>El favorito de los profesionales cuando se necesita control creativo granular. Gen-4.5 (dic. 2025) ocupa el primer lugar en benchmarks de calidad.</p>
+        </div>
+      </div>
+
+      <p style="margin-bottom:.75rem"><strong>Funcionalidades clave:</strong></p>
+      <ul style="margin-bottom:1rem">
+        <li><strong>Reference images:</strong> sube 1-3 fotos de un personaje y el modelo mantiene su identidad visual (rasgos, ropa, estilo) en todos los clips generados</li>
+        <li><strong>Motion Brush:</strong> pinta zonas de la imagen y define dirección/intensidad del movimiento — controla exactamente qué se mueve y cómo</li>
+        <li><strong>Aleph (jul. 2025):</strong> edición in-video con prompts de texto sin regenerar el clip completo — ideal para correcciones puntuales</li>
+        <li><strong>Gen-4 Turbo:</strong> clips de 10 seg en ~30 seg (5× más rápido), ideal para iteración rápida y exploración de ideas</li>
+        <li><strong>Gen-4.5 mejoras:</strong> mejor simulación de física (agua, telas, humo), mayor adherencia al prompt y movimiento más fluido</li>
+      </ul>
+
+      <p style="margin-bottom:.75rem"><strong>Planes y créditos:</strong></p>
+      <table class="pricing-table">
+        <thead>
+          <tr><th>Plan</th><th>Precio/mes</th><th>Créditos</th><th>Segundos Gen-4</th><th>Segundos Gen-4.5</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Free</td><td>$0</td><td>125 únicos</td><td>~7 seg</td><td>~5 seg</td></tr>
+          <tr><td>Standard</td><td>$15</td><td>625/mes</td><td>~31 seg</td><td>~25 seg</td></tr>
+          <tr><td>Pro</td><td>$35</td><td>2,250/mes</td><td>~112 seg</td><td>~90 seg</td></tr>
+          <tr><td>Unlimited</td><td>$95</td><td>Sin límite (std)</td><td>Ilimitado</td><td>Limitado</td></tr>
+          <tr><td>Enterprise</td><td>~$800/mes</td><td>Custom</td><td>Custom</td><td>Custom</td></tr>
+        </tbody>
+      </table>
+
+      <div class="highlight-box">
+        <p><strong>Flujo recomendado:</strong> itera con Gen-4 Turbo (más barato) → cuando el resultado te convence, genera la versión final en Gen-4.5 → usa Aleph para correcciones puntuales.</p>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Módulo 3 -->
+    <div class="module">
+      <div class="module-title">Módulo 3 — Kling 3.0 en profundidad</div>
+      <span class="module-time">25 minutos</span>
+
+      <div class="platform-hero">
+        <div class="platform-icon">⚡</div>
+        <div>
+          <h3>Kling 3.0 — Kuaishou Technology</h3>
+          <p>Lanzado el 5 de febrero de 2026. 4K nativo a 60fps, audio lip-sync multilingüe y arquitectura de razonamiento visual.</p>
+        </div>
+      </div>
+
+      <p style="margin-bottom:.75rem"><strong>Variantes del modelo:</strong></p>
+      <ul style="margin-bottom:1rem">
+        <li><strong>Video 3.0:</strong> text-to-video estándar hasta 15 seg en 4K</li>
+        <li><strong>Video 3.0 Omni:</strong> reference-based con multi-shot storyboard para secuencias narrativas</li>
+        <li><strong>Image 3.0:</strong> generación de imágenes en 2K y 4K nativo</li>
+        <li><strong>Kling O1:</strong> modelo multimodal unificado — texto + imagen + audio + video en un solo pipeline</li>
+      </ul>
+
+      <p style="margin-bottom:.75rem"><strong>Audio y lip-sync nativo:</strong></p>
+      <ul style="margin-bottom:1rem">
+        <li>Genera voz en el idioma especificado de forma nativa (no es traducción post-generación)</li>
+        <li>Sincroniza labios con el audio automáticamente en una sola pasada</li>
+        <li>Soporta diálogos multi-personaje en el mismo clip con voces distintas</li>
+        <li><strong>Idiomas:</strong> Chino, Inglés (americano, británico, indio), Japonés, Coreano, Español</li>
+      </ul>
+
+      <p style="margin-bottom:.75rem"><strong>Multi-shot storyboard (Video 3.0 Omni):</strong></p>
+      <p style="font-size:.88rem;color:#374151;margin-bottom:1rem">Especifica para cada plano: duración exacta · tamaño de plano (primer plano, general, detalle) · perspectiva · contenido narrativo · movimiento de cámara. El modelo genera la secuencia completa de forma coherente.</p>
+
+      <table class="pricing-table">
+        <thead>
+          <tr><th>Plan</th><th>Precio/mes</th><th>Créditos</th><th>4K</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Free</td><td>$0</td><td>66/día</td><td>Limitado</td></tr>
+          <tr><td>Standard</td><td>$6.99</td><td>Ampliado</td><td>Sí</td></tr>
+          <tr><td>Pro</td><td>~$29.99</td><td>Mayor</td><td>Sí</td></tr>
+          <tr><td>Premier</td><td>$64.99</td><td>Máximo</td><td>Prioritario</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Módulo 4 -->
+    <div class="module">
+      <div class="module-title">Módulo 4 — Flujo de producción completo con Manus AI</div>
+      <span class="module-time">20 minutos</span>
+
+      <div class="platform-hero">
+        <div class="platform-icon">🤖</div>
+        <div>
+          <h3>Manus AI — Agente de producción autónomo</h3>
+          <p>Desarrollado por Monica.im, adquirido por Meta (dic. 2025) por ~$2-3B USD. Opera un computador virtual de forma completamente autónoma.</p>
+        </div>
+      </div>
+
+      <p style="margin-bottom:.75rem"><strong>Flujo de producción orquestado por Manus:</strong></p>
+      <div class="flow-steps" style="margin-bottom:1rem">
+        <div class="flow-step"><span class="arrow">1</span><div><strong>Brief del cliente</strong> — Manus recibe el brief en lenguaje natural</div></div>
+        <div class="flow-step"><span class="arrow">2</span><div><strong>Investigación de referentes</strong> — navega la web, recopila moodboard visual</div></div>
+        <div class="flow-step"><span class="arrow">3</span><div><strong>Script + storyboard</strong> — escribe el guión y desglosa la producción</div></div>
+        <div class="flow-step"><span class="arrow">4</span><div><strong>Generación de imágenes de concepto</strong> — vía Image 3.0 o FLUX</div></div>
+        <div class="flow-step"><span class="arrow">5</span><div><strong>Generación de clips de video</strong> — Runway o Kling vía API</div></div>
+        <div class="flow-step"><span class="arrow">6</span><div><strong>Narración de voz</strong> — ElevenLabs API con la voz especificada</div></div>
+        <div class="flow-step"><span class="arrow">7</span><div><strong>Rough cut ensamblado</strong> — entrega al productor para revisión final</div></div>
+      </div>
+
+      <p style="margin-bottom:.75rem"><strong>Consumo de créditos estimado:</strong></p>
+      <ul style="margin-bottom:1rem">
+        <li>Respuesta simple: 10-50 créditos</li>
+        <li>Generación de storyboard con imágenes: 200-400 créditos</li>
+        <li>Investigación profunda + informe: 500-900 créditos</li>
+        <li>Flujo completo de producción: 1,000-3,000 créditos</li>
+      </ul>
+
+      <div class="highlight-box">
+        <p><strong>Atención:</strong> Manus no muestra estimación de créditos antes de ejecutar la tarea. Monitorea el saldo activamente y empieza con tareas de scope pequeño para calibrar el consumo.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <h3>🎬 Crea un video de 30 segundos con al menos 2 plataformas</h3>
+      <p style="font-size:.88rem;color:#475569;margin-bottom:1.25rem">Produce un spot de producto o clip narrativo de 30 segundos combinando mínimo 2 herramientas del stack tecnológico.</p>
+
+      <div class="exercise-step">
+        <span class="exercise-step-num">1</span>
+        <strong>Planificación (10 min)</strong>
+        <p>Elige un producto o historia sencilla. Escribe un storyboard de 3-5 escenas con descripción breve de cada una. Define el estilo visual: cinematográfico, publicitario, documental o fantástico.</p>
+      </div>
+
+      <div class="exercise-step">
+        <span class="exercise-step-num">2</span>
+        <strong>Generación de clips (20 min)</strong>
+        <p>Usa <strong>Kling 3.0</strong> para la escena principal (hasta 15 seg, 4K). Usa <strong>Runway Gen-4 Turbo</strong> para escenas de apoyo con control de cámara. Opcional: <strong>Pika</strong> o <strong>Luma</strong> para una escena experimental.</p>
+      </div>
+
+      <div class="exercise-step">
+        <span class="exercise-step-num">3</span>
+        <strong>Audio (10 min)</strong>
+        <p>Genera la narración en <strong>ElevenLabs</strong> con la voz que mejor encaje con tu historia. Si usaste Kling 3.0, activa el audio nativo con lip-sync para la escena del personaje.</p>
+      </div>
+
+      <div class="exercise-step">
+        <span class="exercise-step-num">4</span>
+        <strong>Edición final (15 min)</strong>
+        <p>Importa todos los clips en <strong>CapCut AI</strong>. Añade subtítulos automáticos, ajusta cortes y añade música de fondo. Exporta en 1080p o 4K según el destino.</p>
+      </div>
+
+      <p style="font-size:.85rem;font-weight:600;color:#7C3AED;margin-top:1rem;margin-bottom:.6rem">Criterios de evaluación:</p>
+      <ul class="checklist">
+        <li>El video tiene al menos 25 segundos de duración</li>
+        <li>Se usaron 2 o más plataformas de generación</li>
+        <li>Hay coherencia visual entre los clips (paleta de color, estilo)</li>
+        <li>El audio está sincronizado con las imágenes</li>
+        <li>El resultado es apto para redes sociales o presentación a cliente</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos</div>
+
+    <p style="font-weight:700;font-size:.9rem;color:#475569;margin-bottom:.6rem;text-transform:uppercase;letter-spacing:.04em">Documentación oficial</p>
+    <a class="resource-link" href="https://help.runwayml.com/hc/en-us/articles/37327109429011-Creating-with-Gen-4-Video" target="_blank">Runway Gen-4 — Guía de usuario oficial</a>
+    <a class="resource-link" href="https://docs.dev.runwayml.com/guides/pricing/" target="_blank">Runway API — Pricing & Credits</a>
+    <a class="resource-link" href="https://klingai.com" target="_blank">Kling AI — Sitio oficial (Video 3.0, Omni, O1)</a>
+    <a class="resource-link" href="https://manus.im/docs" target="_blank">Manus AI — Documentación oficial y planes</a>
+    <a class="resource-link" href="https://elevenlabs.io/voice-library" target="_blank">ElevenLabs — Biblioteca de voces</a>
+
+    <p style="font-weight:700;font-size:.9rem;color:#475569;margin:.75rem 0 .6rem;text-transform:uppercase;letter-spacing:.04em">Comparativas y benchmarks</p>
+    <a class="resource-link" href="https://invideo.io/blog/kling-vs-sora-vs-veo-vs-runway/" target="_blank">Kling vs Sora vs Veo vs Runway — InVideo</a>
+    <a class="resource-link" href="https://ulazai.com/ai-video-models-guide-2025/" target="_blank">Best AI Video Models 2026 — UlazAI</a>
+    <a class="resource-link" href="https://lushbinary.com/blog/ai-video-generation-sora-veo-kling-seedance-comparison/" target="_blank">Sora 2 vs Veo 3.1 vs Kling 3.0 Compared — Lushbinary</a>
+
+    <p style="font-weight:700;font-size:.9rem;color:#475569;margin:.75rem 0 .6rem;text-transform:uppercase;letter-spacing:.04em">Precios actualizados</p>
+    <a class="resource-link" href="https://propicked.com/blog/runway-ml-pricing-2026-hidden-costs" target="_blank">Runway ML Pricing 2026 — ProPicked</a>
+    <a class="resource-link" href="https://soravideo.art/blog/kling-3-pricing" target="_blank">Kling 3.0 Pricing — SoraVideo</a>
+    <a class="resource-link" href="https://www.lindy.ai/blog/manus-ai-pricing" target="_blank">Manus AI Pricing 2026 — Lindy</a>
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-clase</div>
+
+    <p style="font-weight:700;font-size:.9rem;color:#7C3AED;margin-bottom:.75rem">Esta semana:</p>
+    <ul class="checklist">
+      <li>Crear cuenta en Runway (plan Free o Standard) y generar el primer clip con Gen-4 Turbo usando una imagen de referencia</li>
+      <li>Probar Kling 3.0 con audio nativo: generar un clip de 10 segundos con un personaje hablando en español</li>
+      <li>Explorar Manus AI (300 créditos diarios gratis) enviando un prompt completo de brief de producción</li>
+    </ul>
+
+    <p style="font-weight:700;font-size:.9rem;color:#7C3AED;margin:1rem 0 .75rem">Próximas 2 semanas:</p>
+    <ul class="checklist">
+      <li>Completar el ejercicio práctico del spot de 30 segundos y compartirlo en el canal de la comunidad</li>
+      <li>Comparar el costo real de producir el mismo clip en Runway vs Kling y documentar la diferencia</li>
+      <li>Investigar Veo 3 de Google como alternativa emergente con audio nativo integrado</li>
+    </ul>
+
+    <p style="font-weight:700;font-size:.9rem;color:#7C3AED;margin:1rem 0 .75rem">Para seguir aprendiendo:</p>
+    <ul class="checklist">
+      <li>Leer la documentación de la API de Runway para automatizar generación de clips en flujos propios</li>
+      <li>Explorar los presets de voz de ElevenLabs y crear una voz personalizada clonada</li>
+      <li>Ver el demo completo de Manus AI para entender el alcance real del agente autónomo</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  Clase 11 · Agentes de producción audiovisual · Runway Gen-4 · Kling 3.0 · Manus · Presentador: Nico · Viernes 17 julio 2026
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sesión 08 · Centralizar y optimizar el uso de múltiples herramientas de IA — Nati</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#6366F1 0%,#4F46E5 100%);padding:3rem 2rem;color:white}
+    .hero-inner{max-width:900px;margin:0 auto}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-sub{font-size:1rem;opacity:.88;margin-top:.6rem;font-weight:500}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.88rem;margin-top:1.2rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .hero-meta svg{flex-shrink:0}
+
+    /* LAYOUT */
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+
+    /* STATS BANNER */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .stat-card{background:white;border-radius:.75rem;padding:1.25rem 1rem;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06);border-top:3px solid #6366F1}
+    .stat-num{font-size:1.8rem;font-weight:800;color:#6366F1;line-height:1}
+    .stat-label{font-size:.75rem;color:#64748b;margin-top:.3rem;line-height:1.3}
+
+    /* CARDS */
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#0f172a}
+    .card-title .icon{font-size:1.3rem}
+
+    /* OBJETIVOS */
+    .objetivo-list{list-style:none;display:flex;flex-direction:column;gap:.75rem}
+    .objetivo-list li{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 1rem;border-radius:.5rem;background:#eef2ff;border:1px solid #c7d2fe}
+    .objetivo-list li .num{background:#6366F1;color:white;border-radius:999px;width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+    .objetivo-list li strong{color:#3730a3}
+
+    /* CONCEPTOS */
+    .concepto{border-left:3px solid #6366F1;padding-left:1rem;margin-bottom:1.25rem}
+    .concepto h4{font-weight:700;color:#4F46E5;font-size:.95rem;margin-bottom:.25rem}
+    .concepto p{font-size:.9rem;color:#475569}
+
+    /* TOOL GRID */
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1.1rem;background:#fafafa;display:flex;flex-direction:column;gap:.5rem;transition:box-shadow .2s,border-color .2s}
+    .tool-card:hover{box-shadow:0 4px 16px rgba(99,102,241,.15);border-color:#6366F1}
+    .tool-card-header{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+    .tool-name{font-weight:700;font-size:.9rem;color:#0f172a}
+    .tool-role{font-size:.8rem;color:#64748b;line-height:1.4}
+    .tool-link{font-size:.75rem;color:#6366F1;text-decoration:none;font-weight:600;white-space:nowrap}
+    .tool-link:hover{text-decoration:underline}
+
+    /* BADGES */
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .badge-once{background:#f3e8ff;color:#7c3aed}
+
+    /* DECISION TABLE */
+    .table-wrap{overflow-x:auto;margin:.75rem 0}
+    table{width:100%;border-collapse:collapse;font-size:.85rem}
+    th{background:#eef2ff;color:#4F46E5;font-weight:700;padding:.65rem .9rem;text-align:left;border-bottom:2px solid #c7d2fe}
+    td{padding:.55rem .9rem;border-bottom:1px solid #f1f5f9;color:#374151;vertical-align:top}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#f8fafc}
+
+    /* MÓDULOS */
+    .module{border-left:3px solid #6366F1;padding-left:1.25rem;margin-bottom:2rem}
+    .module-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;flex-wrap:wrap}
+    .module-num{background:#6366F1;color:white;font-weight:800;font-size:.8rem;border-radius:.4rem;padding:.2rem .55rem;white-space:nowrap}
+    .module-title{font-size:1rem;font-weight:700;color:#0f172a}
+    .module-time{font-size:.8rem;color:#94a3b8;margin-left:auto}
+    .module p{font-size:.9rem;color:#475569;margin-bottom:.5rem}
+    .module ul{font-size:.9rem;color:#475569;padding-left:1.4rem}
+    .module ul li{margin-bottom:.3rem}
+
+    /* PROMPT BOX */
+    .prompt-box{background:#0f172a;border-radius:.75rem;padding:1.25rem 1.5rem;margin:.75rem 0;font-family:'Courier New',monospace;font-size:.8rem;color:#94a3b8;white-space:pre-wrap;line-height:1.7;overflow-x:auto}
+    .prompt-label{font-size:.72rem;font-weight:600;color:#64748b;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em}
+
+    /* EXERCISE BOX */
+    .exercise-box{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-box h3{color:#4F46E5;font-size:1rem;font-weight:700;margin-bottom:.75rem}
+    .exercise-steps{list-style:none;counter-reset:step;display:flex;flex-direction:column;gap:.75rem}
+    .exercise-steps li{counter-increment:step;display:flex;gap:.75rem;font-size:.88rem;color:#374151;align-items:flex-start}
+    .exercise-steps li::before{content:counter(step);background:#6366F1;color:white;border-radius:999px;width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+    .exercise-steps li strong{color:#0f172a}
+
+    /* CLASIFICACION TAGS */
+    .tag-essential{display:inline-block;background:#dcfce7;color:#16a34a;border-radius:999px;font-size:.72rem;font-weight:700;padding:.1rem .5rem}
+    .tag-useful{display:inline-block;background:#fef3c7;color:#d97706;border-radius:999px;font-size:.72rem;font-weight:700;padding:.1rem .5rem}
+    .tag-remove{display:inline-block;background:#fee2e2;color:#dc2626;border-radius:999px;font-size:.72rem;font-weight:700;padding:.1rem .5rem}
+
+    /* RECURSOS */
+    .resource-section{margin-bottom:1.25rem}
+    .resource-section h4{font-size:.82rem;font-weight:700;color:#6366F1;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem}
+    .resource-list{list-style:none;display:flex;flex-direction:column;gap:.4rem}
+    .resource-list a{font-size:.88rem;color:#0f172a;text-decoration:none;display:flex;align-items:center;gap:.5rem}
+    .resource-list a:hover{color:#6366F1}
+    .resource-list a::before{content:'→';color:#6366F1;font-weight:700;flex-shrink:0}
+
+    /* ACCIONES */
+    .action-weeks{display:flex;flex-direction:column;gap:1rem}
+    .action-week{border-left:3px solid #6366F1;padding-left:1rem}
+    .action-week-label{font-size:.75rem;font-weight:700;color:#6366F1;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
+    .action-list{list-style:none;display:flex;flex-direction:column;gap:.45rem}
+    .action-list li{display:flex;align-items:flex-start;gap:.65rem;font-size:.88rem;color:#374151}
+    .action-list li .checkbox{width:1rem;height:1rem;border:2px solid #6366F1;border-radius:.25rem;flex-shrink:0;margin-top:.2rem}
+
+    /* FLOW */
+    .flow{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}
+    .flow-step{background:#eef2ff;border:1px solid #c7d2fe;border-radius:.5rem;padding:.4rem .85rem;font-size:.82rem;font-weight:600;color:#4338ca}
+    .flow-arrow{color:#6366F1;font-weight:700;font-size:1rem}
+
+    /* UTILS */
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem}
+    a{color:#6366F1}
+    strong{font-weight:700}
+
+    /* HIGHLIGHT QUOTE */
+    .insight-box{background:#eef2ff;border-left:4px solid #6366F1;border-radius:0 .5rem .5rem 0;padding:1rem 1.25rem;margin:.75rem 0;font-size:.9rem;color:#3730a3;font-style:italic}
+
+    /* FOOTER */
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem;border-top:1px solid #e2e8f0;margin-top:1rem}
+    footer strong{color:#6366F1}
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="tier-badge">Asesoría 1-on-1 · Gestión de herramientas</div>
+    <h1>🗂️ Centralizar y optimizar el uso<br>de múltiples herramientas de IA</h1>
+    <p class="hero-sub">Del caos de apps al sistema unificado — cómo construir un stack de IA que realmente funciona</p>
+    <div class="hero-meta">
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Participante: <strong>Nati</strong>
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        90 minutos
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Sesión individual
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        2025
+      </span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ═══════ STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num">28%</div>
+      <div class="stat-label">de empresas usa más de 10 apps de IA distintas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">70%</div>
+      <div class="stat-label">no ha logrado integrar sus herramientas de forma coherente</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">37%</div>
+      <div class="stat-label">más tiempo pierden usuarios con 4+ herramientas desconectadas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">400%</div>
+      <div class="stat-label">ROI potencial al consolidar el stack en 3 años</div>
+    </div>
+  </div>
+
+  <!-- ═══════ OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la sesión</div>
+    <ul class="objetivo-list">
+      <li>
+        <span class="num">1</span>
+        <div><strong>Crear un stack de IA unificado y personalizado</strong> — auditar todas las herramientas actuales, eliminar duplicaciones y construir un flujo que funcione como sistema coherente, no como colección de apps dispersas.</div>
+      </li>
+      <li>
+        <span class="num">2</span>
+        <div><strong>Evitar la duplicación de herramientas</strong> — identificar qué herramientas cubren funciones idénticas y tomar decisiones basadas en uso real, no en miedo a perderse algo (FOMO de apps).</div>
+      </li>
+      <li>
+        <span class="num">3</span>
+        <div><strong>Optimizar costos de suscripciones de IA</strong> — aplicar el framework auditoría → prioridad → consolidación para eliminar gasto en herramientas con ROI negativo o cero.</div>
+      </li>
+      <li>
+        <span class="num">4</span>
+        <div><strong>Diseñar flujos centralizados por tipo de tarea</strong> — asignar cada modelo y herramienta a los casos de uso donde es objetivamente más fuerte, en lugar de usar siempre la misma para todo.</div>
+      </li>
+      <li>
+        <span class="num">5</span>
+        <div><strong>Implementar un sistema de seguimiento</strong> — medir el ahorro de tiempo real y el retorno de cada herramienta para tomar decisiones de renovación basadas en datos concretos.</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ═══════ CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+
+    <div class="concepto">
+      <h4>Stack de IA (AI Stack)</h4>
+      <p>Conjunto estructurado de herramientas de IA que se usan de forma coordinada. Un buen stack no es la mayor cantidad de herramientas posibles — es la combinación mínima que cubre todos los casos de uso con la menor fricción y el menor costo. En 2025, el stack ideal para un profesional individual raramente supera 4-6 herramientas activas.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Deduplicación de herramientas</h4>
+      <p>Proceso de identificar y eliminar herramientas que realizan funciones idénticas o muy similares. El 28% de las organizaciones ya usa más de 10 aplicaciones de IA distintas (Zapier, 2025), pero el 70% no ha logrado integrarlas coherentemente. Múltiples herramientas que hacen lo mismo generan confusión, gasto duplicado y fragmentación de contexto.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>ROI de herramientas de IA</h4>
+      <p>Retorno sobre inversión aplicado a suscripciones. Se calcula comparando el tiempo ahorrado (en valor monetario) contra el costo mensual. Una herramienta de $20/mes se justifica si ahorra al menos 1-2 horas de trabajo mensual. Las organizaciones con stacks fragmentados gastan 37% más tiempo en fricción de integración que en trabajo real.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Flujos centralizados</h4>
+      <p>Diseño de procesos donde todas las tareas de IA siguen una ruta predefinida a través de un hub central, en lugar de acceder a cada herramienta directamente. Esto reduce el cambio de contexto (context switching), mantiene el historial unificado y permite reutilizar prompts y resultados entre tareas.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Selección de modelo por caso de uso</h4>
+      <p>Cada modelo tiene fortalezas distintas y objetivas. Claude lidera en precisión y análisis de documentos largos. ChatGPT ofrece el mejor equilibrio general y el ecosistema más amplio. Gemini supera en tareas con video, audio y Google Workspace. Usar siempre el mismo modelo para todo equivale a usar el mismo cuchillo para cocinar y para cirugía.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Orquestación de IA (AI Orchestration)</h4>
+      <p>Capa de automatización que conecta múltiples herramientas de IA entre sí, pasando datos y resultados de una a otra sin intervención manual. Herramientas como Make.com actúan como "director de orquesta" del stack. Las organizaciones que implementan orquestación reportan 35% de mejora en velocidad de decisión y 45% de reducción en operaciones redundantes (IDC, 2025).</p>
+    </div>
+  </div>
+
+  <!-- ═══════ COMPARATIVA DE MODELOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">⚖️</span> Tabla de decisión: ¿qué modelo usar para qué?</div>
+    <div class="insight-box">
+      "El fin de la era del 'un chatbot para todo' — ningún modelo domina todos los casos de uso en 2025."
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tipo de tarea</th>
+            <th>Herramienta recomendada</th>
+            <th>Por qué</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Análisis de documentos largos, PDFs, contratos</td>
+            <td><strong>Claude</strong></td>
+            <td>Contexto de 200K tokens, mayor precisión y fidelidad al texto fuente</td>
+          </tr>
+          <tr>
+            <td>Redacción estructurada, informes, emails complejos</td>
+            <td><strong>Claude</strong></td>
+            <td>Lidera en calidad de escritura y seguimiento de instrucciones largas</td>
+          </tr>
+          <tr>
+            <td>Generación de imágenes</td>
+            <td><strong>ChatGPT (DALL-E 3)</strong></td>
+            <td>Integración nativa más fluida con texto a imagen</td>
+          </tr>
+          <tr>
+            <td>Búsqueda web en tiempo real</td>
+            <td><strong>ChatGPT / Perplexity</strong></td>
+            <td>Mejor browsing integrado con citas y fuentes actualizadas</td>
+          </tr>
+          <tr>
+            <td>Análisis de video y audio</td>
+            <td><strong>Gemini</strong></td>
+            <td>Único que soporta video y audio de forma nativa con alta calidad</td>
+          </tr>
+          <tr>
+            <td>Trabajo con Google Docs, Sheets, Gmail</td>
+            <td><strong>Gemini</strong></td>
+            <td>Integración nativa con Google Workspace sin extensiones externas</td>
+          </tr>
+          <tr>
+            <td>Asistente general para tareas variadas</td>
+            <td><strong>ChatGPT</strong></td>
+            <td>Mejor equilibrio y el ecosistema de plugins más amplio del mercado</td>
+          </tr>
+          <tr>
+            <td>Acceso a múltiples modelos desde una interfaz</td>
+            <td><strong>TypingMind + OpenRouter</strong></td>
+            <td>Una sola interfaz, tus propias API keys, 400+ modelos disponibles</td>
+          </tr>
+          <tr>
+            <td>Automatización multi-herramienta</td>
+            <td><strong>Make.com</strong></td>
+            <td>Conecta 3,000+ apps, visual, sin código; el mejor orquestador del mercado</td>
+          </tr>
+          <tr>
+            <td>Conocimiento y memoria centralizada</td>
+            <td><strong>Notion AI</strong></td>
+            <td>Busca en todo tu workspace, agentes autónomos desde sept. 2025</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════ STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico recomendado</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Claude.ai</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">Hub principal de análisis. Mejor precisión del mercado, contexto de 200K tokens, ideal para documentos largos y redacción estructurada.</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.78rem;color:#94a3b8">Gratis / $20 USD/mes</span>
+          <a class="tool-link" href="https://claude.ai" target="_blank">claude.ai →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">ChatGPT (GPT-5.x)</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">Asistente general y generación de imágenes. Mejor equilibrio global, ecosistema de plugins más amplio, browsing integrado en tiempo real.</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.78rem;color:#94a3b8">Gratis / $20 USD/mes</span>
+          <a class="tool-link" href="https://chatgpt.com" target="_blank">chatgpt.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Gemini Advanced</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">Video, audio y Google Workspace. Superior en multimodalidad; integra Gmail, Docs, Sheets y Drive de forma nativa sin configuración adicional.</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.78rem;color:#94a3b8">~$20 USD/mes (Google One AI)</span>
+          <a class="tool-link" href="https://gemini.google.com" target="_blank">gemini.google.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">TypingMind</span>
+          <span class="badge badge-once">Pago único</span>
+        </div>
+        <div class="tool-role">Interfaz unificada para Claude, GPT y Gemini con tus propias API keys. Prompt library, carpetas, historial organizado. Sin suscripción mensual.</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.78rem;color:#94a3b8">$39–$99 USD (lifetime)</span>
+          <a class="tool-link" href="https://typingmind.com" target="_blank">typingmind.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">OpenRouter</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">Gateway de 400+ modelos de IA de 50+ proveedores con una sola clave API. Fallback automático, enrutamiento inteligente, sin vendor lock-in.</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.78rem;color:#94a3b8">Pago por uso (sin fijo)</span>
+          <a class="tool-link" href="https://openrouter.ai" target="_blank">openrouter.ai →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">LiteLLM</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <div class="tool-role">Proxy open-source auto-hospedado que unifica 100+ LLMs bajo una API compatible con OpenAI. Sin markup ni vendor lock-in; control total de infraestructura.</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.78rem;color:#94a3b8">Open source (gratis)</span>
+          <a class="tool-link" href="https://litellm.ai" target="_blank">litellm.ai →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Make.com</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">Orquestador visual con 3,000+ integraciones. Conecta herramientas de IA entre sí, automatiza flujos multi-paso, hub central de automatización sin código.</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.78rem;color:#94a3b8">Gratis / desde $9 USD/mes</span>
+          <a class="tool-link" href="https://make.com" target="_blank">make.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Notion AI</span>
+          <span class="badge badge-paid">Pago</span>
+        </div>
+        <div class="tool-role">Knowledge base centralizado con IA integrada (GPT-5, Claude Opus 4.1, o3). Búsqueda en workspace, agentes autónomos desde sept. 2025, conectado a Slack, Drive y Teams.</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.78rem;color:#94a3b8">~$16 USD/mes (Business)</span>
+          <a class="tool-link" href="https://notion.com" target="_blank">notion.com →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════ PLAN DE SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Plan de la sesión — 4 bloques de ~20 min</div>
+
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Bloque 1</span>
+        <span class="module-title">Auditoría del stack actual</span>
+        <span class="module-time">min 0–20</span>
+      </div>
+      <p>Inventario completo de todas las herramientas de IA que Nati usa (o paga). Identificación de funciones duplicadas y herramientas infrautilizadas. Análisis de costo total mensual vs. tiempo ahorrado real.</p>
+      <ul>
+        <li>Mapeo visual: todas las apps de IA en una tabla</li>
+        <li>Clasificación: esencial / útil-redundante / prescindible</li>
+        <li>Cálculo rápido: ¿cuánto estoy pagando en total?</li>
+        <li>Dato clave: usuarios con 4+ herramientas desconectadas pierden 37% de su tiempo en fricción (Zapier, 2025)</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Bloque 2</span>
+        <span class="module-title">Selección estratégica de modelos</span>
+        <span class="module-time">min 20–45</span>
+      </div>
+      <p>Comparativa práctica entre Claude, ChatGPT y Gemini. Construcción de la tabla de decisión personalizada. Principio de herramienta mínima viable: ¿cuántas herramientas necesito realmente?</p>
+      <ul>
+        <li>Demo en vivo: misma tarea ejecutada en 3 modelos distintos</li>
+        <li>Tabla de asignación: tarea → modelo óptimo</li>
+        <li>TypingMind y OpenRouter: acceso multi-modelo sin fricción</li>
+        <li>Cuándo vale la pena pagar por múltiples modelos vs. uno solo</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Bloque 3</span>
+        <span class="module-title">Centralización y automatización</span>
+        <span class="module-time">min 45–65</span>
+      </div>
+      <p>Diseño del hub central del stack de Nati. Make.com como orquestador de flujos multi-herramienta. Notion AI como memoria centralizada del sistema.</p>
+      <ul>
+        <li>Flujo de trabajo tipo: cómo se conectan las herramientas entre sí</li>
+        <li>Ejercicio guiado: crear un flujo automatizado para una tarea recurrente</li>
+        <li>Prompt library en Notion: guardar y reutilizar los mejores prompts</li>
+        <li>OpenRouter vs. LiteLLM: cuándo usar cada uno según perfil técnico</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Bloque 4</span>
+        <span class="module-title">Optimización de costos y plan de implementación</span>
+        <span class="module-time">min 65–90</span>
+      </div>
+      <p>Framework de ROI para medir si una herramienta vale lo que cuesta. Decisión final: qué cancelar, qué conservar, qué agregar. Hoja de ruta de implementación por semanas.</p>
+      <ul>
+        <li>Fórmula ROI: (tiempo ahorrado × valor/hora) – costo mensual</li>
+        <li>Sistema de seguimiento mensual simple y accionable</li>
+        <li>Preguntas abiertas y personalización del plan final</li>
+        <li>Compromisos concretos para las próximas 3 semanas</li>
+      </ul>
+    </div>
+
+    <!-- Flujo visual -->
+    <div class="flow">
+      <span class="flow-step">Auditoría de herramientas</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">Selección de modelos</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">Centralización</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">Optimización de costos</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">Sistema unificado</span>
+    </div>
+  </div>
+
+  <!-- ═══════ EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <h3>🗂️ Auditoría de IA en 30 minutos: del caos al sistema</h3>
+      <p style="font-size:.88rem;color:#475569;margin-bottom:1rem"><strong>Objetivo:</strong> Mapear todas las herramientas de IA actuales, identificar duplicaciones y construir un plan de consolidación personalizado con Claude como asistente del proceso.</p>
+
+      <ol class="exercise-steps">
+        <li>
+          <div>
+            <strong>Inventario completo (10 min)</strong> — Listar en una tabla todas las herramientas de IA, activas o pagadas aunque no se usen. Columnas: Herramienta | Costo/mes | Frecuencia de uso | Para qué la uso | ¿Puede reemplazarla otra que ya tengo?
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Clasificación (5 min)</strong> — Etiquetar cada herramienta: <span class="tag-essential">🟢 Esencial</span> — uso 3+ veces por semana, valor claro. <span class="tag-useful">🟡 Útil pero redundante</span> — la uso, pero otra ya lo hace. <span class="tag-remove">🔴 Prescindible</span> — pago pero no uso, o fácilmente reemplazable.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Prompt de consolidación en Claude (5 min)</strong> — Pegar la tabla en Claude con el prompt de análisis (ver abajo) y recibir recomendaciones de consolidación personalizadas.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Plan de consolidación (10 min)</strong> — Con los resultados del paso anterior, definir: qué cancelar en los próximos 7 días, qué hub adoptar como punto de entrada principal, y el flujo unificado para las 3 tareas más frecuentes.
+          </div>
+        </li>
+      </ol>
+
+      <div style="margin-top:1.25rem">
+        <div class="prompt-label">Prompt de análisis para Claude</div>
+        <div class="prompt-box">Tengo el siguiente inventario de herramientas de IA:
+[PEGAR TABLA DEL PASO 1 AQUÍ]
+
+Analiza y responde:
+1. ¿Cuáles herramientas tienen funciones duplicadas?
+2. ¿Cuál es el costo total mensual de mi stack actual?
+3. Propón un stack mínimo de 4-6 herramientas que cubra todas mis necesidades
+4. ¿Qué herramientas debería cancelar primero y por qué?
+5. Crea una tabla de asignación: para cada tipo de tarea que hago, qué herramienta usar
+6. ¿Qué ROI estimado tendría consolidar mi stack?</div>
+      </div>
+
+      <div style="margin-top:1rem;padding:.75rem 1rem;background:white;border-radius:.5rem;border:1px solid #c7d2fe">
+        <strong style="color:#4F46E5;font-size:.85rem">Resultado esperado:</strong>
+        <span style="font-size:.85rem;color:#374151"> Reducción del 30-50% en gasto mensual de herramientas de IA + flujo de trabajo más simple con menos cambio de contexto entre apps.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos recomendados</div>
+
+    <div class="resource-section">
+      <h4>Herramientas clave para explorar</h4>
+      <ul class="resource-list">
+        <li><a href="https://claude.ai" target="_blank">Claude.ai — Hub de análisis y redacción (plan gratuito disponible)</a></li>
+        <li><a href="https://typingmind.com" target="_blank">TypingMind.com — Interfaz multi-modelo con compra única</a></li>
+        <li><a href="https://openrouter.ai" target="_blank">OpenRouter.ai — Gateway de 400+ modelos, pago por uso</a></li>
+        <li><a href="https://litellm.ai" target="_blank">LiteLLM — Proxy open-source para unificar APIs (gratis)</a></li>
+        <li><a href="https://make.com" target="_blank">Make.com — Orquestación de flujos multi-herramienta</a></li>
+        <li><a href="https://notion.com" target="_blank">Notion.com — Knowledge base con IA integrada</a></li>
+      </ul>
+    </div>
+
+    <div class="resource-section">
+      <h4>Lecturas recomendadas</h4>
+      <ul class="resource-list">
+        <li><a href="https://zapier.com/blog/ai-sprawl-survey/" target="_blank">Tool sprawl limits AI integration for 70% of enterprises — Zapier Survey 2025</a></li>
+        <li><a href="https://intuitionlabs.ai/articles/claude-vs-chatgpt-vs-copilot-vs-gemini-enterprise-comparison" target="_blank">Claude vs ChatGPT vs Copilot vs Gemini: Enterprise Guide — IntuitionLabs</a></li>
+        <li><a href="https://aloa.co/ai/comparisons/llm-comparison/chatgpt-vs-claude-vs-gemini" target="_blank">ChatGPT vs Claude vs Gemini: Comparativa completa para negocios — Aloa</a></li>
+        <li><a href="https://www.make.com/en/ai-automation" target="_blank">Make.com AI Automation — Automatización centralizada sin código</a></li>
+        <li><a href="https://openrouter.ai/docs/guides/overview/models" target="_blank">OpenRouter Documentation — Cómo centralizar acceso a modelos</a></li>
+      </ul>
+    </div>
+
+    <div class="resource-section">
+      <h4>Estadísticas clave para tener a la mano</h4>
+      <ul style="padding-left:1.4rem;font-size:.88rem;color:#374151">
+        <li><strong>28%</strong> de empresas usa más de 10 apps de IA distintas (Zapier, 2025)</li>
+        <li><strong>70%</strong> no ha logrado integrar sus herramientas de forma coherente</li>
+        <li><strong>37%</strong> más tiempo pierden usuarios con 4+ herramientas desconectadas</li>
+        <li><strong>200-400%</strong> de ROI potencial al consolidar el stack en 3 años</li>
+        <li><strong>35%</strong> de mejora en velocidad de decisión con orquestación de IA (IDC, 2025)</li>
+        <li><strong>45%</strong> de reducción en operaciones redundantes con flujos centralizados (IDC, 2025)</li>
+        <li><strong>$644 mil millones</strong> invertirán las empresas en IA en 2025; el 72% sin ROI medible</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══════ ACCIONES POST-SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-sesión</div>
+    <div class="action-weeks">
+
+      <div class="action-week">
+        <div class="action-week-label">Esta semana</div>
+        <ul class="action-list">
+          <li><span class="checkbox"></span>Completar el inventario de herramientas (tabla del ejercicio) y analizarla con Claude</li>
+          <li><span class="checkbox"></span>Cancelar o pausar las suscripciones clasificadas como "prescindibles"</li>
+          <li><span class="checkbox"></span>Definir el hub principal del stack: Claude.ai o TypingMind según preferencia</li>
+        </ul>
+      </div>
+
+      <div class="action-week">
+        <div class="action-week-label">Semana 2</div>
+        <ul class="action-list">
+          <li><span class="checkbox"></span>Configurar TypingMind o OpenRouter como punto de entrada unificado para múltiples modelos</li>
+          <li><span class="checkbox"></span>Crear en Notion una "biblioteca de prompts" con los prompts más usados, listos para reutilizar</li>
+          <li><span class="checkbox"></span>Diseñar la tabla de asignación definitiva: tarea → herramienta óptima</li>
+        </ul>
+      </div>
+
+      <div class="action-week">
+        <div class="action-week-label">Semana 3</div>
+        <ul class="action-list">
+          <li><span class="checkbox"></span>Construir en Make.com al menos 1 flujo automatizado que conecte 2 herramientas del stack</li>
+          <li><span class="checkbox"></span>Medir el ahorro real de tiempo (en horas) y calcular el ROI del stack consolidado</li>
+          <li><span class="checkbox"></span>Revisar si hay herramientas adicionales que cancelar tras 2 semanas de uso del stack nuevo</li>
+        </ul>
+      </div>
+
+      <div class="action-week">
+        <div class="action-week-label">Seguimiento a 30 días</div>
+        <ul class="action-list">
+          <li><span class="checkbox"></span>Sesión de revisión: ¿cuánto se redujo el gasto mensual? ¿cuánto tiempo se ganó?</li>
+          <li><span class="checkbox"></span>Ajustar el stack según lo que funcionó y lo que no en la práctica real</li>
+          <li><span class="checkbox"></span>Decidir si escalar con herramientas adicionales de orquestación o automatización</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  Sesión preparada para <strong>Nati</strong> — Asesoría 1-on-1 de IA: Centralizar y optimizar el uso de múltiples herramientas | 90 minutos
+</footer>
+
+</body>
+</html>

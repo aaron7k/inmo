@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 13 · Optimizar créditos en Claude para código</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#EF4444 0%,#DC2626 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.35rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;transition:box-shadow .2s}
+    .tool-card:hover{box-shadow:0 4px 12px rgba(239,68,68,.12);border-color:#fca5a5}
+    .tool-name{font-weight:700;font-size:.95rem;margin-bottom:.25rem;color:#1e293b}
+    .tool-desc{font-size:.82rem;color:#64748b;margin-bottom:.6rem;line-height:1.4}
+    .tool-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem}
+    .tool-link{font-size:.78rem;color:#EF4444;text-decoration:none;font-weight:600}
+    .tool-link:hover{text-decoration:underline}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .badge-oss{background:#f3e8ff;color:#7c3aed}
+    .module{border-left:3px solid #EF4444;padding-left:1.25rem;margin-bottom:2rem}
+    .module h3{font-size:1.05rem;font-weight:700;color:#1e293b;margin-bottom:.6rem}
+    .module-meta{font-size:.8rem;color:#94a3b8;margin-bottom:.75rem;font-weight:500}
+    .module p{color:#475569;font-size:.93rem;margin-bottom:.75rem}
+    .module ul{padding-left:1.5rem;color:#475569;font-size:.93rem}
+    .module ul li{margin-bottom:.4rem}
+    .exercise-box{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:.75rem;padding:1.5rem}
+    .exercise-box h3{font-weight:700;color:#DC2626;margin-bottom:.75rem;font-size:1rem}
+    .exercise-box p{color:#475569;font-size:.92rem;margin-bottom:.75rem}
+    .exercise-box ol{padding-left:1.5rem;color:#475569;font-size:.92rem}
+    .exercise-box ol li{margin-bottom:.5rem}
+    .code-block{background:#0f172a;border-radius:.6rem;padding:1.25rem;margin:1rem 0;overflow-x:auto}
+    .code-block pre{color:#e2e8f0;font-size:.8rem;font-family:'Courier New',monospace;line-height:1.6;white-space:pre}
+    .pricing-table{width:100%;border-collapse:collapse;font-size:.9rem;margin-bottom:1rem}
+    .pricing-table th{background:#fef2f2;color:#991b1b;font-weight:700;padding:.75rem 1rem;text-align:left;border-bottom:2px solid #fca5a5}
+    .pricing-table td{padding:.6rem 1rem;border-bottom:1px solid #f1f5f9;color:#475569}
+    .pricing-table tr:last-child td{border-bottom:none}
+    .pricing-table tr:hover td{background:#fef2f2}
+    .pricing-table .model-name{font-weight:700;color:#1e293b}
+    .pricing-table .highlight{color:#DC2626;font-weight:700}
+    .savings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:1rem}
+    .savings-card{background:linear-gradient(135deg,#fef2f2,#fff);border:1px solid #fca5a5;border-radius:.75rem;padding:1.25rem;text-align:center}
+    .savings-number{font-size:2rem;font-weight:800;color:#DC2626;line-height:1}
+    .savings-label{font-size:.8rem;color:#64748b;margin-top:.35rem;font-weight:500}
+    .obj-list{list-style:none;padding:0}
+    .obj-list li{display:flex;gap:.75rem;align-items:flex-start;margin-bottom:.9rem;font-size:.93rem;color:#475569}
+    .obj-list li::before{content:'✓';background:#EF4444;color:white;border-radius:50%;width:1.4rem;height:1.4rem;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0;margin-top:.1rem}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .concept-card{background:#fef2f2;border-left:3px solid #EF4444;border-radius:.5rem;padding:1rem}
+    .concept-card h4{font-weight:700;color:#991b1b;font-size:.9rem;margin-bottom:.4rem}
+    .concept-card p{font-size:.84rem;color:#475569;line-height:1.5}
+    .resource-list{list-style:none;padding:0}
+    .resource-list li{display:flex;align-items:flex-start;gap:.75rem;padding:.65rem 0;border-bottom:1px solid #f1f5f9}
+    .resource-list li:last-child{border-bottom:none}
+    .resource-cat{font-size:.7rem;font-weight:700;color:#EF4444;text-transform:uppercase;letter-spacing:.05em;min-width:70px;margin-top:.15rem}
+    .resource-list a{color:#1e293b;text-decoration:none;font-weight:600;font-size:.88rem}
+    .resource-list a:hover{color:#EF4444}
+    .resource-list span.desc{display:block;color:#64748b;font-size:.8rem;margin-top:.1rem}
+    .action-section h4{font-weight:700;color:#1e293b;font-size:.95rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+    .action-section h4::before{content:'';display:inline-block;width:.5rem;height:.5rem;background:#EF4444;border-radius:50%}
+    .checklist{list-style:none;padding:0;margin-bottom:1.5rem}
+    .checklist li{display:flex;align-items:flex-start;gap:.75rem;padding:.4rem 0;font-size:.88rem;color:#475569}
+    .checklist li::before{content:'☐';color:#EF4444;font-size:1rem;flex-shrink:0;line-height:1.3}
+    .stacking-box{background:linear-gradient(135deg,#fef2f2,#fff5f5);border:2px solid #EF4444;border-radius:.75rem;padding:1.25rem;margin:1rem 0}
+    .stacking-box h4{font-weight:800;color:#DC2626;margin-bottom:.5rem;font-size:.95rem}
+    .stacking-box p{font-size:.88rem;color:#475569}
+    .stacking-box .math{font-size:1.1rem;font-weight:800;color:#DC2626;margin:.5rem 0}
+    .warning-box{background:#fffbeb;border:1px solid #fbbf24;border-radius:.6rem;padding:1rem;margin:.75rem 0;font-size:.85rem;color:#78350f}
+    .warning-box strong{color:#92400e}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    .divider{height:1px;background:#f1f5f9;margin:1.5rem 0}
+    @media(max-width:600px){.savings-grid{grid-template-columns:1fr 1fr}.hero{padding:2rem 1.25rem}}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="tier-badge">Tier 4 · TI / Dev track</div>
+    <h1>💰 Optimizar consumo de créditos<br>en Claude para código</h1>
+    <div class="hero-meta">
+      <span>👤 Dani</span>
+      <span>📅 Viernes 24 julio 2026</span>
+      <span>👥 Devs</span>
+      <span>⏱ 90 min</span>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+  <!-- AHORRO RÁPIDO -->
+  <div class="savings-grid" style="margin-top:1.5rem">
+    <div class="savings-card">
+      <div class="savings-number">90%</div>
+      <div class="savings-label">Reducción con prompt caching en input tokens</div>
+    </div>
+    <div class="savings-card">
+      <div class="savings-number">50%</div>
+      <div class="savings-label">Descuento fijo con Message Batches API</div>
+    </div>
+    <div class="savings-card">
+      <div class="savings-number">95%</div>
+      <div class="savings-label">Ahorro máximo combinando cache + batch</div>
+    </div>
+    <div class="savings-card">
+      <div class="savings-number">5×</div>
+      <div class="savings-label">Diferencia de costo entre Haiku y Opus</div>
+    </div>
+  </div>
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos</div>
+    <ul class="obj-list">
+      <li>Reducir el costo por token en producción hasta un <strong>90%</strong> aplicando prompt caching correctamente, eliminando el reprocesamiento de contextos repetidos en cada llamada a la API.</li>
+      <li>Implementar prompt caching con breakpoints explícitos y automáticos en Python y TypeScript, verificando su activación mediante los campos <code style="background:#fef2f2;color:#DC2626;padding:.1rem .35rem;border-radius:.3rem;font-size:.85rem">cache_read_input_tokens</code> y <code style="background:#fef2f2;color:#DC2626;padding:.1rem .35rem;border-radius:.3rem;font-size:.85rem">cache_creation_input_tokens</code>.</li>
+      <li>Elegir el modelo correcto para cada tarea: Haiku 4.5 para clasificación de alta frecuencia, Sonnet 4.6 como default de producción, Opus 4.7 solo para razonamiento complejo.</li>
+      <li>Batchear requests no urgentes con el Message Batches API para obtener un <strong>50% de descuento automático</strong> en revisiones de código, análisis de logs y generación de documentación.</li>
+      <li>Monitorear el gasto en tiempo real con Helicone, LangSmith y LiteLLM para detectar endpoints costosos, establecer presupuestos por equipo y actuar antes de que la factura sorprenda.</li>
+    </ul>
+  </div>
+
+  <!-- PRECIOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💵</span> Precios actuales — Claude API 2026</div>
+    <table class="pricing-table">
+      <thead>
+        <tr>
+          <th>Modelo</th>
+          <th>Input estándar</th>
+          <th>Cache write 5m</th>
+          <th>Cache write 1h</th>
+          <th>Cache hit</th>
+          <th>Output</th>
+          <th>Batch input</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="model-name">Claude Haiku 4.5</td>
+          <td>$1.00 / MTok</td>
+          <td>$1.25 / MTok</td>
+          <td>$2.00 / MTok</td>
+          <td class="highlight">$0.10 / MTok</td>
+          <td>$5.00 / MTok</td>
+          <td class="highlight">$0.50 / MTok</td>
+        </tr>
+        <tr>
+          <td class="model-name">Claude Sonnet 4.6</td>
+          <td>$3.00 / MTok</td>
+          <td>$3.75 / MTok</td>
+          <td>$6.00 / MTok</td>
+          <td class="highlight">$0.30 / MTok</td>
+          <td>$15.00 / MTok</td>
+          <td class="highlight">$1.50 / MTok</td>
+        </tr>
+        <tr>
+          <td class="model-name">Claude Opus 4.7</td>
+          <td>$5.00 / MTok</td>
+          <td>$6.25 / MTok</td>
+          <td>$10.00 / MTok</td>
+          <td class="highlight">$0.50 / MTok</td>
+          <td>$25.00 / MTok</td>
+          <td class="highlight">$2.50 / MTok</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="warning-box">
+      <strong>⚠️ Atención — Nuevo tokenizador en Opus 4.7+:</strong> A partir de Opus 4.7, Anthropic introdujo un nuevo tokenizador que puede consumir hasta un <strong>35% más de tokens</strong> para el mismo texto fijo. Recalcular estimaciones de costo antes de migrar de modelos anteriores.
+    </div>
+    <div class="stacking-box">
+      <h4>Stacking: Cache + Batch = 95% de ahorro en input</h4>
+      <p>Los multiplicadores de caching y batch se acumulan. Un token cacheado dentro de un batch se cobra a:</p>
+      <div class="math">0.10 × 0.50 = 0.05 = 5% del precio original</div>
+      <p>Para pipelines de análisis masivo con contexto compartido (misma base de código, mismas instrucciones), el sistema prompt puede costar <strong>20× menos</strong> que sin optimizaciones.</p>
+    </div>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>Tokens</h4>
+        <p>1 token ≈ 4 caracteres / 0.75 palabras. Todo lo que envías es input; todo lo que Claude responde es output. Los tokens de output cuestan <strong>5× más</strong> que los de input en todos los modelos actuales.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Prompt Caching</h4>
+        <p>Reutiliza porciones procesadas del prompt (system, docs, tools) entre llamadas. Cache hit = <strong>10% del precio de input</strong>. TTL de 5 minutos (write 1.25×) o 1 hora (write 2×).</p>
+      </div>
+      <div class="concept-card">
+        <h4>Context Windows</h4>
+        <p>Sonnet 4.6 y Opus 4.6+ soportan hasta <strong>1M tokens</strong> al mismo precio por token. Sin caching, el historial completo de conversación se cobra en cada turno.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Selección de modelos</h4>
+        <p>Haiku para tareas simples de alta frecuencia, Sonnet como default de producción, Opus solo para razonamiento complejo. Usar el modelo incorrecto puede costar <strong>5× de más</strong>.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Message Batches API</h4>
+        <p>Procesamiento asíncrono con <strong>50% de descuento fijo</strong> en todos los modelos. Hasta 100,000 requests o 256 MB por batch. La mayoría finaliza en menos de 1 hora.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Monitoreo de costos</h4>
+        <p>Tracking de <code style="font-size:.8rem">usage.cache_read_input_tokens</code>, distribución por modelo, costo por feature. Herramientas: Helicone, LangSmith, LiteLLM, Langfuse.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-name">Claude API (Anthropic)</div>
+        <div class="tool-desc">API principal para acceder a los modelos Claude. Soporta prompt caching, Message Batches API y streaming.</div>
+        <div class="tool-footer">
+          <a class="tool-link" href="https://platform.claude.com" target="_blank">platform.claude.com ↗</a>
+          <span class="badge badge-paid">Pago por uso</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Anthropic SDK Python</div>
+        <div class="tool-desc">SDK oficial de Python con soporte completo para caching, batch processing, streaming y manejo de errores.</div>
+        <div class="tool-footer">
+          <a class="tool-link" href="https://github.com/anthropics/anthropic-sdk-python" target="_blank">github.com ↗</a>
+          <span class="badge badge-oss">Open source</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Anthropic SDK TypeScript</div>
+        <div class="tool-desc">SDK oficial de TypeScript/Node.js con tipado completo, soporte streaming y herramientas para código de producción.</div>
+        <div class="tool-footer">
+          <a class="tool-link" href="https://github.com/anthropics/anthropic-sdk-typescript" target="_blank">github.com ↗</a>
+          <span class="badge badge-oss">Open source</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">LangChain</div>
+        <div class="tool-desc">Framework de orquestación para aplicaciones LLM: chains, agentes, RAG y soporte para múltiples modelos.</div>
+        <div class="tool-footer">
+          <a class="tool-link" href="https://www.langchain.com" target="_blank">langchain.com ↗</a>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">LangSmith</div>
+        <div class="tool-desc">Observabilidad para LLM dentro del ecosistema LangChain: trazabilidad, tracking de costos, evaluación y debugging de pipelines.</div>
+        <div class="tool-footer">
+          <a class="tool-link" href="https://smith.langchain.com" target="_blank">smith.langchain.com ↗</a>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Helicone</div>
+        <div class="tool-desc">Proxy open source de observabilidad: integración en 1 línea, tracking por modelo/usuario/feature, alertas de presupuesto y análisis de latencia.</div>
+        <div class="tool-footer">
+          <a class="tool-link" href="https://www.helicone.ai" target="_blank">helicone.ai ↗</a>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">LiteLLM</div>
+        <div class="tool-desc">Proxy unificado open source para 100+ LLMs: presupuestos por clave API, routing inteligente entre modelos y tracking automático de costos.</div>
+        <div class="tool-footer">
+          <a class="tool-link" href="https://www.litellm.ai" target="_blank">litellm.ai ↗</a>
+          <span class="badge badge-oss">Open source</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Langfuse</div>
+        <div class="tool-desc">Alternativa open source a LangSmith: trazas de conversación, tracking de tokens y costos, evaluaciones con etiquetado personalizado.</div>
+        <div class="tool-footer">
+          <a class="tool-link" href="https://langfuse.com" target="_blank">langfuse.com ↗</a>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">tiktoken</div>
+        <div class="tool-desc">Librería para contar tokens antes de hacer la llamada. Útil para estimar costos y verificar que el prompt supera el mínimo de caching.</div>
+        <div class="tool-footer">
+          <a class="tool-link" href="https://github.com/openai/tiktoken" target="_blank">github.com ↗</a>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Anthropic Console</div>
+        <div class="tool-desc">Dashboard oficial: monitoreo de uso y costos en tiempo real, gestión de claves API, tiers de rate limiting y configuración de límites.</div>
+        <div class="tool-footer">
+          <a class="tool-link" href="https://console.anthropic.com" target="_blank">console.anthropic.com ↗</a>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MÓDULOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Contenido — Módulos de la clase</div>
+
+    <div class="module">
+      <h3>Módulo 1: Entender los tokens y su costo real</h3>
+      <div class="module-meta">⏱ 20 min · Fundamentos</div>
+      <p>Antes de optimizar, hay que medir. El campo <code style="background:#fef2f2;color:#DC2626;padding:.1rem .35rem;border-radius:.3rem;font-size:.82rem">usage</code> en cada respuesta de la API contiene los datos exactos de consumo. La mayoría de los devs no lo instrumentan desde el inicio y se enteran del sobrecosto cuando llega la factura.</p>
+      <ul>
+        <li>Anatomía de los tokens: system prompt, historial de conversación, definiciones de tools, overhead del modelo</li>
+        <li>Por qué el historial crece exponencialmente sin caching: el mensaje 20 envía los 19 anteriores</li>
+        <li>Cómo leer <code style="background:#fef2f2;color:#DC2626;padding:.05rem .3rem;border-radius:.25rem;font-size:.82rem">input_tokens</code>, <code style="background:#fef2f2;color:#DC2626;padding:.05rem .3rem;border-radius:.25rem;font-size:.82rem">output_tokens</code>, <code style="background:#fef2f2;color:#DC2626;padding:.05rem .3rem;border-radius:.25rem;font-size:.82rem">cache_read_input_tokens</code></li>
+        <li>Calcular el costo exacto de cada llamada en USD desde el código</li>
+        <li>Overhead de tools: Sonnet 4.6 con <code style="background:#fef2f2;color:#DC2626;padding:.05rem .3rem;border-radius:.25rem;font-size:.82rem">auto</code> agrega 497 tokens al system prompt automáticamente</li>
+        <li><strong>Regla de oro:</strong> los tokens de output cuestan 5× más que los de input → prompts precisos, respuestas enfocadas = ahorro doble</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <h3>Módulo 2: Prompt Caching — de la teoría al código</h3>
+      <div class="module-meta">⏱ 25 min · Técnicas avanzadas</div>
+      <p>El prompt caching es la optimización con mayor impacto para la mayoría de aplicaciones. Si tienes un system prompt largo, documentos de contexto o una base de código que Claude necesita analizar repetidamente, el caching puede reducir tu factura un <strong>90% en esas porciones</strong>.</p>
+      <ul>
+        <li><strong>Cache explícito:</strong> añadir <code style="background:#fef2f2;color:#DC2626;padding:.05rem .3rem;border-radius:.25rem;font-size:.82rem">cache_control: {"type": "ephemeral"}</code> a bloques específicos del system prompt</li>
+        <li><strong>Cache automático:</strong> aplicar <code style="background:#fef2f2;color:#DC2626;padding:.05rem .3rem;border-radius:.25rem;font-size:.82rem">cache_control</code> a nivel de request para conversaciones multi-turno</li>
+        <li><strong>Cache de 1 hora:</strong> <code style="background:#fef2f2;color:#DC2626;padding:.05rem .3rem;border-radius:.25rem;font-size:.82rem">{"type": "ephemeral", "ttl": "1h"}</code> para workflows agénticos con pasos espaciados</li>
+        <li><strong>Mínimos de tokens:</strong> 1,024 para Sonnet 4.6 · 4,096 para Haiku 4.5 · 1,024 para Opus 4.8</li>
+        <li><strong>Pre-warming:</strong> usar <code style="background:#fef2f2;color:#DC2626;padding:.05rem .3rem;border-radius:.25rem;font-size:.82rem">max_tokens: 0</code> para cargar el caché antes de que lleguen usuarios</li>
+        <li><strong>Error clásico:</strong> colocar el breakpoint en contenido que cambia cada request → cache miss garantizado</li>
+        <li>Hasta <strong>4 breakpoints</strong> de caché por request; jerarquía: tools → system → messages</li>
+      </ul>
+      <div class="code-block">
+        <pre># Implementación mínima de prompt caching (Python)
+import anthropic
+client = anthropic.Anthropic()
+
+response = client.messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=1024,
+    system=[
+        {
+            "type": "text",
+            "text": SYSTEM_PROMPT_EXTENSO,  # > 1,024 tokens
+            "cache_control": {"type": "ephemeral"}  # ← la clave
+        }
+    ],
+    messages=[{"role": "user", "content": codigo_del_usuario}]
+)
+
+# Verificar que el caché funcionó
+u = response.usage
+print(f"Cache reads:  {u.cache_read_input_tokens}")   # > 0 = ahorro activo
+print(f"Cache writes: {u.cache_creation_input_tokens}")  # > 0 = caché creado</pre>
+      </div>
+    </div>
+
+    <div class="module">
+      <h3>Módulo 3: Selección de modelos y Message Batches API</h3>
+      <div class="module-meta">⏱ 25 min · Optimización avanzada</div>
+      <p>Routing inteligente entre modelos y uso del Batches API son las dos palancas que, combinadas con caching, permiten llegar al 95% de ahorro en casos de uso de procesamiento masivo.</p>
+      <ul>
+        <li><strong>Routing por complejidad:</strong> Haiku para clasificación/extracción (3× más barato que Sonnet), Opus solo cuando se justifica (reservar para arquitectura y razonamiento complejo)</li>
+        <li><strong>Ejemplo real:</strong> 10,000 clasificaciones/día con Haiku vs. Sonnet = $5/día vs. $15/día = <strong>$300/mes de ahorro</strong> solo por elegir el modelo correcto</li>
+        <li><strong>Message Batches API:</strong> 50% de descuento fijo, sin umbral de volumen, en todos los modelos</li>
+        <li><strong>Límites del batch:</strong> hasta 100,000 requests o 256 MB; la mayoría procesa en &lt;1 hora</li>
+        <li><strong>Stacking:</strong> cache hit dentro de un batch = 10% × 50% = <strong>5% del precio original</strong></li>
+        <li><strong>Casos de uso ideales para batch:</strong> revisiones de código en CI/CD, generación de tests, análisis de PRs, documentación, clasificación de issues</li>
+        <li>Polling del estado del batch vs. webhooks; manejo de errores parciales por request</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <h3>Módulo 4: Monitoreo de costos en producción</h3>
+      <div class="module-meta">⏱ 20 min · Observabilidad</div>
+      <p>El monitoreo convierte las optimizaciones de teoría en práctica sostenible. Sin visibilidad, el equipo no puede saber si las optimizaciones funcionan ni detectar regresiones de costo.</p>
+      <ul>
+        <li><strong>Métricas clave:</strong> costo por request, cache hit rate, distribución por modelo, tokens de output promedio, costo por feature/endpoint</li>
+        <li><strong>Helicone:</strong> integración en 1 línea cambiando la <code style="background:#fef2f2;color:#DC2626;padding:.05rem .3rem;border-radius:.25rem;font-size:.82rem">base_url</code> del cliente — todas las llamadas existentes funcionan sin modificación</li>
+        <li><strong>LiteLLM:</strong> presupuestos por clave API o equipo, rechazo automático al superar el límite, configuración en YAML</li>
+        <li><strong>Instrumentación manual:</strong> capturar <code style="background:#fef2f2;color:#DC2626;padding:.05rem .3rem;border-radius:.25rem;font-size:.82rem">usage</code> en cada llamada y enviar a DataDog, Grafana o cualquier sistema de métricas</li>
+        <li><strong>Alertas:</strong> configurar umbrales de gasto diario/mensual antes de escalar a producción</li>
+        <li><strong>Anthropic Console:</strong> breakdown de uso oficial por modelo, ideal para auditorías y revisión de facturas</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <h3>Implementar prompt caching y medir el ahorro real</h3>
+      <p><strong>Objetivo:</strong> Construir un analizador de código con y sin caching, ejecutarlo 5 veces de cada modo con el mismo system prompt, y documentar el ahorro real en tokens y USD.</p>
+      <div class="divider"></div>
+      <p><strong>Paso 1 — Setup (10 min)</strong></p>
+      <ol>
+        <li>Instalar el SDK: <code style="background:#0f172a;color:#e2e8f0;padding:.15rem .5rem;border-radius:.3rem;font-size:.82rem">pip install anthropic</code></li>
+        <li>Exportar la clave: <code style="background:#0f172a;color:#e2e8f0;padding:.15rem .5rem;border-radius:.3rem;font-size:.82rem">export ANTHROPIC_API_KEY="sk-ant-..."</code></li>
+        <li>Crear un system prompt de más de 1,024 tokens (instrucciones de revisión de código detalladas)</li>
+      </ol>
+      <div class="divider"></div>
+      <p><strong>Paso 2 — Comparar llamadas con y sin cache (20 min)</strong></p>
+      <ol>
+        <li>Implementar <code style="background:#0f172a;color:#e2e8f0;padding:.15rem .5rem;border-radius:.3rem;font-size:.82rem">analizar_sin_cache()</code> — system prompt como string plano</li>
+        <li>Implementar <code style="background:#0f172a;color:#e2e8f0;padding:.15rem .5rem;border-radius:.3rem;font-size:.82rem">analizar_con_cache()</code> — system prompt con <code style="background:#0f172a;color:#e2e8f0;padding:.15rem .5rem;border-radius:.3rem;font-size:.82rem">cache_control</code></li>
+        <li>Ejecutar cada función 5 veces y registrar tokens + costo USD por llamada</li>
+        <li>Calcular el ahorro total y el porcentaje de reducción</li>
+        <li>Proyectar el ahorro a 1,000 llamadas/día y a 30 días</li>
+      </ol>
+      <div class="divider"></div>
+      <p><strong>Paso 3 — Bonus: Message Batches API (30 min)</strong></p>
+      <ol>
+        <li>Enviar las 5 revisiones como un batch usando <code style="background:#0f172a;color:#e2e8f0;padding:.15rem .5rem;border-radius:.3rem;font-size:.82rem">client.messages.batches.create()</code></li>
+        <li>Comparar el costo del batch vs. llamadas síncronas</li>
+        <li>Medir la latencia del batch (tiempo hasta que <code style="background:#0f172a;color:#e2e8f0;padding:.15rem .5rem;border-radius:.3rem;font-size:.82rem">processing_status == "ended"</code>)</li>
+        <li>Discutir: ¿qué workloads de su app actual podrían batchearse sin afectar la UX?</li>
+      </ol>
+      <div class="divider"></div>
+      <p><strong>Reflexión grupal (10 min):</strong> Cada participante comparte qué system prompt de su aplicación actual podría cachear hoy mismo y cuánto estima que ahorraría.</p>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos recomendados</div>
+    <ul class="resource-list">
+      <li>
+        <span class="resource-cat">Docs</span>
+        <div>
+          <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-caching" target="_blank">Prompt Caching — Claude API Docs (oficial)</a>
+          <span class="desc">Guía técnica completa: precios, implementación, ejemplos de código, casos de uso y errores comunes</span>
+        </div>
+      </li>
+      <li>
+        <span class="resource-cat">Docs</span>
+        <div>
+          <a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing" target="_blank">Message Batches API — Claude API Docs (oficial)</a>
+          <span class="desc">Documentación del Batches API: límites, pricing, polling de estado y manejo de errores</span>
+        </div>
+      </li>
+      <li>
+        <span class="resource-cat">Precios</span>
+        <div>
+          <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank">Pricing oficial — Claude API 2026</a>
+          <span class="desc">Tabla de precios actualizada: todos los modelos, caching, batch, tools y managed agents</span>
+        </div>
+      </li>
+      <li>
+        <span class="resource-cat">Tutorial</span>
+        <div>
+          <a href="https://platform.claude.com/cookbook/misc-batch-processing" target="_blank">Batch Processing — Claude Cookbook</a>
+          <span class="desc">Ejemplo end-to-end de batch processing con código funcional en Python</span>
+        </div>
+      </li>
+      <li>
+        <span class="resource-cat">Artículo</span>
+        <div>
+          <a href="https://dev.to/whoffagents/claude-api-cost-optimization-caching-batching-and-60-token-reduction-in-production-3n49" target="_blank">Claude API Cost Optimization: Caching, Batching y 60% de reducción — DEV Community</a>
+          <span class="desc">Caso real de producción con métricas concretas de ahorro por técnica</span>
+        </div>
+      </li>
+      <li>
+        <span class="resource-cat">Artículo</span>
+        <div>
+          <a href="https://levelup.gitconnected.com/stop-burning-tokens-a-developers-guide-to-claude-ai-token-optimization-4c70c7c52ffb" target="_blank">Stop Burning Tokens: A Developer's Guide — Level Up Coding</a>
+          <span class="desc">Guía práctica de optimización de tokens con ejemplos de código reales</span>
+        </div>
+      </li>
+      <li>
+        <span class="resource-cat">Herramienta</span>
+        <div>
+          <a href="https://www.helicone.ai" target="_blank">Helicone — Observabilidad open source</a>
+          <span class="desc">Proxy con integración en 1 línea: tracking de costos, latencia y cache hit rate en tiempo real</span>
+        </div>
+      </li>
+      <li>
+        <span class="resource-cat">Herramienta</span>
+        <div>
+          <a href="https://www.litellm.ai" target="_blank">LiteLLM — Proxy unificado open source</a>
+          <span class="desc">Presupuestos por equipo/clave, routing entre 100+ LLMs, tracking automático de costos</span>
+        </div>
+      </li>
+      <li>
+        <span class="resource-cat">Herramienta</span>
+        <div>
+          <a href="https://langfuse.com" target="_blank">Langfuse — Observabilidad LLM open source</a>
+          <span class="desc">Trazas de conversación, token tracking, evaluaciones y dashboards de costo</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-clase</div>
+
+    <div class="action-section">
+      <h4>Esta semana (compromiso mínimo)</h4>
+      <ul class="checklist">
+        <li>Revisar el system prompt de tu aplicación principal: ¿cuántos tokens tiene? ¿supera el mínimo de caching (1,024 para Sonnet 4.6)?</li>
+        <li>Añadir <code style="background:#fef2f2;color:#DC2626;padding:.1rem .35rem;border-radius:.3rem;font-size:.82rem">cache_control: {"type": "ephemeral"}</code> al system prompt y verificar <code style="background:#fef2f2;color:#DC2626;padding:.1rem .35rem;border-radius:.3rem;font-size:.82rem">cache_read_input_tokens > 0</code> en la segunda llamada</li>
+        <li>Abrir el Anthropic Console y revisar el breakdown de uso por modelo del último mes</li>
+      </ul>
+    </div>
+
+    <div class="action-section">
+      <h4>Este mes</h4>
+      <ul class="checklist">
+        <li>Implementar logging del campo <code style="background:#fef2f2;color:#DC2626;padding:.1rem .35rem;border-radius:.3rem;font-size:.82rem">usage</code> en todas las llamadas a la API del proyecto</li>
+        <li>Identificar qué endpoints consumen más tokens y evaluar si el modelo asignado es el correcto (¿se puede bajar a Haiku?)</li>
+        <li>Migrar al menos un workload batch-compatible (revisiones de código, análisis de logs, generación de tests) al Message Batches API</li>
+        <li>Configurar Helicone o Langfuse para visibilidad de costos en tiempo real</li>
+      </ul>
+    </div>
+
+    <div class="action-section">
+      <h4>Este trimestre</h4>
+      <ul class="checklist">
+        <li>Implementar routing inteligente entre modelos basado en la complejidad de cada request</li>
+        <li>Establecer alertas de presupuesto por feature y por equipo vía LiteLLM o Helicone</li>
+        <li>Medir el impacto total: comparar el costo mensual antes y después de las optimizaciones implementadas</li>
+        <li>Documentar las estrategias aplicadas, los ahorros conseguidos y compartir con el equipo</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Clase 13 · Programa IA Aplicada · Track TI / Dev · Tier 4<br>
+  Presentado por <strong>Dani</strong> · Viernes 24 julio 2026
+</footer>
+
+</body>
+</html>

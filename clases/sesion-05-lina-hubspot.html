@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agentes de HubSpot — Lina | Asesoría 1-on-1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#6366F1 0%,#4F46E5 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;transition:box-shadow .2s}
+    .tool-card:hover{box-shadow:0 4px 12px rgba(99,102,241,.15)}
+    .tool-card h4{font-size:.95rem;font-weight:700;margin-bottom:.3rem;color:#1e293b}
+    .tool-card p{font-size:.82rem;color:#64748b;margin-bottom:.6rem;line-height:1.5}
+    .tool-card a{font-size:.78rem;color:#6366F1;text-decoration:none;font-weight:600}
+    .tool-card a:hover{text-decoration:underline}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600;display:inline-block;margin-bottom:.5rem}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .module{border-left:3px solid #6366F1;padding-left:1.25rem;margin-bottom:1.5rem}
+    .module h3{font-size:1rem;font-weight:700;color:#4F46E5;margin-bottom:.5rem}
+    .module p{font-size:.9rem;color:#334155;margin-bottom:.4rem}
+    .module ul{padding-left:1.2rem}
+    .module ul li{font-size:.9rem;color:#334155;margin-bottom:.35rem}
+    .exercise-box{background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-box h3{font-size:1rem;font-weight:700;color:#4F46E5;margin-bottom:1rem}
+    .exercise-step{display:flex;gap:1rem;margin-bottom:1.2rem;align-items:flex-start}
+    .step-num{background:#6366F1;color:white;border-radius:50%;width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;margin-top:.1rem}
+    .step-content h4{font-size:.9rem;font-weight:700;color:#1e293b;margin-bottom:.3rem}
+    .step-content p,.step-content li{font-size:.87rem;color:#475569;line-height:1.5}
+    .step-content ul{padding-left:1.2rem}
+    .step-content li{margin-bottom:.25rem}
+    .code-block{background:#1e293b;color:#e2e8f0;border-radius:.5rem;padding:1rem;font-family:monospace;font-size:.8rem;line-height:1.6;margin-top:.6rem;overflow-x:auto;white-space:pre-wrap}
+    .objectives-list{list-style:none;padding:0}
+    .objectives-list li{display:flex;gap:.75rem;margin-bottom:1rem;align-items:flex-start}
+    .objectives-list .obj-num{background:#6366F1;color:white;border-radius:.4rem;padding:.15rem .5rem;font-weight:700;font-size:.8rem;flex-shrink:0;margin-top:.15rem}
+    .objectives-list .obj-text{font-size:.92rem;color:#334155}
+    .objectives-list .obj-text strong{color:#1e293b}
+    .concepts-grid{display:grid;grid-template-columns:1fr;gap:1rem}
+    .concept-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.75rem;padding:1.25rem}
+    .concept-card h4{font-size:.95rem;font-weight:700;color:#4F46E5;margin-bottom:.5rem}
+    .concept-card p{font-size:.88rem;color:#475569;line-height:1.55}
+    .plan-block{background:#f8fafc;border-radius:.75rem;padding:1.25rem;margin-bottom:1rem;border:1px solid #e2e8f0}
+    .plan-block .block-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+    .block-time{background:#6366F1;color:white;border-radius:.5rem;padding:.2rem .7rem;font-size:.78rem;font-weight:700;white-space:nowrap}
+    .block-title{font-size:1rem;font-weight:700;color:#1e293b}
+    .plan-block ul{padding-left:1.2rem}
+    .plan-block ul li{font-size:.88rem;color:#475569;margin-bottom:.3rem}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .stat-card{background:linear-gradient(135deg,#6366F1 0%,#4F46E5 100%);color:white;border-radius:.75rem;padding:1.25rem;text-align:center}
+    .stat-card .stat-num{font-size:2rem;font-weight:800;line-height:1}
+    .stat-card .stat-label{font-size:.78rem;opacity:.9;margin-top:.4rem}
+    .resources-list{list-style:none;padding:0}
+    .resources-list li{display:flex;gap:.75rem;margin-bottom:.75rem;align-items:flex-start;padding-bottom:.75rem;border-bottom:1px solid #f1f5f9}
+    .resources-list li:last-child{border-bottom:none;margin-bottom:0}
+    .res-icon{font-size:1.1rem;flex-shrink:0;margin-top:.1rem}
+    .res-content a{font-size:.9rem;font-weight:600;color:#4F46E5;text-decoration:none}
+    .res-content a:hover{text-decoration:underline}
+    .res-content p{font-size:.82rem;color:#64748b;margin-top:.2rem}
+    .actions-list{list-style:none;padding:0}
+    .actions-list li{display:flex;gap:.75rem;margin-bottom:.7rem;align-items:flex-start}
+    .actions-list .check{width:1.2rem;height:1.2rem;border:2px solid #6366F1;border-radius:.25rem;flex-shrink:0;margin-top:.15rem}
+    .actions-list .action-text{font-size:.9rem;color:#334155}
+    .actions-list .action-text strong{color:#6366F1}
+    .week-label{background:#ede9fe;color:#6366F1;border-radius:999px;font-size:.72rem;font-weight:700;padding:.15rem .6rem;margin-right:.4rem;white-space:nowrap}
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    .hero-inner{max-width:900px;margin:0 auto}
+    a{color:inherit}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="tier-badge">Asesoría 1-on-1</div>
+    <h1>🔶 Agentes de HubSpot</h1>
+    <div class="hero-meta">
+      <span>👤 Participante: <strong>Lina</strong></span>
+      <span>⏱️ 90 minutos</span>
+      <span>🎯 Marketing &amp; Ventas</span>
+      <span>📅 Sesión individual práctica</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la sesión</div>
+    <ul class="objectives-list">
+      <li>
+        <span class="obj-num">01</span>
+        <span class="obj-text"><strong>Entender y usar Breeze AI de HubSpot</strong> — conocer los agentes nativos (Customer, Prospecting, Content, Knowledge Base, Data) y saber cuándo activar cada uno en tu flujo de marketing y ventas.</span>
+      </li>
+      <li>
+        <span class="obj-num">02</span>
+        <span class="obj-text"><strong>Crear workflows inteligentes con IA</strong> — configurar automatizaciones con la acción "Run Agent" que disparan agentes según etapas del pipeline, comportamientos de leads o triggers personalizados.</span>
+      </li>
+      <li>
+        <span class="obj-num">03</span>
+        <span class="obj-text"><strong>Implementar lead scoring con IA</strong> — activar el modelo predictivo de HubSpot que analiza 12 meses de historial de engagement y mejora la precisión de leads calificados hasta 3x.</span>
+      </li>
+      <li>
+        <span class="obj-num">04</span>
+        <span class="obj-text"><strong>Conectar HubSpot con Claude</strong> — usar el Conector Oficial (lanzado julio 2025) para consultar el CRM en lenguaje natural, analizar campañas y generar insights accionables desde Claude.ai.</span>
+      </li>
+      <li>
+        <span class="obj-num">05</span>
+        <span class="obj-text"><strong>Automatizar con Make.com y Zapier</strong> — construir flujos que conecten HubSpot con herramientas externas usando IA para calificación, seguimiento y personalización de outreach sin código.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ESTADÍSTICAS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📊</span> Números que importan</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num">40%</div>
+        <div class="stat-label">menos tareas CRM repetitivas con los 4 agentes Breeze activos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">3x</div>
+        <div class="stat-label">más precisión en leads calificados con scoring predictivo vs. manual</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">2x</div>
+        <div class="stat-label">más tasa de respuesta con el Prospecting Agent vs. outreach manual</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">20+</div>
+        <div class="stat-label">agentes disponibles en HubSpot (aumento 5x desde INBOUND 2024)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">20K+</div>
+        <div class="stat-label">clientes ya usan el conector Claude x HubSpot sobre 23M de registros</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">25%</div>
+        <div class="stat-label">más rapidez en respuesta a leads con agentes de HubSpot activos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+    <div class="concepts-grid">
+
+      <div class="concept-card">
+        <h4>HubSpot Breeze AI</h4>
+        <p>Capa de inteligencia artificial unificada de HubSpot, lanzada en INBOUND 2024 y expandida 5x en INBOUND 2025. Comprende tres componentes: <strong>Breeze Assistant</strong> (asistente conversacional gratuito para todos), <strong>Breeze Agents</strong> (trabajadores digitales autónomos que ejecutan tareas completas) y <strong>Breeze Intelligence</strong> (enriquecimiento automático de contactos y empresas con señales de intención de compra).</p>
+      </div>
+
+      <div class="concept-card">
+        <h4>Agentes de CRM (Breeze Agents)</h4>
+        <p>A diferencia de la automatización tradicional ("si X entonces Y"), los agentes usan <strong>razonamiento para interpretar datos</strong>, tomar decisiones y ejecutar flujos complejos de forma autónoma. Los 4 agentes core en disponibilidad general son: <strong>Customer Agent</strong> (soporte en 9 canales incluyendo WhatsApp y voz), <strong>Prospecting Agent</strong> (investigación y outreach personalizado), <strong>Content Agent</strong> (creación de contenido multicanal) y <strong>Knowledge Base Agent</strong> (expansión automática de base de conocimientos).</p>
+      </div>
+
+      <div class="concept-card">
+        <h4>Workflows Inteligentes</h4>
+        <p>HubSpot Workflows es el motor de automatización del CRM. Con la nueva acción <strong>"Run Agent"</strong> (Private Beta, 2025), se puede disparar un agente de Breeze automáticamente cuando cambia una etapa de deal, cuando un lead completa un formulario, o cuando se detecta una señal de compra — escalando operaciones sin contratar más personal.</p>
+      </div>
+
+      <div class="concept-card">
+        <h4>Lead Scoring con IA</h4>
+        <p>HubSpot ofrece dos modalidades: <strong>scoring manual</strong> (reglas definidas por el usuario) y <strong>scoring predictivo con IA</strong> (modelos de machine learning entrenados con deals cerrados-ganados y cerrados-perdidos). El modelo predictivo analiza datos firmográficos, secuencias de comportamiento, recency de engagement y fuente de origen. Requiere mínimo <strong>100 deals cerrados ganados + 100 perdidos</strong>. Una vez activo, se reentrena continuamente.</p>
+      </div>
+
+      <div class="concept-card">
+        <h4>Conector Oficial Claude × HubSpot</h4>
+        <p>HubSpot fue el primer CRM en lanzar un conector nativo para Claude (julio 29, 2025). Permite consultar el CRM completo en lenguaje natural desde Claude.ai: crear y actualizar registros, acceder al <strong>historial completo de engagement</strong> (emails, llamadas, reuniones, notas), analizar campañas, generar visualizaciones y obtener insights de pipeline. Usa OAuth automático.</p>
+      </div>
+
+      <div class="concept-card">
+        <h4>Integraciones No-Code (Make y Zapier)</h4>
+        <p><strong>Make.com</strong> conecta HubSpot CRM con Claude/Anthropic usando triggers y acciones bidireccionales. <strong>Zapier</strong> conecta más de 9,000 apps incluyendo HubSpot, con su función <strong>AI Actions</strong> que interpreta instrucciones en lenguaje natural para construir flujos en tiempo real. Ambas permiten calificación de leads con IA, detección de sentimiento y personalización de outreach sin código.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <h4>HubSpot Breeze AI</h4>
+        <p>Agentes nativos de CRM: Customer, Prospecting, Content, Knowledge Base, Data Agent. Automatización de marketing, ventas y servicio desde adentro de HubSpot.</p>
+        <a href="https://www.hubspot.com/products/artificial-intelligence/breeze-ai-agents" target="_blank">→ hubspot.com/breeze</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-free">Gratis (con límites)</span>
+        <h4>HubSpot API v3</h4>
+        <p>API REST para crear/actualizar contactos, deals, propiedades personalizadas, triggers de workflows y extracción de datos CRM para integraciones avanzadas.</p>
+        <a href="https://developers.hubspot.com/docs/api/overview" target="_blank">→ developers.hubspot.com</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <h4>Claude (Anthropic)</h4>
+        <p>Análisis de datos CRM en lenguaje natural, generación de emails personalizados, calificación de leads, resúmenes de pipeline. Conector oficial con HubSpot desde julio 2025.</p>
+        <a href="https://claude.ai" target="_blank">→ claude.ai</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <h4>Make.com</h4>
+        <p>Automatizaciones visuales no-code: conecta HubSpot con Claude, Gmail, Slack, Sheets y +1,500 apps. Ideal para flujos de calificación de leads y notificaciones inteligentes.</p>
+        <a href="https://www.make.com/en/integrations/hubspotcrm/anthropic-claude" target="_blank">→ make.com</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <h4>Zapier</h4>
+        <p>Conecta HubSpot con +9,000 apps. AI Actions permite crear automatizaciones con instrucciones en lenguaje natural. Nativo para sincronización de leads y campañas.</p>
+        <a href="https://zapier.com/apps/hubspot/integrations/ai" target="_blank">→ zapier.com</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-paid">Pago</span>
+        <h4>Breeze Intelligence (ex-Clearbit)</h4>
+        <p>Enriquecimiento automático de contactos y empresas: cargo, industria, tamaño, tecnologías usadas, señales de intención de compra — integrado nativamente en HubSpot.</p>
+        <a href="https://www.hubspot.com/products/marketing/breeze-intelligence" target="_blank">→ Breeze Intelligence</a>
+      </div>
+
+      <div class="tool-card">
+        <span class="badge badge-freemium">Freemium</span>
+        <h4>n8n</h4>
+        <p>Alternativa open-source a Make/Zapier: flujos de automatización entre Claude y HubSpot con control total del código. Ideal para integraciones personalizadas y privacidad de datos.</p>
+        <a href="https://n8n.io/integrations/claude/and/hubspot/" target="_blank">→ n8n.io</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PLAN DE SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Plan de la sesión</div>
+
+    <div class="plan-block">
+      <div class="block-header">
+        <span class="block-time">Min 0–20</span>
+        <span class="block-title">Bloque 1 — Panorama de Breeze AI y agentes de HubSpot</span>
+      </div>
+      <ul>
+        <li>¿Qué es Breeze AI y cómo se diferencia de la automatización tradicional de HubSpot?</li>
+        <li>Recorrido por los 4 agentes core + marketplace de agentes (+20 disponibles)</li>
+        <li>Demostración en vivo: Breeze Assistant en acción dentro del CRM</li>
+        <li>Diferencia entre Breeze Assistant (gratis) y Breeze Agents (créditos)</li>
+        <li>Stat clave: equipos que usan los 4 agentes reportan 40% menos tareas repetitivas en los primeros 90 días</li>
+      </ul>
+    </div>
+
+    <div class="plan-block">
+      <div class="block-header">
+        <span class="block-time">Min 20–45</span>
+        <span class="block-title">Bloque 2 — Lead scoring y Prospecting Agent</span>
+      </div>
+      <ul>
+        <li>Cómo funciona el scoring predictivo: datos de entrenamiento, señales analizadas, reentrenamiento continuo</li>
+        <li>Activar y configurar el modelo de lead scoring en el portal</li>
+        <li>El Prospecting Agent: cómo investiga cuentas objetivo, personaliza outreach y monitorea señales de compra</li>
+        <li>Diferencia entre scoring manual (reglas) vs. scoring predictivo (machine learning)</li>
+        <li>Ejercicio: revisar los leads actuales con el scoring activado y priorizar los top 10</li>
+      </ul>
+    </div>
+
+    <div class="plan-block">
+      <div class="block-header">
+        <span class="block-time">Min 45–65</span>
+        <span class="block-title">Bloque 3 — Workflows inteligentes y Conector Claude</span>
+      </div>
+      <ul>
+        <li>Crear un workflow con la acción "Run Agent": trigger por etapa de deal, acción del agente, notificación al rep</li>
+        <li>Configurar el Conector Oficial HubSpot × Claude: acceso a registros, consultas en lenguaje natural</li>
+        <li>Demo: pedirle a Claude que resuma el pipeline, identifique deals estancados y sugiera next steps</li>
+        <li>Integración con Make.com: flujo de calificación automática cuando llega un lead nuevo</li>
+        <li>Ejemplo: "lead puntúa +80 → Prospecting Agent crea outreach → rep recibe notificación en Slack"</li>
+      </ul>
+    </div>
+
+    <div class="plan-block">
+      <div class="block-header">
+        <span class="block-time">Min 65–90</span>
+        <span class="block-title">Bloque 4 — Construcción del agente y plan de acción</span>
+      </div>
+      <ul>
+        <li>Construcción guiada del agente completo de calificación (ejercicio práctico)</li>
+        <li>Selección de las 2-3 automatizaciones prioritarias para implementar esta semana</li>
+        <li>Límites y precauciones: cuándo la IA puede fallar en el CRM</li>
+        <li>Acciones concretas post-sesión y recursos para profundizar</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EJERCICIO PRÁCTICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <h3>"Agente de calificación de leads con HubSpot + IA"</h3>
+      <p style="font-size:.9rem;color:#475569;margin-bottom:1.5rem;">Objetivo: construir un agente completo que reciba un lead nuevo, lo enriquezca, lo puntúe y genere outreach personalizado listo para aprobar — operando 24/7 sin intervención manual.</p>
+
+      <div class="exercise-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Configurar el Formulario de Captura</h4>
+          <ul>
+            <li>Marketing → Formularios → crear formulario con: nombre, email, empresa, cargo, teléfono, "¿Cómo nos encontraste?"</li>
+            <li>Activar la propiedad personalizada "Canal de origen" para clasificar leads desde el origen</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="exercise-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Activar Breeze Intelligence (enriquecimiento automático)</h4>
+          <ul>
+            <li>Settings → Data Management → Breeze Intelligence</li>
+            <li>Activar "Auto-enrich new contacts": completará cargo real, tamaño de empresa, industria y tecnologías usadas</li>
+            <li>Configurar mínimo 5 propiedades de enriquecimiento prioritarias</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="exercise-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Configurar Lead Scoring Predictivo</h4>
+          <ul>
+            <li>Marketing → Lead Scoring → "Switch to Predictive"</li>
+            <li>Si tienes +200 deals cerrados: activar modelo ML directamente</li>
+            <li>Si tienes &lt;200 deals: scoring manual (cargo: +10pts, email abierto: +5pts, demo solicitada: +25pts, visita pricing page: +15pts)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="exercise-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>Crear el Workflow de calificación (el "agente")</h4>
+          <div class="code-block">TRIGGER: Contacto nuevo creado vía formulario
+
+PASO 1 → Esperar 5 min (para que Breeze Intelligence enriquezca)
+PASO 2 → Rama condicional:
+  Si Lead Score ≥ 80 → "Lead Caliente"
+  Si Lead Score 40-79 → "Lead Tibio"
+  Si Lead Score &lt; 40  → "Lead Frío"
+
+RAMA "Lead Caliente":
+PASO 3 → Run Agent → Prospecting Agent
+          "Investiga [Nombre] de [Empresa], personaliza email
+           mencionando su industria y rol. Tono conversacional."
+PASO 4 → Notificar rep en Slack: "Nuevo lead caliente 🔥"
+PASO 5 → Crear tarea: "Revisar y enviar outreach en 2 horas"
+
+RAMA "Lead Tibio":
+PASO 3 → Enrollar en secuencia nurturing (3 emails en 7 días)
+
+RAMA "Lead Frío":
+PASO 3 → Agregar a campaña de contenido educativo</div>
+        </div>
+      </div>
+
+      <div class="exercise-step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h4>Conectar Claude para análisis semanal del pipeline</h4>
+          <ul>
+            <li>Claude.ai → Settings → Connectors → HubSpot (OAuth automático)</li>
+          </ul>
+          <div class="code-block">Analiza mi pipeline de HubSpot de esta semana:
+1. ¿Cuáles deals llevan más de 14 días sin actividad?
+2. ¿Qué leads con score alto no han sido contactados aún?
+3. Genera un resumen de 5 puntos para mi reunión del lunes</div>
+        </div>
+      </div>
+
+      <div class="exercise-step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <h4>Medir resultados a los 30 días</h4>
+          <ul>
+            <li>Tasa de respuesta a leads calientes (objetivo: &gt;30%)</li>
+            <li>Tiempo promedio de primer contacto (objetivo: &lt;2 horas)</li>
+            <li>Leads clasificados como calientes que convierten a cliente</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem;background:rgba(99,102,241,.1);border-radius:.5rem;padding:1rem">
+        <p style="font-size:.88rem;color:#4F46E5;font-weight:600;">Resultado esperado</p>
+        <p style="font-size:.87rem;color:#475569;margin-top:.3rem">Sistema de calificación automático que opera 24/7, responde a leads calientes en minutos y libera a Lina de clasificar manualmente decenas de contactos por semana.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos recomendados</div>
+
+    <p style="font-size:.88rem;font-weight:600;color:#64748b;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.04em">Documentación oficial</p>
+    <ul class="resources-list">
+      <li>
+        <span class="res-icon">🤖</span>
+        <div class="res-content">
+          <a href="https://www.hubspot.com/products/artificial-intelligence/breeze-ai-agents" target="_blank">Breeze AI Agents — HubSpot</a>
+          <p>Página oficial de todos los agentes: Customer, Prospecting, Content, Knowledge Base, Data y marketplace</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">🎓</span>
+        <div class="res-content">
+          <a href="https://academy.hubspot.com" target="_blank">HubSpot Academy — AI Automation</a>
+          <p>Cursos gratuitos de certificación en automatización, workflows e IA aplicada al CRM</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">🔗</span>
+        <div class="res-content">
+          <a href="https://knowledge.hubspot.com/integrations/set-up-and-use-the-hubspot-connector-for-claude" target="_blank">Conector Claude × HubSpot — Guía oficial</a>
+          <p>Configuración paso a paso del conector OAuth entre HubSpot y Claude.ai</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">⚙️</span>
+        <div class="res-content">
+          <a href="https://developers.hubspot.com/docs/api/overview" target="_blank">HubSpot Developers — API v3</a>
+          <p>Documentación técnica de la API REST para integraciones personalizadas con el CRM</p>
+        </div>
+      </li>
+    </ul>
+
+    <p style="font-size:.88rem;font-weight:600;color:#64748b;margin:1.5rem 0 1rem;text-transform:uppercase;letter-spacing:.04em">Guías prácticas</p>
+    <ul class="resources-list">
+      <li>
+        <span class="res-icon">📈</span>
+        <div class="res-content">
+          <a href="https://www.xcellimark.com/blog/how-to-build-lead-scoring-in-hubspot-2025-update" target="_blank">Cómo construir Lead Scoring en HubSpot 2025</a>
+          <p>Guía práctica con scoring manual y predictivo, umbrales recomendados y flujos de automatización</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">🧠</span>
+        <div class="res-content">
+          <a href="https://www.fastslowmotion.com/hubspot-claude/" target="_blank">HubSpot + Claude: guía completa de insights CRM</a>
+          <p>Ejemplos reales de consultas en lenguaje natural, casos de uso para marketing y ventas</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">⚡</span>
+        <div class="res-content">
+          <a href="https://zapier.com/blog/hubspot-workflow-examples/" target="_blank">11 Workflows esenciales de HubSpot 2025-2026 — Zapier</a>
+          <p>Ejemplos listos para usar incluyendo workflows con IA, calificación de leads y notificaciones</p>
+        </div>
+      </li>
+      <li>
+        <span class="res-icon">🔄</span>
+        <div class="res-content">
+          <a href="https://www.make.com/en/integrations/hubspotcrm/anthropic-claude" target="_blank">Make.com: integración HubSpot + Claude</a>
+          <p>Templates de automatización listos para usar entre HubSpot CRM y Anthropic Claude</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ACCIONES POST-SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-sesión</div>
+    <ul class="actions-list">
+      <li>
+        <div class="check"></div>
+        <div class="action-text"><span class="week-label">Semana 1</span> Activar Breeze Intelligence y revisar el enriquecimiento automático de los últimos 50 contactos</div>
+      </li>
+      <li>
+        <div class="check"></div>
+        <div class="action-text"><span class="week-label">Semana 1</span> Configurar el lead scoring (predictivo si hay +200 deals, manual si hay menos) y revisar el score del pipeline actual</div>
+      </li>
+      <li>
+        <div class="check"></div>
+        <div class="action-text"><span class="week-label">Semana 1</span> Conectar Claude con HubSpot via el conector oficial y hacer la primera consulta de pipeline en lenguaje natural</div>
+      </li>
+      <li>
+        <div class="check"></div>
+        <div class="action-text"><span class="week-label">Semana 2</span> Construir el workflow de calificación de leads con las 3 ramas (caliente / tibio / frío) del ejercicio práctico</div>
+      </li>
+      <li>
+        <div class="check"></div>
+        <div class="action-text"><span class="week-label">Semana 2</span> Crear cuenta en Make.com y configurar el flujo: "lead caliente nuevo → notificación en WhatsApp o Slack"</div>
+      </li>
+      <li>
+        <div class="check"></div>
+        <div class="action-text"><span class="week-label">Semana 3</span> Activar el Prospecting Agent para los top 10 leads con mayor score y revisar los emails de outreach antes de enviarlos</div>
+      </li>
+      <li>
+        <div class="check"></div>
+        <div class="action-text"><span class="week-label">30 días</span> Sesión de revisión: medir tasa de respuesta, tiempo de primer contacto y precisión del scoring</div>
+      </li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  Sesión preparada para Lina — Asesoría 1-on-1 de Agentes de HubSpot | 90 minutos
+</footer>
+
+</body>
+</html>

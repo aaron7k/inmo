@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sesión 04 · Flujos de IA para evaluación académica — Jaime</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#6366F1 0%,#4F46E5 100%);padding:3rem 2rem;color:white}
+    .hero-inner{max-width:900px;margin:0 auto}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-sub{font-size:1rem;opacity:.88;margin-top:.6rem;font-weight:500}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.88rem;margin-top:1.2rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+
+    /* LAYOUT */
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+
+    /* CARDS */
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#0f172a}
+    .card-title .icon{font-size:1.3rem}
+
+    /* OBJETIVOS */
+    .objetivo-list{list-style:none;display:flex;flex-direction:column;gap:.75rem}
+    .objetivo-list li{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 1rem;border-radius:.5rem;background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.2)}
+    .objetivo-list li .num{background:#6366F1;color:white;border-radius:999px;width:1.6rem;height:1.6rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.15rem}
+    .objetivo-list li strong{color:#4338ca;font-weight:700}
+
+    /* CONCEPTOS */
+    .concepto{border-left:3px solid #6366F1;padding-left:1rem;margin-bottom:1.25rem}
+    .concepto h4{font-weight:700;color:#4F46E5;font-size:.95rem;margin-bottom:.25rem}
+    .concepto p{font-size:.9rem;color:#475569}
+
+    /* TOOL GRID */
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;background:#fafafa;display:flex;flex-direction:column;gap:.5rem;transition:box-shadow .2s,border-color .2s}
+    .tool-card:hover{box-shadow:0 4px 16px rgba(99,102,241,.15);border-color:#6366F1}
+    .tool-card-header{display:flex;align-items:center;justify-content:space-between}
+    .tool-name{font-weight:700;font-size:.9rem;color:#0f172a}
+    .tool-role{font-size:.8rem;color:#64748b;line-height:1.4}
+    .tool-link{font-size:.75rem;color:#6366F1;text-decoration:none;font-weight:600}
+    .tool-link:hover{text-decoration:underline}
+
+    /* BADGES */
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+
+    /* MÓDULOS */
+    .module{border-left:3px solid #6366F1;padding-left:1.25rem;margin-bottom:2rem}
+    .module-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+    .module-num{background:#6366F1;color:white;font-weight:800;font-size:.8rem;border-radius:.4rem;padding:.2rem .55rem}
+    .module-title{font-size:1.05rem;font-weight:700;color:#0f172a}
+    .module-time{font-size:.8rem;color:#94a3b8;margin-left:auto;white-space:nowrap}
+    .module p{font-size:.9rem;color:#475569;margin-bottom:.75rem}
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem}
+
+    /* FLOW */
+    .flow{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}
+    .flow-step{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.3);border-radius:.5rem;padding:.4rem .85rem;font-size:.82rem;font-weight:600;color:#4338ca}
+    .flow-arrow{color:#6366F1;font-weight:700;font-size:1rem}
+
+    /* FLOW VERTICAL */
+    .flow-vertical{display:flex;flex-direction:column;gap:.25rem;margin:.75rem 0}
+    .flow-vertical .fv-step{display:flex;align-items:center;gap:.6rem}
+    .flow-vertical .fv-dot{width:.7rem;height:.7rem;border-radius:999px;background:#6366F1;flex-shrink:0}
+    .flow-vertical .fv-text{font-size:.88rem;color:#334155;font-weight:500}
+    .flow-vertical .fv-connector{width:.7rem;height:1.2rem;border-left:2px dashed rgba(99,102,241,.4);margin-left:.35rem}
+
+    /* PROMPT BOX */
+    .prompt-box{background:#0f172a;border-radius:.75rem;padding:1.25rem 1.5rem;margin:.75rem 0;font-family:'Courier New',monospace;font-size:.8rem;color:#a5b4fc;white-space:pre-wrap;line-height:1.7;overflow-x:auto}
+    .prompt-label{font-size:.75rem;font-weight:700;color:#6366F1;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem}
+
+    /* EXERCISE BOX */
+    .exercise-box{background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-box h4{font-weight:700;color:#4338ca;margin-bottom:.75rem;font-size:1rem}
+
+    /* STATS */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1rem;margin-top:1rem}
+    .stat-card{background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.2);border-radius:.75rem;padding:1rem;text-align:center}
+    .stat-number{font-size:1.8rem;font-weight:800;color:#4F46E5;line-height:1}
+    .stat-label{font-size:.78rem;color:#64748b;margin-top:.3rem;line-height:1.4}
+
+    /* RESOURCE LIST */
+    .resource-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:.5rem}
+    .resource-list li{padding:.6rem .9rem;border-radius:.5rem;background:#f8fafc;border:1px solid #e2e8f0;font-size:.88rem}
+    .resource-list a{color:#4F46E5;font-weight:600;text-decoration:none}
+    .resource-list a:hover{text-decoration:underline}
+    .resource-list .res-sub{color:#94a3b8;font-size:.78rem;display:block;margin-top:.15rem}
+
+    /* ACTIONS */
+    .action-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:.5rem}
+    .action-list li{display:flex;align-items:center;gap:.75rem;padding:.6rem .9rem;border-radius:.5rem;background:#f8fafc;border:1px solid #e2e8f0;font-size:.88rem;color:#334155}
+    .action-list .checkbox{width:1.1rem;height:1.1rem;border:2px solid #6366F1;border-radius:.25rem;flex-shrink:0}
+
+    /* TABLE */
+    .table-wrap{overflow-x:auto;margin:.75rem 0}
+    table{width:100%;border-collapse:collapse;font-size:.85rem}
+    th{background:rgba(99,102,241,.08);color:#4338ca;font-weight:700;padding:.6rem .9rem;text-align:left;border-bottom:2px solid rgba(99,102,241,.2)}
+    td{padding:.55rem .9rem;border-bottom:1px solid #f1f5f9;color:#374151}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#f8fafc}
+    td a{color:#4F46E5;font-weight:600;text-decoration:none}
+    td a:hover{text-decoration:underline}
+
+    /* RUBRIC DEMO */
+    .rubric-demo{border-radius:.75rem;overflow:hidden;border:1px solid rgba(99,102,241,.2);margin:.75rem 0}
+    .rubric-demo table{font-size:.78rem}
+    .rubric-demo th{background:#4F46E5;color:white;font-size:.78rem}
+    .rubric-demo td{vertical-align:top;line-height:1.4;color:#475569}
+    .rubric-demo td:first-child{font-weight:700;color:#0f172a;background:rgba(99,102,241,.04)}
+    .level-excellent{color:#15803d;font-weight:700}
+    .level-good{color:#0369a1;font-weight:700}
+    .level-developing{color:#d97706;font-weight:700}
+    .level-insufficient{color:#dc2626;font-weight:700}
+
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    footer strong{color:#6366F1}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="tier-badge">Asesoría 1-on-1 &nbsp;·&nbsp; Sesión 04</div>
+    <h1>🎓 Flujos de IA para evaluación y fortalecimiento del trabajo académico</h1>
+    <p class="hero-sub">Rúbricas inteligentes · Retroalimentación automática · Integridad académica · Evaluación por pares con IA</p>
+    <div class="hero-meta">
+      <span>👤 Participante: <strong>Jaime</strong></span>
+      <span>⏱ 90 minutos</span>
+      <span>🎯 Formato: Individual</span>
+      <span>🏛 Área: Académica / Educación</span>
+      <span>📅 2026</span>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats-grid" style="margin-bottom:1.5rem">
+    <div class="stat-card">
+      <div class="stat-number">84%</div>
+      <div class="stat-label">de investigadores ya usan IA en su trabajo (2025)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">+10pts</div>
+      <div class="stat-label">de éxito con Claude Outcomes al evaluar con rúbrica</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">&lt;1%</div>
+      <div class="stat-label">falsos positivos de Turnitin en detección de IA</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">57%</div>
+      <div class="stat-label">de chats docentes en Claude involucran diseño curricular</div>
+    </div>
+  </div>
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la sesión</div>
+    <ol class="objetivo-list">
+      <li>
+        <span class="num">1</span>
+        <div><strong>Diseñar flujos de evaluación con IA</strong> que reduzcan el tiempo de calificación hasta un 70 % sin sacrificar calidad pedagógica ni criterio docente.</div>
+      </li>
+      <li>
+        <span class="num">2</span>
+        <div><strong>Construir rúbricas inteligentes</strong> que Claude y otras herramientas puedan usar para proporcionar retroalimentación consistente, detallada y libre de sesgo subjetivo.</div>
+      </li>
+      <li>
+        <span class="num">3</span>
+        <div><strong>Implementar retroalimentación automática formativa</strong> que llegue al estudiante en minutos, no en semanas, usando flujos multi-agente.</div>
+      </li>
+      <li>
+        <span class="num">4</span>
+        <div><strong>Integrar herramientas de integridad académica</strong> como Turnitin Clarity y detectores de IA para mantener la autenticidad del trabajo estudiantil.</div>
+      </li>
+      <li>
+        <span class="num">5</span>
+        <div><strong>Crear un sistema de evaluación por pares mediado por IA</strong> que enseñe a los estudiantes a evaluar críticamente el trabajo ajeno con criterios estandarizados.</div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+
+    <div class="concepto">
+      <h4>Rúbricas con IA</h4>
+      <p>Una rúbrica cargada en Claude genera puntajes parciales con justificación textual para cada criterio. La NLP puede evaluar tanto conocimiento básico como habilidades cognitivas superiores: pensamiento crítico, síntesis y argumentación (investigación Frontiers, 2025).</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Feedback formativo automatizado</h4>
+      <p>Retroalimentación que ocurre durante el proceso de aprendizaje, no al final. Los sistemas multi-agente (AutoFeedback, 2025) reducen significativamente los errores de "sobre-elogio" y "sobre-inferencia" frente a modelos únicos.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Claude Outcomes — evaluación por rúbrica</h4>
+      <p>Función de Anthropic que añade un agente evaluador separado para verificar el trabajo contra la rúbrica. Resultado: +10 puntos porcentuales de éxito en tareas, +8.4% en documentos escritos, según pruebas internas de Anthropic (2025).</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Evaluación por pares con IA</h4>
+      <p>Flujo donde el estudiante revisa el trabajo de un compañero con una rúbrica generada por IA, y la IA valida la coherencia de esa revisión. Crea un segundo ciclo de aprendizaje y enseña pensamiento evaluativo.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Turnitin Clarity — integridad con transparencia</h4>
+      <p>Nuevo paradigma de integridad académica reconocido por TIME (Mejor Invento 2025). No penaliza el uso de IA sino lo hace visible para abrir una conversación pedagógica. Menos de 1% de falsos positivos en detección.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Flujo de evaluación multi-etapa</h4>
+      <p>Arquitectura donde distintos agentes de IA se especializan: un agente lee el trabajo, otro lo compara contra la rúbrica, otro genera el feedback, otro valida que el feedback sea pedagógicamente adecuado. Más preciso que un solo modelo.</p>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Claude (Anthropic)</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-role">Análisis de trabajos, generación de rúbricas, feedback formativo detallado. Claude Outcomes para evaluación con rúbrica integrada.</p>
+        <a class="tool-link" href="https://claude.ai" target="_blank">claude.ai →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">NotebookLM (Google)</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <p class="tool-role">Analiza hasta 50 fuentes académicas (PDFs, links, YouTube). Verifica argumentos y citas del estudiante contra la bibliografía real del curso.</p>
+        <a class="tool-link" href="https://notebooklm.google.com" target="_blank">notebooklm.google.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Turnitin</span>
+          <span class="badge badge-paid">Institucional</span>
+        </div>
+        <p class="tool-role">Detección de plagio + detección de escritura generada por IA. Turnitin Clarity: transparencia de uso de IA, reconocido por TIME 2025.</p>
+        <a class="tool-link" href="https://www.turnitin.com" target="_blank">turnitin.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Grammarly for Education</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-role">Retroalimentación de escritura alineada a rúbrica y objetivos del curso. Corrección gramatical, estilo APA/MLA, 84.93% de precisión en categorías de error.</p>
+        <a class="tool-link" href="https://www.grammarly.com/edu" target="_blank">grammarly.com/edu →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Elicit</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-role">Extracción estructurada de papers: métodos, tamaños de muestra, hallazgos en tablas comparativas. Ideal para revisar marcos teóricos estudiantiles.</p>
+        <a class="tool-link" href="https://elicit.com" target="_blank">elicit.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Consensus</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-role">Verifica afirmaciones empíricas de los trabajos estudiantiles. El Consensus Meter indica si hay consenso científico, debate o falta de evidencia.</p>
+        <a class="tool-link" href="https://consensus.app" target="_blank">consensus.app →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Google Classroom</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <p class="tool-role">Gestión de tareas y rúbricas nativas, distribución de feedback, registro de calificaciones. Integración con CoGrader y GradeWithAI.</p>
+        <a class="tool-link" href="https://classroom.google.com" target="_blank">classroom.google.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">CoGrader</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-role">Calificación automática con IA integrada a Google Classroom. Evalúa contra rúbrica y devuelve notas directamente en la plataforma.</p>
+        <a class="tool-link" href="https://cograder.com" target="_blank">cograder.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">GradeWithAI</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-role">Evaluación rubric-based con integración a Google Classroom. Importa tareas, califica con IA y publica feedback por estudiante en minutos.</p>
+        <a class="tool-link" href="https://www.gradewithai.com" target="_blank">gradewithai.com →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PLAN DE SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Plan de la sesión — 4 bloques de 20 min</div>
+
+    <!-- BLOQUE 1 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Bloque 1</span>
+        <span class="module-title">Diagnóstico y diseño de rúbricas con IA</span>
+        <span class="module-time">20 min</span>
+      </div>
+      <p>Partimos de un tipo de tarea real de Jaime y construimos la rúbrica junto a Claude en tiempo real.</p>
+
+      <div class="flow">
+        <span class="flow-step">Jaime describe la tarea</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Claude sugiere criterios</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Jaime ajusta</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Rúbrica lista</span>
+      </div>
+
+      <p><strong>Tipos de rúbricas:</strong></p>
+      <ul>
+        <li><strong>Holística:</strong> una sola calificación global con descriptor. Rápida, buena para borradores.</li>
+        <li><strong>Analítica:</strong> criterios independientes con puntajes separados. Más rica en feedback.</li>
+        <li><strong>Única:</strong> describe solo el nivel de excelencia esperado; lo demás queda implícito.</li>
+      </ul>
+
+      <div class="prompt-label">Prompt base — crear rúbrica con Claude</div>
+      <div class="prompt-box">Actúa como experto en evaluación educativa en [nivel/área]. Necesito diseñar una rúbrica analítica para evaluar [tipo de tarea].
+
+Contexto del curso: [descripción breve]
+Nivel educativo: [pregrado / posgrado / bachillerato]
+Duración esperada del trabajo: [páginas / minutos / slides]
+Objetivos de aprendizaje: [lista]
+
+Crea una rúbrica con:
+- 5 a 7 criterios principales
+- 4 niveles de desempeño: Sobresaliente / Satisfactorio / En desarrollo / Insuficiente
+- Descriptores específicos y observables para cada celda
+- Ponderación en porcentaje por criterio
+
+Formato: tabla markdown lista para usar.</div>
+
+      <p style="margin-top:.75rem"><strong>Ejemplo de rúbrica generada por IA — Ensayo argumentativo:</strong></p>
+      <div class="rubric-demo">
+        <table>
+          <thead>
+            <tr>
+              <th>Criterio</th>
+              <th>Sobresaliente (4)</th>
+              <th>Satisfactorio (3)</th>
+              <th>En desarrollo (2)</th>
+              <th>Insuficiente (1)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Tesis y argumento central</td>
+              <td><span class="level-excellent">Tesis clara, original, sostenida con evidencia sólida a lo largo del ensayo.</span></td>
+              <td><span class="level-good">Tesis presente y generalmente sostenida con evidencia relevante.</span></td>
+              <td><span class="level-developing">Tesis vaga o parcialmente desarrollada; evidencia inconsistente.</span></td>
+              <td><span class="level-insufficient">Sin tesis clara o argumento central identificable.</span></td>
+            </tr>
+            <tr>
+              <td>Uso de fuentes</td>
+              <td><span class="level-excellent">Fuentes primarias y secundarias diversas, correctamente citadas y analizadas.</span></td>
+              <td><span class="level-good">Fuentes relevantes bien citadas; análisis suficiente.</span></td>
+              <td><span class="level-developing">Fuentes escasas o mal citadas; uso descriptivo sin análisis.</span></td>
+              <td><span class="level-insufficient">Sin fuentes o fuentes no confiables.</span></td>
+            </tr>
+            <tr>
+              <td>Estructura y coherencia</td>
+              <td><span class="level-excellent">Organización lógica impecable; párrafos bien construidos y conectados.</span></td>
+              <td><span class="level-good">Estructura clara con transiciones adecuadas.</span></td>
+              <td><span class="level-developing">Organización irregular; algunas ideas desconectadas.</span></td>
+              <td><span class="level-insufficient">Sin estructura identificable; ideas desorganizadas.</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BLOQUE 2 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Bloque 2</span>
+        <span class="module-title">Flujo de retroalimentación automática</span>
+        <span class="module-time">20 min</span>
+      </div>
+      <p>Construimos el ciclo completo de feedback: desde la entrega hasta que el estudiante recibe comentarios concretos y accionables.</p>
+
+      <div class="flow-vertical">
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">Estudiante entrega trabajo</div></div>
+        <div class="fv-connector"></div>
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">Turnitin verifica originalidad + detección de IA</div></div>
+        <div class="fv-connector"></div>
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">Claude analiza trabajo contra rúbrica (criterio por criterio)</div></div>
+        <div class="fv-connector"></div>
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">Grammarly revisa escritura, estilo y citas</div></div>
+        <div class="fv-connector"></div>
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">Claude genera reporte de feedback consolidado</div></div>
+        <div class="fv-connector"></div>
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">Docente revisa y aprueba (5 min por trabajo)</div></div>
+        <div class="fv-connector"></div>
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">Estudiante recibe feedback en menos de 24 h</div></div>
+      </div>
+
+      <div class="prompt-label">Prompt — feedback alineado a rúbrica</div>
+      <div class="prompt-box">Eres un evaluador académico experto en [área]. Evalúa el siguiente trabajo usando la rúbrica adjunta.
+
+RÚBRICA:
+[pegar rúbrica]
+
+TRABAJO DEL ESTUDIANTE:
+[pegar texto o adjuntar archivo]
+
+Para cada criterio de la rúbrica genera:
+1. Nivel de desempeño alcanzado (Sobresaliente / Satisfactorio / En desarrollo / Insuficiente)
+2. Puntuación (X / puntaje máximo del criterio)
+3. Comentario específico de 2-3 oraciones: qué hizo bien y qué debe mejorar
+4. Sugerencia concreta de cómo mejorar (accionable, no genérica)
+
+Al final: puntuación total, fortaleza principal del trabajo,
+y el paso más importante para la próxima versión.
+
+Tono: constructivo, específico, alentador pero honesto.</div>
+    </div>
+
+    <!-- BLOQUE 3 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Bloque 3</span>
+        <span class="module-title">Herramientas de integridad e investigación</span>
+        <span class="module-time">20 min</span>
+      </div>
+      <p>Incorporamos NotebookLM, Elicit y Consensus para verificar la calidad académica del contenido, más allá de la forma.</p>
+
+      <div class="tool-grid" style="margin:.75rem 0">
+        <div class="tool-card">
+          <span class="tool-name">NotebookLM</span>
+          <p class="tool-role">Cargar bibliografía del curso (hasta 50 fuentes). Verificar si las citas y argumentos del estudiante coinciden con las fuentes reales. Detectar uso superficial o malinterpretación.</p>
+        </div>
+        <div class="tool-card">
+          <span class="tool-name">Elicit</span>
+          <p class="tool-role">Evaluar el marco teórico del estudiante. Extrae papers con métodos y hallazgos en tabla comparativa. Identifica si el estudiante omitió evidencia clave.</p>
+        </div>
+        <div class="tool-card">
+          <span class="tool-name">Consensus</span>
+          <p class="tool-role">Verificar afirmaciones empíricas. El Consensus Meter muestra si una afirmación tiene respaldo científico, está en debate o carece de evidencia suficiente.</p>
+        </div>
+        <div class="tool-card">
+          <span class="tool-name">Turnitin Clarity</span>
+          <p class="tool-role">Nuevo paradigma 2025: no penaliza el uso de IA sino lo visibiliza. Genera reporte de transparencia para conversación pedagógica con el estudiante.</p>
+        </div>
+      </div>
+
+      <p><strong>Pregunta pedagógica clave con Turnitin Clarity:</strong></p>
+      <p style="font-style:italic;color:#475569;font-size:.9rem;margin:.5rem 0 0 0">"¿Para qué usaste IA en este trabajo? ¿La IA amplió tu pensamiento o lo reemplazó?"</p>
+    </div>
+
+    <!-- BLOQUE 4 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Bloque 4</span>
+        <span class="module-title">Evaluación por pares y sistema completo</span>
+        <span class="module-time">20 min</span>
+      </div>
+      <p>Cerramos construyendo el flujo de evaluación por pares mediada por IA y el mapa completo del sistema.</p>
+
+      <div class="flow-vertical">
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">Estudiante A entrega trabajo</div></div>
+        <div class="fv-connector"></div>
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">IA asigna trabajo de A a Estudiante B (anónimo)</div></div>
+        <div class="fv-connector"></div>
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">B evalúa con rúbrica generada por IA</div></div>
+        <div class="fv-connector"></div>
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">Claude verifica coherencia del feedback de B con la rúbrica</div></div>
+        <div class="fv-connector"></div>
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">Si es superficial → Claude pide a B que profundice (socráticamente)</div></div>
+        <div class="fv-connector"></div>
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">A recibe feedback de B + feedback de IA</div></div>
+        <div class="fv-connector"></div>
+        <div class="fv-step"><div class="fv-dot"></div><div class="fv-text">Docente ve resumen de patrones de toda la clase</div></div>
+      </div>
+
+      <div class="prompt-label">Prompt — Claude como validador de feedback de pares</div>
+      <div class="prompt-box">Tienes la rúbrica de la tarea y el feedback que un estudiante (evaluador)
+escribió sobre el trabajo de su compañero.
+
+RÚBRICA: [rúbrica]
+TRABAJO EVALUADO: [trabajo]
+FEEDBACK DEL EVALUADOR: [feedback del par]
+
+Evalúa si el feedback del evaluador:
+1. Está alineado con los criterios de la rúbrica
+2. Es específico y basado en evidencia del texto
+3. Es constructivo y accionable
+4. No contiene sesgos o comentarios inapropiados
+
+Si el feedback es insuficiente, genera una pregunta socrática para que
+el evaluador profundice, sin darle la respuesta directamente.</div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <h4>"Sistema de evaluación completo para tu tarea real"</h4>
+      <p style="font-size:.9rem;color:#475569;margin-bottom:1rem">Construir en vivo un sistema de evaluación con IA adaptado al tipo de tarea que Jaime usa en su contexto académico real.</p>
+
+      <ol style="padding-left:1.5rem;display:flex;flex-direction:column;gap:.75rem;font-size:.9rem;color:#334155">
+        <li><strong>Elegir el tipo de tarea:</strong> ensayo argumentativo, reporte de lectura, presentación, proyecto de investigación o caso de estudio.</li>
+        <li><strong>Crear la rúbrica con Claude:</strong> usar el prompt del Bloque 1 con los detalles reales del curso. Ajustar hasta que refleje exactamente lo que Jaime valora pedagógicamente.</li>
+        <li><strong>Probar el flujo de feedback:</strong> usar un trabajo real (anonimizado) o ejemplo escrito para la sesión. Comparar el feedback de Claude con la evaluación manual. Identificar dónde Claude acierta y dónde hay que ajustar el prompt.</li>
+        <li><strong>Configurar en Google Classroom:</strong> crear la tarea con la rúbrica integrada. Conectar CoGrader o GradeWithAI. Definir el flujo de revisión humana antes de publicar notas.</li>
+        <li><strong>Reflexión crítica:</strong> ¿qué aspectos evalúa bien la IA y cuáles requieren juicio humano? ¿Cómo comunicar a los estudiantes que la IA participa en la evaluación?</li>
+      </ol>
+
+      <p style="margin-top:1.25rem;font-size:.85rem;color:#4338ca;font-weight:600">Entregables de la sesión:</p>
+      <ul style="font-size:.88rem;color:#475569;margin-top:.4rem">
+        <li>Rúbrica lista para usar en el próximo ciclo</li>
+        <li>Prompt de feedback calibrado para el área de Jaime</li>
+        <li>Mapa del flujo completo de evaluación con IA</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos</div>
+
+    <p style="font-weight:700;font-size:.88rem;color:#4338ca;margin-bottom:.6rem">Investigación y evidencia (2024-2025)</p>
+    <ul class="resource-list" style="margin-bottom:1.25rem">
+      <li>
+        <a href="https://www.emerald.com/aiie/article/doi/10.1108/AIIE-03-2025-0036/1317167/" target="_blank">AI-Driven Grading & Personalised Feedback: A Systematic Review (Emerald, 2025)</a>
+        <span class="res-sub">Revisión sistemática sobre el futuro de la evaluación educativa con IA en educación superior.</span>
+      </li>
+      <li>
+        <a href="https://www.frontiersin.org/journals/education/articles/10.3389/feduc.2025.1704820/full" target="_blank">AI-Automated Feedback in Higher Education: Potentials, Pitfalls & Ethics (Frontiers, 2025)</a>
+        <span class="res-sub">Reflexiones de educadores sobre feedback automatizado: beneficios, riesgos y dimensiones éticas.</span>
+      </li>
+      <li>
+        <a href="https://dl.acm.org/doi/10.1145/3732299.3732338" target="_blank">Claude 3.5 Sonnet: Automated Written Corrective Feedback for EFL Students (ACM, 2025)</a>
+        <span class="res-sub">Análisis sistemático del feedback correctivo escrito de Claude en ensayos argumentativos de estudiantes de inglés.</span>
+      </li>
+      <li>
+        <a href="https://arxiv.org/pdf/2411.07407" target="_blank">Using Generative AI and Multi-Agents to Provide Automatic Feedback (arXiv, 2024)</a>
+        <span class="res-sub">AutoFeedback: sistema multi-agente que reduce errores de sobre-elogio y sobre-inferencia.</span>
+      </li>
+      <li>
+        <a href="https://www.frontiersin.org/journals/education/articles/10.3389/feduc.2025.1522841/full" target="_blank">Early Impact of AI on Higher Education: Curriculum, Instruction & Assessment (Frontiers, 2025)</a>
+        <span class="res-sub">Revisión sistemática del impacto temprano de IA en currículo, instrucción y evaluación en educación superior.</span>
+      </li>
+    </ul>
+
+    <p style="font-weight:700;font-size:.88rem;color:#4338ca;margin-bottom:.6rem">Herramientas y guías prácticas</p>
+    <ul class="resource-list" style="margin-bottom:1.25rem">
+      <li>
+        <a href="https://learning.northeastern.edu/ai-student-guides-using-ai-for-writing-feedback/" target="_blank">Northeastern University: Using AI for Writing Feedback</a>
+        <span class="res-sub">Guía con prompts y estrategias para obtener feedback de escritura académica con IA.</span>
+      </li>
+      <li>
+        <a href="https://faculty.saintleo.edu/claude/" target="_blank">Saint Leo University: Claude como herramienta docente</a>
+        <span class="res-sub">Uso de Claude en contextos educativos: grading, feedback y revisión de escritura.</span>
+      </li>
+      <li>
+        <a href="https://www.turnitin.com/solutions/academic-integrity" target="_blank">Turnitin Clarity — Transparencia en el uso de IA (2025)</a>
+        <span class="res-sub">Nuevo enfoque de integridad académica: visibilizar el uso de IA en vez de solo penalizarlo.</span>
+      </li>
+      <li>
+        <a href="https://support.google.com/edu/classroom/answer/9335428" target="_blank">Google Classroom: Calificar con rúbrica — Guía oficial</a>
+        <span class="res-sub">Cómo crear y usar rúbricas nativas en Google Classroom para calificación.</span>
+      </li>
+      <li>
+        <a href="https://cograder.com/ai-grading/" target="_blank">CoGrader: AI Grading Tool para docentes</a>
+        <span class="res-sub">Evaluación automática integrada a Google Classroom con rubric-based feedback.</span>
+      </li>
+      <li>
+        <a href="https://paperguide.ai/blog/elicit-vs-notebooklm/" target="_blank">Elicit vs. NotebookLM: cuál usar para investigación académica</a>
+        <span class="res-sub">Comparativa detallada de las dos herramientas más usadas por investigadores en 2025.</span>
+      </li>
+      <li>
+        <a href="https://effortlessacademic.com/notebook-lm-googles-newest-academic-ai-tool/" target="_blank">NotebookLM Review: AI Tool for Researchers (The Effortless Academic)</a>
+        <span class="res-sub">Guía completa de uso de NotebookLM para investigación y análisis de fuentes.</span>
+      </li>
+    </ul>
+
+    <p style="font-weight:700;font-size:.88rem;color:#4338ca;margin-bottom:.6rem">Estadísticas clave (2025)</p>
+    <ul style="font-size:.88rem;color:#475569">
+      <li>84 % de investigadores usan IA en su trabajo (vs. 57 % en 2024)</li>
+      <li>57 % de los chats académicos de docentes en Claude involucran diseño curricular (Anthropic/Clio, 2025)</li>
+      <li>Grammarly: 84.93 % de precisión en categorías de error de escritura académica</li>
+      <li>Turnitin Clarity: menos de 1 % de falsos positivos en detección de escritura generada por IA</li>
+      <li>Claude Outcomes: +10 puntos porcentuales de éxito en tareas evaluadas con rúbrica</li>
+    </ul>
+  </div>
+
+  <!-- ACCIONES POST-SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-sesión</div>
+    <ul class="action-list">
+      <li><span class="checkbox"></span> Crear la primera rúbrica de IA para un tipo de tarea real del curso en <a href="https://claude.ai" style="color:#4F46E5;font-weight:600">claude.ai</a></li>
+      <li><span class="checkbox"></span> Configurar una tarea en <a href="https://classroom.google.com" style="color:#4F46E5;font-weight:600">Google Classroom</a> con la rúbrica integrada</li>
+      <li><span class="checkbox"></span> Explorar <a href="https://cograder.com" style="color:#4F46E5;font-weight:600">CoGrader</a> o <a href="https://www.gradewithai.com" style="color:#4F46E5;font-weight:600">GradeWithAI</a> conectado al Classroom</li>
+      <li><span class="checkbox"></span> Crear un notebook en <a href="https://notebooklm.google.com" style="color:#4F46E5;font-weight:600">NotebookLM</a> con la bibliografía del curso</li>
+      <li><span class="checkbox"></span> Probar <a href="https://elicit.com" style="color:#4F46E5;font-weight:600">Elicit</a> con una pregunta de investigación de un trabajo estudiantil</li>
+      <li><span class="checkbox"></span> Revisar la política de uso de IA de la institución y diseñar la política de aula</li>
+      <li><span class="checkbox"></span> Probar el prompt de feedback con un trabajo real (anonimizado) y comparar con evaluación manual</li>
+      <li><span class="checkbox"></span> Documentar en qué criterios Claude genera feedback útil y en cuáles hay que ajustar el prompt</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  <strong>Sesión 04 · Jaime · Flujos de IA para evaluación académica</strong><br>
+  Asesoría 1-on-1 · 90 minutos · Área académica / Educación · Inmo Academy 2026
+</footer>
+
+</body>
+</html>
