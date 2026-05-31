@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrenamiento adecuado de la IA para investigación — Juli</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#6366F1 0%,#4F46E5 100%);padding:3rem 2rem;color:white}
+    .hero-inner{max-width:900px;margin:0 auto}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-sub{font-size:1.05rem;opacity:.85;margin-top:.5rem;font-weight:400}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1.25rem}
+    .hero-meta span{display:flex;align-items:center;gap:.35rem}
+
+    /* LAYOUT */
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+
+    /* CARDS */
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+
+    /* OBJECTIVES */
+    .objective-list{list-style:none;padding:0}
+    .objective-list li{display:flex;gap:1rem;align-items:flex-start;padding:.75rem 0;border-bottom:1px solid #f1f5f9}
+    .objective-list li:last-child{border-bottom:none}
+    .obj-num{min-width:2rem;height:2rem;background:linear-gradient(135deg,#6366F1,#4F46E5);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0}
+    .obj-text strong{display:block;font-weight:600;color:#1e293b}
+    .obj-text span{font-size:.9rem;color:#64748b}
+
+    /* CONCEPTS TABLE */
+    .concept-table{width:100%;border-collapse:collapse;font-size:.9rem}
+    .concept-table th{background:#f8fafc;padding:.75rem 1rem;text-align:left;font-weight:700;color:#374151;border-bottom:2px solid #e2e8f0}
+    .concept-table td{padding:.75rem 1rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    .concept-table tr:last-child td{border-bottom:none}
+    .concept-table td:first-child{font-weight:600;color:#4F46E5;white-space:nowrap;width:210px}
+    .concept-table tr:hover td{background:#fafbff}
+
+    /* TOOL GRID */
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1.25rem;transition:box-shadow .2s,transform .2s}
+    .tool-card:hover{box-shadow:0 4px 20px rgba(99,102,241,.12);transform:translateY(-2px)}
+    .tool-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+    .tool-name{font-weight:700;color:#1e293b;font-size:1rem}
+    .tool-desc{font-size:.85rem;color:#64748b;margin-bottom:.75rem;line-height:1.5}
+    .tool-footer{display:flex;align-items:center;justify-content:space-between}
+    .tool-price{font-size:.8rem;color:#475569;font-weight:500}
+    .tool-link{font-size:.8rem;color:#6366F1;font-weight:600;text-decoration:none}
+    .tool-link:hover{text-decoration:underline}
+
+    /* BADGES */
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+
+    /* SESSION PLAN */
+    .module{border-left:3px solid #6366F1;padding:.75rem 0 .75rem 1.25rem;margin-bottom:1.25rem}
+    .module:last-child{margin-bottom:0}
+    .module-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem}
+    .module-num{background:#6366F1;color:white;font-weight:700;font-size:.8rem;padding:.2rem .65rem;border-radius:.4rem}
+    .module-title{font-weight:700;color:#1e293b;font-size:1rem}
+    .module-time{font-size:.8rem;color:#94a3b8;margin-left:auto}
+    .module ul{padding-left:1.25rem;color:#475569;font-size:.9rem}
+    .module ul li{margin-bottom:.3rem}
+
+    /* EXERCISE */
+    .exercise-box{background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-title{font-weight:700;color:#4F46E5;font-size:1rem;margin-bottom:.75rem}
+    .code-block{background:#1e293b;color:#e2e8f0;border-radius:.6rem;padding:1.25rem;font-family:'Courier New',monospace;font-size:.82rem;line-height:1.7;overflow-x:auto;margin:1rem 0}
+    .code-block .xml-tag{color:#a78bfa}
+    .code-block .xml-comment{color:#64748b}
+    .steps-list{list-style:none;padding:0;margin-top:1rem}
+    .steps-list li{display:flex;align-items:flex-start;gap:.75rem;padding:.5rem 0;border-bottom:1px solid rgba(99,102,241,.15)}
+    .steps-list li:last-child{border-bottom:none}
+    .step-num{min-width:1.6rem;height:1.6rem;background:#6366F1;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;margin-top:.1rem}
+
+    /* RESOURCES */
+    .resource-section{margin-bottom:1.25rem}
+    .resource-section h4{font-weight:700;color:#374151;margin-bottom:.75rem;font-size:.95rem;padding-bottom:.4rem;border-bottom:1px solid #e2e8f0}
+    .resource-list{list-style:none;padding:0}
+    .resource-list li{padding:.4rem 0;border-bottom:1px solid #f8fafc;font-size:.9rem}
+    .resource-list li:last-child{border-bottom:none}
+    .resource-list a{color:#6366F1;font-weight:600;text-decoration:none}
+    .resource-list a:hover{text-decoration:underline}
+    .resource-list .res-desc{color:#64748b;font-size:.85rem}
+
+    /* ACTIONS */
+    .action-group{margin-bottom:1.5rem}
+    .action-group h4{font-weight:700;color:#374151;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+    .action-group h4 .action-tag{font-size:.75rem;background:#f1f5f9;color:#64748b;padding:.15rem .5rem;border-radius:.3rem;font-weight:500}
+    .checklist{list-style:none;padding:0}
+    .checklist li{display:flex;align-items:flex-start;gap:.6rem;padding:.45rem 0;border-bottom:1px solid #f8fafc;font-size:.9rem;color:#374151}
+    .checklist li:last-child{border-bottom:none}
+    .check-box{min-width:1.1rem;height:1.1rem;border:2px solid #cbd5e1;border-radius:.25rem;flex-shrink:0;margin-top:.15rem}
+
+    /* DECISION TABLE */
+    .decision-table{width:100%;border-collapse:collapse;font-size:.88rem}
+    .decision-table th{background:linear-gradient(135deg,#6366F1,#4F46E5);color:white;padding:.65rem 1rem;text-align:left;font-weight:600}
+    .decision-table th:first-child{border-radius:.5rem 0 0 0}
+    .decision-table th:last-child{border-radius:0 .5rem 0 0}
+    .decision-table td{padding:.65rem 1rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    .decision-table tr:last-child td{border-bottom:none}
+    .decision-table tr:hover td{background:#fafbff}
+    .decision-table td:first-child{font-weight:600;color:#4F46E5}
+
+    /* STATS ROW */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .stat-card{background:white;border-radius:.75rem;padding:1.25rem;text-align:center;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+    .stat-number{font-size:1.8rem;font-weight:800;color:#6366F1;line-height:1}
+    .stat-label{font-size:.8rem;color:#64748b;margin-top:.35rem}
+
+    /* FOOTER */
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    footer strong{color:#6366F1}
+
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem}
+
+    @media(max-width:600px){
+      .hero{padding:2rem 1.25rem}
+      .card{padding:1.25rem}
+      .concept-table td:first-child{width:auto;white-space:normal}
+      .decision-table{font-size:.8rem}
+      .decision-table td,.decision-table th{padding:.5rem .65rem}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="tier-badge">Asesoría 1-on-1</div>
+    <h1>🔬 Entrenamiento adecuado de la IA para investigación</h1>
+    <p class="hero-sub">Cómo personalizar, configurar e integrar herramientas de IA para acelerar tu flujo de research sin sacrificar rigor académico</p>
+    <div class="hero-meta">
+      <span>👤 <strong>Participante:</strong>&nbsp;Juli</span>
+      <span>⏱ <strong>Duración:</strong>&nbsp;90 minutos</span>
+      <span>🎯 <strong>Formato:</strong>&nbsp;Sesión individual personalizada</span>
+      <span>📅 <strong>Nivel:</strong>&nbsp;Intermedio · Research</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-number">80%</div>
+      <div class="stat-label">Ahorro de tiempo en revisión sistemática con Elicit</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">125M</div>
+      <div class="stat-label">Papers disponibles en la base de datos de Elicit</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">200K</div>
+      <div class="stat-label">Tokens de contexto de Claude (~15 papers completos)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">98%</div>
+      <div class="stat-label">Precisión de RAG en preguntas de dominio específico</div>
+    </div>
+  </div>
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la sesión</div>
+    <ol class="objective-list">
+      <li>
+        <div class="obj-num">1</div>
+        <div class="obj-text">
+          <strong>Personalizar una IA para tu área de investigación</strong>
+          <span>Mediante system prompts avanzados que conviertan a Claude en un asistente experto en tu dominio específico</span>
+        </div>
+      </li>
+      <li>
+        <div class="obj-num">2</div>
+        <div class="obj-text">
+          <strong>Crear flujos de research reproducibles</strong>
+          <span>Combinar múltiples herramientas para acelerar la revisión de literatura, extracción de datos y síntesis de hallazgos</span>
+        </div>
+      </li>
+      <li>
+        <div class="obj-num">3</div>
+        <div class="obj-text">
+          <strong>Dominar la diferencia entre system prompts, RAG y fine-tuning</strong>
+          <span>Elegir la estrategia correcta según el tamaño y tipo de tu base de conocimiento — y evitar el error más caro (fine-tuning cuando no hace falta)</span>
+        </div>
+      </li>
+      <li>
+        <div class="obj-num">4</div>
+        <div class="obj-text">
+          <strong>Configurar NotebookLM como base documental sin alucinaciones</strong>
+          <span>Subir tus fuentes primarias y obtener respuestas ancladas en citas verificables de tus propios documentos</span>
+        </div>
+      </li>
+      <li>
+        <div class="obj-num">5</div>
+        <div class="obj-text">
+          <strong>Integrar Elicit o Consensus en tu flujo de revisión sistemática</strong>
+          <span>Ahorrar hasta un 80% del tiempo de screening con herramientas diseñadas específicamente para research académico</span>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+    <div style="overflow-x:auto">
+      <table class="concept-table">
+        <thead>
+          <tr><th>Término</th><th>Definición</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>System Prompt</td>
+            <td>Instrucción de configuración que se da a la IA antes de la conversación, definiendo su rol, expertise, tono y restricciones. Es la forma más rápida y económica de "entrenar" una IA para investigación.</td>
+          </tr>
+          <tr>
+            <td>RAG</td>
+            <td>Retrieval-Augmented Generation. La IA busca en una base de datos propia (tus papers, notas, documentos) antes de responder. Logra 94–98% de precisión en preguntas de dominio específico.</td>
+          </tr>
+          <tr>
+            <td>Fine-Tuning</td>
+            <td>Reentrenamiento del modelo con datos propios. Costoso (+5.000 USD de inversión inicial), lento de iterar y frecuentemente sobre-aplicado. Solo vale cuando se necesita comportamiento muy específico a gran escala.</td>
+          </tr>
+          <tr>
+            <td>Context Window</td>
+            <td>Texto que la IA puede procesar en una conversación. Claude maneja 200K tokens (~15 papers completos). NotebookLM ahora soporta 1 millón de tokens con el motor Gemini 3.</td>
+          </tr>
+          <tr>
+            <td>NotebookLM</td>
+            <td>Herramienta de Google que analiza hasta 50 fuentes (PDFs, URLs, YouTube, audio) y responde con citas ancladas en tus documentos. Ideal para research libre de alucinaciones.</td>
+          </tr>
+          <tr>
+            <td>Claude Projects</td>
+            <td>Espacio de trabajo persistente en Claude donde cargas papers base, notas metodológicas y configuras skills. Se convierte en un laboratorio de investigación completo y reutilizable.</td>
+          </tr>
+          <tr>
+            <td>Perplexity Deep Research</td>
+            <td>Realiza docenas de búsquedas automáticas y lee cientos de fuentes, entregando reportes comprehensivos con citas verificables en 2–4 minutos.</td>
+          </tr>
+          <tr>
+            <td>Elicit</td>
+            <td>Asistente científico con acceso a 125M papers. Extrae datos estructurados, soporta PRISMA 2020 y logra 95% de recall en revisiones sistemáticas. Más de 2 millones de investigadores lo usan.</td>
+          </tr>
+          <tr>
+            <td>Consensus</td>
+            <td>Motor académico que sintetiza evidencia de estudios revisados por pares y muestra el nivel de acuerdo científico sobre una pregunta concreta.</td>
+          </tr>
+          <tr>
+            <td>Prompt XML estructurado</td>
+            <td>Uso de etiquetas XML (&lt;rol&gt;, &lt;contexto&gt;, &lt;tarea&gt;, &lt;restricciones&gt;) que Claude parsea como input estructurado, mejorando significativamente la precisión del análisis académico.</td>
+          </tr>
+          <tr>
+            <td>Zotero</td>
+            <td>Gestor de referencias gratuito y open-source. Soporta 9.000+ estilos de cita, integra con Word, Google Docs y Overleaf. Captura referencias directamente desde el navegador.</td>
+          </tr>
+          <tr>
+            <td>Fuentes primarias</td>
+            <td>Papers originales, datos crudos, reportes directos. La IA debe siempre anclarse a ellas — nunca generarlas. NotebookLM + Elicit son los guardianes de este principio.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FRAMEWORK DE DECISIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">⚖️</span> Framework: ¿qué enfoque usar?</div>
+    <p style="color:#64748b;font-size:.9rem;margin-bottom:1.25rem">La pregunta más frecuente: ¿cuándo usar system prompts, RAG o fine-tuning? La respuesta depende de tu caso de uso.</p>
+    <div style="overflow-x:auto">
+      <table class="decision-table">
+        <thead>
+          <tr>
+            <th>Enfoque</th>
+            <th>Cuándo usarlo</th>
+            <th>Costo / Velocidad</th>
+            <th>Precisión</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>System Prompt</td>
+            <td>Base de conocimiento &lt;200K tokens. Necesitas velocidad y flexibilidad. Quieres iterar rápido.</td>
+            <td>Horas de setup · Gratis</td>
+            <td>Alta si el prompt es bien estructurado</td>
+          </tr>
+          <tr>
+            <td>RAG</td>
+            <td>Biblioteca de documentos propia (papers, notas, datos). Necesitas información actualizada. Quieres citas verificables.</td>
+            <td>Días de setup · Bajo costo</td>
+            <td>94–98% en dominio específico</td>
+          </tr>
+          <tr>
+            <td>Fine-Tuning</td>
+            <td>El modelo debe aprender comportamiento o estilo muy específico. Escala de producción (miles de queries diarios).</td>
+            <td>Semanas · +5.000 USD</td>
+            <td>Máxima — pero solo si los datos son buenos</td>
+          </tr>
+          <tr>
+            <td>Híbrido RAG + FT</td>
+            <td>Los sistemas de producción más avanzados de 2026. RAG para hechos, fine-tuning para comportamiento y razonamiento.</td>
+            <td>Meses · Empresa</td>
+            <td>Estado del arte</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:1rem;font-size:.85rem;color:#94a3b8">Para investigación individual: system prompts + RAG (NotebookLM) es la combinación óptima en 2026. Fine-tuning raramente se justifica.</p>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico para investigación con IA</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Claude.ai</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Asistente principal de investigación. Análisis de papers, síntesis literaria, redacción académica. Context window de 200K tokens (~15 papers). Claude Projects para workspace persistente.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Gratis / Pro $20/mes</span>
+          <a class="tool-link" href="https://claude.ai" target="_blank">claude.ai →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">NotebookLM</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Base documental sin alucinaciones. Soporta 50 fuentes (PDFs, URLs, YouTube, audio). 1M token context con Gemini 3. Genera Audio Overviews, Mind Maps, Flashcards y Slide Decks.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Gratis / Plus $19.99/mes</span>
+          <a class="tool-link" href="https://notebooklm.google.com" target="_blank">notebooklm.google.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Perplexity</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Búsqueda académica con citas en tiempo real. Modo Academic para papers peer-reviewed. Deep Research: docenas de búsquedas automáticas en 2–4 minutos. 45M usuarios activos.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Gratis / Pro $20/mes</span>
+          <a class="tool-link" href="https://perplexity.ai" target="_blank">perplexity.ai →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Elicit</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Revisión sistemática con IA. 125M papers disponibles. Extracción estructurada, soporte PRISMA 2020, 95% recall, 80% ahorro de tiempo. Más de 2M investigadores activos.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Gratis / Plus $12/mes / Pro $49/mes</span>
+          <a class="tool-link" href="https://elicit.com" target="_blank">elicit.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Consensus</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Evidencia científica consolidada. Sintetiza estudios peer-reviewed y muestra el nivel de acuerdo científico sobre preguntas específicas. Ideal para estados del arte rápidos.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Gratis / Premium $11.99/mes</span>
+          <a class="tool-link" href="https://consensus.app" target="_blank">consensus.app →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Zotero</div>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <div class="tool-desc">Gestión de referencias open-source. 9.000+ estilos de cita. Integra con Word, Google Docs y Overleaf. Captura referencias directamente desde el navegador con un clic.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Gratis (open source)</span>
+          <a class="tool-link" href="https://zotero.org" target="_blank">zotero.org →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Semantic Scholar</div>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <div class="tool-desc">200M+ papers académicos con red de citas. Alertas de papers nuevos, autores relacionados y papers con mayor impacto en tu área. API disponible para automatización.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Gratis</span>
+          <a class="tool-link" href="https://semanticscholar.org" target="_blank">semanticscholar.org →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">ResearchRabbit</div>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <div class="tool-desc">Visualización de redes de citas y literatura relacionada. Descubre papers que no aparecen en búsquedas directas siguiendo la red de referencias hacia adelante y hacia atrás.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Gratis</span>
+          <a class="tool-link" href="https://researchrabbit.ai" target="_blank">researchrabbit.ai →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PLAN DE SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Plan de la sesión (4 bloques de 20 minutos)</div>
+
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Bloque 1</span>
+        <span class="module-title">Diagnóstico y fundamentos</span>
+        <span class="module-time">min 0–20</span>
+      </div>
+      <ul>
+        <li>Diagnóstico personalizado: ¿qué tipo de investigación hace Juli? ¿Cuál es su flujo actual? ¿Dónde pierde más tiempo?</li>
+        <li>Revisión de los 3 enfoques: system prompts vs. RAG vs. fine-tuning y cuándo aplica cada uno</li>
+        <li>Demostración en vivo: el mismo query en Google Scholar, Perplexity Academic y Elicit — diferencias en calidad y velocidad</li>
+        <li>Identificación del stack óptimo para el área específica de Juli</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Bloque 2</span>
+        <span class="module-title">Construcción del asistente personal</span>
+        <span class="module-time">min 20–40</span>
+      </div>
+      <ul>
+        <li>Diseño del system prompt específico para el área de Juli usando estructura XML completa</li>
+        <li>Configuración de Claude Project: carga de papers base + instrucciones metodológicas personalizadas</li>
+        <li>Prueba del flujo completo: pregunta de investigación → búsqueda → extracción → síntesis</li>
+        <li>Iteración y ajuste del system prompt según los resultados obtenidos en vivo</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Bloque 3</span>
+        <span class="module-title">NotebookLM como base documental</span>
+        <span class="module-time">min 40–60</span>
+      </div>
+      <ul>
+        <li>Importación de las fuentes primarias de Juli (PDFs, URLs, notas de campo)</li>
+        <li>Uso de consultas estructuradas para extraer datos sin alucinaciones con citas verificables</li>
+        <li>Generación de Audio Overview y Mind Map para revisión rápida de literatura</li>
+        <li>Integración NotebookLM + Claude: usar NotebookLM para hechos verificados, Claude para análisis y síntesis</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Bloque 4</span>
+        <span class="module-title">Flujo completo y plan de implementación</span>
+        <span class="module-time">min 60–90</span>
+      </div>
+      <ul>
+        <li>Flujo integrado: Elicit / Semantic Scholar → Zotero → NotebookLM → Claude</li>
+        <li>Plantilla de system prompt personalizada que Juli se lleva lista para usar desde hoy</li>
+        <li>Estrategia de mantenimiento: cómo actualizar la base de conocimiento periódicamente</li>
+        <li>Q&amp;A y definición de las 3 acciones concretas para implementar esta semana</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio personalizado: asistente de investigación propio</div>
+    <p style="color:#64748b;font-size:.9rem;margin-bottom:1.25rem">Durante la sesión construiremos en vivo un asistente de investigación con system prompt específico para el área de Juli. El resultado es una plantilla lista para usar desde el primer día.</p>
+
+    <div class="exercise-box">
+      <div class="exercise-title">Plantilla de System Prompt base (a personalizar en sesión)</div>
+      <div class="code-block"><span class="xml-tag">&lt;rol&gt;</span>
+Eres un asistente de investigación experto en [ÁREA ESPECÍFICA DE JULI].
+Tienes experiencia en metodología [CUANTITATIVA / CUALITATIVA / MIXTA].
+Conoces los principales journals, metodologías y debates actuales del campo.
+<span class="xml-tag">&lt;/rol&gt;</span>
+
+<span class="xml-tag">&lt;comportamiento&gt;</span>
+- Siempre cita fuentes específicas. Si no tienes certeza, dilo explícitamente.
+- Usa lenguaje académico riguroso pero claro.
+- Cuando analices papers, extrae: objetivo, metodología, muestra,
+  hallazgos clave y limitaciones.
+- Si encuentras contradicciones entre fuentes, señálalas y explica el debate.
+- Nunca inventes datos, estadísticas o referencias bibliográficas.
+<span class="xml-tag">&lt;/comportamiento&gt;</span>
+
+<span class="xml-tag">&lt;formato_de_respuesta&gt;</span>
+Para síntesis de literatura: usa estructura IMRAD adaptada.
+Para comparación de estudios: tabla con columnas:
+  Autor/Año | Muestra | Metodología | Hallazgo principal | Limitación.
+Para brechas de investigación: lista numerada con nivel de evidencia.
+<span class="xml-tag">&lt;/formato_de_respuesta&gt;</span>
+
+<span class="xml-tag">&lt;restricciones&gt;</span>
+- Solo trabaja con información que yo te proporcione o puedas verificar.
+- Si la pregunta está fuera de mi área, indícalo y sugiere alternativas.
+- Longitud: concisa por defecto, extensa solo si lo solicito explícitamente.
+<span class="xml-tag">&lt;/restricciones&gt;</span></div>
+    </div>
+
+    <div style="margin-top:1.5rem">
+      <p style="font-weight:700;color:#374151;margin-bottom:.75rem">Pasos del ejercicio en sesión:</p>
+      <ol class="steps-list">
+        <li><div class="step-num">1</div><div>Identificar el área específica de investigación de Juli y sus preguntas de investigación activas</div></li>
+        <li><div class="step-num">2</div><div>Completar la plantilla de system prompt con los datos reales del área (metodología, journals clave, vocabulario técnico)</div></li>
+        <li><div class="step-num">3</div><div>Cargar 3–5 papers clave de Juli en NotebookLM y configurar las consultas base</div></li>
+        <li><div class="step-num">4</div><div>Ejecutar una búsqueda real en Elicit sobre el tema principal de Juli y filtrar por relevancia</div></li>
+        <li><div class="step-num">5</div><div>Comparar resultados: NotebookLM (fuentes propias) vs. Elicit (125M papers) vs. Claude con system prompt</div></li>
+        <li><div class="step-num">6</div><div>Documentar el flujo que mejor funcionó y crear la plantilla personal de prompts reutilizables</div></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos específicos para investigación</div>
+
+    <div class="resource-section">
+      <h4>Guías y tutoriales prácticos</h4>
+      <ul class="resource-list">
+        <li>
+          <a href="https://beginnersinai.org/claude-for-research/" target="_blank">Claude for Research: Lit Reviews, Data Analysis, Academia (2026)</a>
+          <div class="res-desc">Workflow de 8 pasos con Claude para revisiones sistemáticas. Incluye configuración de Projects y prompts XML.</div>
+        </li>
+        <li>
+          <a href="https://www.secondtalent.com/resources/perplexity-ai-features-capabilities-2026/" target="_blank">Perplexity AI Features &amp; Capabilities 2026 — Second Talent</a>
+          <div class="res-desc">Guía completa de Deep Research, modo Academic y cómo obtener citas verificables de fuentes primarias.</div>
+        </li>
+        <li>
+          <a href="https://ucstrategies.com/news/notebooklm-guide-how-to-use-googles-free-ai-research-tool-2026/" target="_blank">NotebookLM Guide 2026 — UC Strategies</a>
+          <div class="res-desc">Cómo configurar notebooks, importar fuentes y aprovechar Audio Overviews y Mind Maps para research.</div>
+        </li>
+        <li>
+          <a href="https://papersflow.ai/blog/best-ai-research-tools-2026" target="_blank">12 Best AI Research Tools 2026 — PapersFlow</a>
+          <div class="res-desc">Comparativa exhaustiva de herramientas testadas por investigadores, con casos de uso reales.</div>
+        </li>
+        <li>
+          <a href="https://paperguide.ai/blog/elicit-vs-consensus/" target="_blank">Elicit vs Consensus: Detailed Comparison 2026 — PaperGuide</a>
+          <div class="res-desc">Cuándo usar Elicit (extracción sistemática) vs. Consensus (síntesis de evidencia) en tu flujo de research.</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="resource-section">
+      <h4>Lectura técnica (para ir más profundo)</h4>
+      <ul class="resource-list">
+        <li>
+          <a href="https://hyperleap.ai/blog/rag-vs-fine-tuning-vs-prompt-engineering-business-guide" target="_blank">RAG vs Fine-Tuning vs Prompt Engineering — Hyperleap AI</a>
+          <div class="res-desc">Framework de decisión práctico para elegir el enfoque correcto según tu caso de uso y recursos.</div>
+        </li>
+        <li>
+          <a href="https://medium.com/@pradeepdas/the-fine-tuning-landscape-in-2025-a-comprehensive-analysis-d650d24bed97" target="_blank">The Fine-Tuning Landscape 2025 — Pradeep Das / Medium</a>
+          <div class="res-desc">Análisis comprehensivo de técnicas: SFT, LoRA, RLHF. Cuándo cada una vale la inversión.</div>
+        </li>
+        <li>
+          <a href="https://www.anthropic.com/news/accelerating-scientific-research" target="_blank">Accelerating Scientific Research — Anthropic</a>
+          <div class="res-desc">Casos reales de científicos e investigadores usando Claude para acelerar su trabajo de investigación.</div>
+        </li>
+        <li>
+          <a href="https://blog.google/innovation-and-ai/models-and-research/google-labs/notebooklm-deep-research-file-types/" target="_blank">NotebookLM: Deep Research y nuevos tipos de archivo — Google Blog</a>
+          <div class="res-desc">Anuncio oficial de las funciones más recientes de NotebookLM, incluyendo Deep Research y nuevos formatos.</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="resource-section">
+      <h4>Herramientas complementarias de descubrimiento</h4>
+      <ul class="resource-list">
+        <li>
+          <a href="https://semanticscholar.org" target="_blank">Semantic Scholar</a>
+          <div class="res-desc">200M+ papers con red de citas, alertas y API para automatización avanzada.</div>
+        </li>
+        <li>
+          <a href="https://researchrabbit.ai" target="_blank">ResearchRabbit</a>
+          <div class="res-desc">Visualización de redes de literatura relacionada. Descubre papers via red de referencias.</div>
+        </li>
+        <li>
+          <a href="https://connectedpapers.com" target="_blank">Connected Papers</a>
+          <div class="res-desc">Mapa visual de papers relacionados a partir de un artículo semilla.</div>
+        </li>
+        <li>
+          <a href="https://scite.ai" target="_blank">Scite.ai</a>
+          <div class="res-desc">Validación de citas con contexto: cómo y cuántas veces se cita cada paper (supporting vs. contrasting).</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ACCIONES POST-SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-sesión</div>
+
+    <div class="action-group">
+      <h4>Esta semana <span class="action-tag">próximos 7 días</span></h4>
+      <ul class="checklist">
+        <li><div class="check-box"></div><div>Copiar y personalizar el system prompt de la sesión en Claude.ai como Project nuevo dedicado a tu investigación</div></li>
+        <li><div class="check-box"></div><div>Cargar los 10 papers más importantes de tu área en NotebookLM y configurar consultas base</div></li>
+        <li><div class="check-box"></div><div>Crear cuenta en Elicit y hacer una búsqueda piloto sobre tu pregunta de investigación principal</div></li>
+        <li><div class="check-box"></div><div>Instalar Zotero y capturar en el gestor las referencias que ya tienes dispersas</div></li>
+      </ul>
+    </div>
+
+    <div class="action-group">
+      <h4>Este mes <span class="action-tag">30 días</span></h4>
+      <ul class="checklist">
+        <li><div class="check-box"></div><div>Ejecutar tu primer flujo completo de research: Elicit → Zotero → NotebookLM → Claude</div></li>
+        <li><div class="check-box"></div><div>Probar Perplexity Deep Research con una pregunta de tu área y evaluar la calidad de las citas</div></li>
+        <li><div class="check-box"></div><div>Crear una plantilla reutilizable de prompts específicos para tu metodología de investigación</div></li>
+        <li><div class="check-box"></div><div>Revisar si Consensus tiene cobertura suficiente en tu área específica y comparar con Elicit</div></li>
+      </ul>
+    </div>
+
+    <div class="action-group">
+      <h4>A largo plazo <span class="action-tag">3 meses+</span></h4>
+      <ul class="checklist">
+        <li><div class="check-box"></div><div>Evaluar si conviene implementar RAG con tu biblioteca de papers cuando supere los 500 documentos</div></li>
+        <li><div class="check-box"></div><div>Integrar Overleaf para redacción académica con referencias Zotero automáticas</div></li>
+        <li><div class="check-box"></div><div>Explorar APIs de Semantic Scholar o PubMed para automatización avanzada de descubrimiento</div></li>
+        <li><div class="check-box"></div><div>Evaluar Scite.ai para validar el impacto real de las citas en tu área de investigación</div></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Sesión diseñada específicamente para <strong>Juli</strong> · Asesoría 1-on-1 de 90 minutos</p>
+  <p style="margin-top:.4rem">Fuentes: Anthropic (2026) · Google NotebookLM (2026) · Elicit (2026) · Perplexity AI (2026) · PapersFlow (2026) · Second Talent (2026) · Hyperleap AI (2026)</p>
+</footer>
+
+</body>
+</html>

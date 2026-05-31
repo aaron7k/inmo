@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spec Driven Development con IA — Asesoría Jere</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#6366F1 0%,#4F46E5 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;transition:border-color .2s,box-shadow .2s}
+    .tool-card:hover{border-color:#6366F1;box-shadow:0 2px 12px rgba(99,102,241,.12)}
+    .tool-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+    .tool-name{font-weight:700;font-size:.95rem;color:#1e293b}
+    .tool-role{font-size:.82rem;color:#64748b;margin-bottom:.6rem;line-height:1.4}
+    .tool-url{font-size:.78rem;color:#6366F1;text-decoration:none;font-family:'JetBrains Mono',monospace}
+    .tool-url:hover{text-decoration:underline}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600;white-space:nowrap}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .module{border-left:3px solid #6366F1;padding-left:1rem;margin-bottom:1.5rem}
+    .module-title{font-weight:700;color:#4F46E5;margin-bottom:.4rem;font-size:.95rem}
+    .module-time{font-size:.78rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+    .module p{font-size:.9rem;color:#475569}
+    .objective-list{list-style:none;padding:0}
+    .objective-list li{display:flex;gap:.75rem;align-items:flex-start;padding:.6rem 0;border-bottom:1px solid #f1f5f9;font-size:.93rem}
+    .objective-list li:last-child{border-bottom:none}
+    .obj-num{background:#6366F1;color:white;width:1.6rem;height:1.6rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+    .concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(max-width:600px){.concept-grid{grid-template-columns:1fr}}
+    .concept-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.75rem;padding:1.2rem}
+    .concept-card h4{font-size:.9rem;font-weight:700;color:#4F46E5;margin-bottom:.4rem}
+    .concept-card p{font-size:.83rem;color:#475569;line-height:1.5}
+    .cycle-box{background:linear-gradient(135deg,rgba(99,102,241,.06),rgba(79,70,229,.08));border:1px solid rgba(99,102,241,.2);border-radius:.75rem;padding:1.5rem;margin-bottom:1.5rem;text-align:center}
+    .cycle-steps{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.5rem;margin-top:1rem}
+    .cycle-step{background:white;border:1.5px solid #6366F1;color:#4F46E5;border-radius:.5rem;padding:.4rem 1rem;font-size:.82rem;font-weight:700}
+    .cycle-arrow{color:#94a3b8;font-size:1rem}
+    .exercise-box{background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-box h4{color:#4F46E5;font-weight:700;margin-bottom:.5rem;font-size:.95rem}
+    .step-list{list-style:none;padding:0;counter-reset:steps}
+    .step-list li{counter-increment:steps;display:flex;gap:1rem;align-items:flex-start;padding:.75rem 0;border-bottom:1px solid rgba(99,102,241,.12)}
+    .step-list li:last-child{border-bottom:none}
+    .step-num{background:#6366F1;color:white;min-width:1.8rem;height:1.8rem;border-radius:.4rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0}
+    .step-content strong{display:block;font-size:.9rem;color:#1e293b;margin-bottom:.2rem}
+    .step-content p{font-size:.84rem;color:#64748b}
+    code{font-family:'JetBrains Mono',monospace;background:#f1f5f9;padding:.15rem .4rem;border-radius:.3rem;font-size:.82rem;color:#4F46E5}
+    pre{background:#0f172a;color:#e2e8f0;border-radius:.75rem;padding:1.2rem 1.5rem;overflow-x:auto;margin:.75rem 0;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.7}
+    pre .comment{color:#94a3b8}
+    pre .keyword{color:#a78bfa}
+    pre .string{color:#86efac}
+    pre .heading{color:#fbbf24}
+    .resource-list{list-style:none;padding:0}
+    .resource-list li{padding:.5rem 0;border-bottom:1px solid #f1f5f9;font-size:.88rem}
+    .resource-list li:last-child{border-bottom:none}
+    .resource-list a{color:#6366F1;text-decoration:none;font-weight:500}
+    .resource-list a:hover{text-decoration:underline}
+    .resource-list .source{font-size:.78rem;color:#94a3b8;margin-left:.5rem}
+    .checklist{list-style:none;padding:0}
+    .checklist li{display:flex;gap:.75rem;align-items:flex-start;padding:.5rem 0;font-size:.9rem}
+    .checklist li::before{content:"☐";color:#6366F1;font-size:1.1rem;flex-shrink:0;line-height:1.3}
+    .action-highlight{background:linear-gradient(135deg,#6366F1,#4F46E5);color:white;border-radius:.75rem;padding:1.2rem 1.5rem;margin-top:1.5rem;font-size:.88rem;line-height:1.6}
+    .action-highlight strong{display:block;margin-bottom:.3rem;font-size:.95rem}
+    .doc-table{width:100%;border-collapse:collapse;font-size:.85rem;margin:.75rem 0}
+    .doc-table th{background:#f1f5f9;color:#475569;font-weight:600;padding:.6rem .8rem;text-align:left;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+    .doc-table td{padding:.6rem .8rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    .doc-table tr:last-child td{border-bottom:none}
+    .doc-table td:first-child{font-weight:600;color:#4F46E5}
+    .given-box{background:#f0fdf4;border-left:3px solid #16a34a;padding:1rem 1.2rem;border-radius:0 .5rem .5rem 0;margin:.75rem 0;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.8}
+    .given-box .label{font-weight:700;color:#16a34a}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    .section-divider{height:1px;background:linear-gradient(90deg,transparent,#e2e8f0,transparent);margin:2rem 0}
+    .tag{display:inline-block;background:#ede9fe;color:#6366F1;padding:.2rem .7rem;border-radius:999px;font-size:.75rem;font-weight:600;margin-right:.3rem;margin-bottom:.3rem}
+  </style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="tier-badge">⚡ Asesoría 1-on-1</div>
+    <h1>📐 Spec Driven Development con IA</h1>
+    <div class="hero-meta">
+      <span>👤 Jere</span>
+      <span>⏱ 90 minutos</span>
+      <span>🛠 Sesión técnica individual</span>
+      <span>📅 2026</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONTAINER ===== -->
+<div class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la sesión</div>
+    <ul class="objective-list">
+      <li>
+        <div class="obj-num">1</div>
+        <div><strong>Implementar SDD con Claude</strong> como metodología central de tu flujo como developer, dejando atrás el vibe coding.</div>
+      </li>
+      <li>
+        <div class="obj-num">2</div>
+        <div><strong>Escribir specs antes de código</strong>: convertir ideas y feature requests en documentos estructurados (SPEC.md) antes de abrir el editor.</div>
+      </li>
+      <li>
+        <div class="obj-num">3</div>
+        <div><strong>Reducir errores y alucinaciones</strong> del modelo dándole contexto preciso, criterios de aceptación y restricciones técnicas desde el inicio.</div>
+      </li>
+      <li>
+        <div class="obj-num">4</div>
+        <div><strong>Configurar CLAUDE.md</strong> como "constitución" del proyecto: contexto persistente que Claude lee en cada sesión para mantener coherencia arquitectural.</div>
+      </li>
+      <li>
+        <div class="obj-num">5</div>
+        <div><strong>Ejecutar el ciclo completo</strong> Especificar → Planificar → Implementar → Validar en un caso real del proyecto de Jere.</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+
+    <!-- Qué es SDD -->
+    <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:.75rem">¿Qué es Spec Driven Development?</h3>
+    <p style="font-size:.9rem;color:#475569;margin-bottom:1.5rem">
+      SDD es una metodología donde se redacta una especificación estructurada —que define intención, comportamiento, restricciones y criterios de aceptación— <strong>antes de escribir una sola línea de código</strong>. La aparición de LLMs como Claude lo hace práctico y escalable a nivel individual.
+      <br><br>
+      La diferencia con el <em>"vibe coding"</em> es fundamental: SDD separa la fase de diseño de la implementación, manteniendo al humano como arquitecto y árbitro de decisiones.
+    </p>
+
+    <!-- Ciclo -->
+    <div class="cycle-box">
+      <div style="font-weight:700;color:#4F46E5;margin-bottom:.5rem">El ciclo SDD con Claude</div>
+      <div class="cycle-steps">
+        <div class="cycle-step">Feature Request</div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-step">SPEC.md</div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-step">PLAN.md</div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-step">Implementación</div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-step">Validación</div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-step">Commit</div>
+      </div>
+    </div>
+
+    <!-- Documentos -->
+    <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:.75rem">Documentos del ecosistema SDD</h3>
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th>Documento</th>
+          <th>Propósito</th>
+          <th>¿Quién lo escribe?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>PRD</td>
+          <td>Define el "qué" y el "por qué". Audiencia, problema, métricas de éxito.</td>
+          <td>Product Manager / Dev</td>
+        </tr>
+        <tr>
+          <td>SPEC.md</td>
+          <td>Especificación técnica: interfaces, flujos, edge cases, criterios de aceptación.</td>
+          <td>Developer + Claude (iterativo)</td>
+        </tr>
+        <tr>
+          <td>PLAN.md</td>
+          <td>Plan paso a paso: archivos a modificar, orden, dependencias.</td>
+          <td>Claude (revisado por dev)</td>
+        </tr>
+        <tr>
+          <td>TDD</td>
+          <td>Casos de prueba definidos antes de implementar. Se convierte en la suite.</td>
+          <td>Developer + Claude</td>
+        </tr>
+        <tr>
+          <td>CLAUDE.md</td>
+          <td>Contexto permanente del proyecto: stack, convenciones, comandos.</td>
+          <td>Developer (en git)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="section-divider"></div>
+
+    <!-- BDD -->
+    <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:.75rem">BDD: criterios de aceptación Given / When / Then</h3>
+    <p style="font-size:.88rem;color:#475569;margin-bottom:.75rem">Estos criterios van directamente en el SPEC.md y Claude los usa como guía para saber qué construir y cuándo terminó:</p>
+    <div class="given-box">
+      <span class="label">Given</span>  el usuario está autenticado y tiene rol "admin"<br>
+      <span class="label">When</span>   hace POST /api/properties con datos válidos<br>
+      <span class="label">Then</span>   la propiedad se guarda, se retorna 201 y se dispara el evento "property.created"
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- CLAUDE.md -->
+    <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:.75rem">CLAUDE.md: la "constitución" del proyecto</h3>
+    <p style="font-size:.88rem;color:#475569;margin-bottom:.75rem">Claude lee <code>CLAUDE.md</code> al inicio de cada sesión. Es la diferencia entre un asistente genérico y un pair programmer que conoce tu proyecto:</p>
+    <pre><span class="heading"># Mi Proyecto</span>
+
+<span class="heading">## Stack</span>
+<span class="string">- Next.js 14, TypeScript, Prisma, PostgreSQL
+- Tests: Vitest + Playwright para E2E</span>
+
+<span class="heading">## Convenciones</span>
+<span class="string">- Usar ES modules (import/export), nunca require
+- Nombres de archivos en kebab-case
+- Commits convencionales: feat:, fix:, chore:</span>
+
+<span class="heading">## Comandos clave</span>
+<span class="string">- npm run dev       → servidor local
+- npm run test      → vitest watch
+- npm run typecheck → tsc --noEmit</span></pre>
+    <p style="font-size:.82rem;color:#64748b;background:#fef3c7;padding:.75rem;border-radius:.5rem;border-left:3px solid #d97706">
+      <strong>Regla de oro:</strong> si Claude sigue haciendo algo incorrecto a pesar de tener la instrucción, el CLAUDE.md está demasiado largo. Podarlo es mantenimiento activo — cada línea debe justificarse.
+    </p>
+
+    <div class="section-divider"></div>
+
+    <!-- Por qué reduce errores -->
+    <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:.75rem">Por qué SDD reduce alucinaciones</h3>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>Ancla de contexto</h4>
+        <p>Un spec bien escrito reduce la ambigüedad — el modelo sabe exactamente qué construir y con qué restricciones.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Validación automática</h4>
+        <p>Si el output no cumple el spec, el CI/CD falla. El spec se convierte en una puerta de calidad automatizable.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Coherencia entre sesiones</h4>
+        <p>Claude no "olvida" decisiones previas porque están escritas en el spec y en CLAUDE.md — accesibles en cada sesión.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Revisión trazable</h4>
+        <p>El spec es la fuente de verdad, no los comentarios del código. Los PRs se pueden revisar contra el spec original.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Claude (claude.ai)</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">Pair programmer principal: genera specs, planes, código y tests en conversación natural.</div>
+        <a class="tool-url" href="https://claude.ai" target="_blank">claude.ai</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Claude Code CLI</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">Agente de terminal autónomo: lee archivos, ejecuta comandos e implementa specs directamente en el codebase.</div>
+        <a class="tool-url" href="https://code.claude.com" target="_blank">code.claude.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Cursor AI</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">IDE con IA integrada que indexa todo el codebase para contexto preciso. Reduce alucinaciones en proyectos grandes.</div>
+        <a class="tool-url" href="https://cursor.com" target="_blank">cursor.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">GitHub Copilot</div>
+          <span class="badge badge-paid">Pago</span>
+        </div>
+        <div class="tool-role">Autocompletado inteligente + Copilot Chat para Q&A en VS Code. Complementa SDD con sugerencias en contexto.</div>
+        <a class="tool-url" href="https://github.com/features/copilot" target="_blank">github.com/features/copilot</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Linear</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">Gestión de issues y feature requests. El punto de partida del ciclo SDD — issues bien redactados se convierten en specs.</div>
+        <a class="tool-url" href="https://linear.app" target="_blank">linear.app</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Notion</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-role">Base de conocimiento para PRDs, ADRs (Architecture Decision Records) y specs de equipo con versionado colaborativo.</div>
+        <a class="tool-url" href="https://notion.so" target="_blank">notion.so</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Playwright</div>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <div class="tool-role">Testing E2E: valida que la implementación cumple los criterios de aceptación Given/When/Then definidos en el spec.</div>
+        <a class="tool-url" href="https://playwright.dev" target="_blank">playwright.dev</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Vitest</div>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <div class="tool-role">Tests unitarios ultra-rápidos. Se escriben desde el TDD antes de implementar — el spec dicta qué probar.</div>
+        <a class="tool-url" href="https://vitest.dev" target="_blank">vitest.dev</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">GitHub Spec Kit</div>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <div class="tool-role">Framework open-source (sept. 2025): integra SDD en CI/CD, valida compliance de specs y genera issues desde spec items.</div>
+        <a class="tool-url" href="https://github.com/github/spec-kit" target="_blank">github.com/github/spec-kit</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PLAN DE SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Plan de la sesión</div>
+
+    <div class="module">
+      <div class="module-time">Bloque 1 · 20 min</div>
+      <div class="module-title">Fundamentos SDD — el "por qué" antes del "cómo"</div>
+      <p>Comparar flujo tradicional vs SDD con Claude. Demostración en vivo: una feature sin spec vs con spec. Anatomía de un buen SPEC.md. Identificar dónde en el flujo actual de Jere se pierde contexto o se generan errores.</p>
+    </div>
+
+    <div class="module">
+      <div class="module-time">Bloque 2 · 20 min</div>
+      <div class="module-title">CLAUDE.md y contexto persistente</div>
+      <p>Configurar el proyecto para trabajo efectivo con Claude Code. Crear o refinar el CLAUDE.md del proyecto de Jere usando <code>/init</code>. Estructura de directorios recomendada para SDD. Configurar permisos y herramientas permitidas.</p>
+    </div>
+
+    <div class="module">
+      <div class="module-time">Bloque 3 · 30 min</div>
+      <div class="module-title">Ciclo completo: Feature → Spec → Código</div>
+      <p>Tomar un issue o feature request real del proyecto. Usar el patrón "entrevista primero" para generar SPEC.md. Claude genera PLAN.md desde el spec. Implementación con Claude Code en modo plan. Validación: tests, typecheck, build.</p>
+    </div>
+
+    <div class="module" style="margin-bottom:0">
+      <div class="module-time">Bloque 4 · 20 min</div>
+      <div class="module-title">Patrones avanzados y próximos pasos</div>
+      <p>Writer/Reviewer pattern (dos sesiones de Claude). Subagentes para revisión adversarial. Integración con GitHub PRs vinculados al spec. Cómo mantener CLAUDE.md actualizado. Q&A y plan de acción personal para la semana.</p>
+    </div>
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <p style="font-size:.9rem;color:#475569;margin-bottom:1.5rem">
+      Convertir un feature request en lenguaje natural → SPEC.md → PLAN.md → código implementado con tests. Duración estimada: <strong>45–60 min</strong>.
+    </p>
+
+    <div class="exercise-box" style="margin-bottom:1.5rem">
+      <h4>Punto de partida: feature request de ejemplo</h4>
+      <div class="given-box" style="background:#ede9fe;border-left-color:#6366F1;font-size:.85rem">
+        Como usuario autenticado,<br>
+        quiero poder guardar propiedades en favoritos<br>
+        para revisarlas más tarde sin tener que buscarlas de nuevo.
+      </div>
+    </div>
+
+    <ol class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Genera SPEC.md con Claude</strong>
+          <p>Pide a Claude que actúe como tech lead y escriba el spec completo con criterios de aceptación, interfaces TypeScript, endpoints de API y scope explícito. Itera hasta que el spec esté preciso.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Valida el SPEC.md</strong>
+          <p>¿Qué problema resuelve? ¿Cuáles son los criterios de éxito medibles? ¿Qué está fuera del scope? ¿Tiene sentido técnico dado el stack?</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Genera PLAN.md desde el spec</strong>
+          <p>Claude lista los archivos a crear o modificar, el orden de cambios, migraciones de DB si aplica, y los tests a escribir por cada criterio de aceptación.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Implementa con Claude Code CLI</strong>
+          <p>Modo plan primero — Claude muestra el plan antes de codear. Ejecuta tests al finalizar y corrige si fallan. Usa <code>claude "implementa la feature de favoritos..."</code></p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <strong>Validación adversarial</strong>
+          <p>Subagente en sesión nueva revisa la implementación contra el SPEC.md. Lista gaps sin incluir preferencias de estilo. Solo reporta lo que afecta correctitud.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <strong>Commit atómico</strong>
+          <p>Mensaje de commit convencional que referencia el spec. Ejemplo: <code>feat(favorites): implement save/unsave property — resolves SPEC-04</code></p>
+        </div>
+      </li>
+    </ol>
+
+    <div style="margin-top:1.2rem">
+      <div class="tag">Entregable: SPEC.md</div>
+      <div class="tag">Entregable: PLAN.md</div>
+      <div class="tag">Entregable: Código + Tests</div>
+      <div class="tag">Entregable: Commit</div>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos esenciales</div>
+
+    <h4 style="font-size:.85rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem">Documentación oficial</h4>
+    <ul class="resource-list">
+      <li>
+        <a href="https://code.claude.com/docs/en/best-practices" target="_blank">Claude Code Best Practices</a>
+        <span class="source">— Anthropic · Guía oficial con patrones probados en producción</span>
+      </li>
+      <li>
+        <a href="https://code.claude.com/docs/en/memory" target="_blank">CLAUDE.md Reference</a>
+        <span class="source">— Anthropic · Cómo estructurar el contexto permanente del proyecto</span>
+      </li>
+      <li>
+        <a href="https://code.claude.com/docs/en/common-workflows" target="_blank">Claude Code Common Workflows</a>
+        <span class="source">— Anthropic · Recetas paso a paso para debugging, testing y PRs</span>
+      </li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <h4 style="font-size:.85rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem">Artículos y guías</h4>
+    <ul class="resource-list">
+      <li>
+        <a href="https://www.thoughtworks.com/en-us/insights/blog/agile-engineering-practices/spec-driven-development-unpacking-2025-new-engineering-practices" target="_blank">Spec-driven development: Unpacking one of 2025's key new practices</a>
+        <span class="source">— Thoughtworks</span>
+      </li>
+      <li>
+        <a href="https://www.productbuilder.net/learn/spec-driven-development" target="_blank">Spec-Driven Development (2026 Guide): Build Production AI Code</a>
+        <span class="source">— ProductBuilder</span>
+      </li>
+      <li>
+        <a href="https://medium.com/@mattia.darge/the-spec-to-code-workflow-building-software-using-only-llms-5e025cd28de0" target="_blank">The Spec-to-Code Workflow: Building Software Using Only LLMs</a>
+        <span class="source">— Medium</span>
+      </li>
+      <li>
+        <a href="https://medium.com/@haberlah/how-to-write-prds-for-ai-coding-agents-d60d72efb797" target="_blank">How to write PRDs for AI Coding Agents</a>
+        <span class="source">— Medium</span>
+      </li>
+      <li>
+        <a href="https://www.epam.com/insights/ai/blogs/inside-spec-driven-development-what-githubspec-kit-makes-possible-for-ai-engineering" target="_blank">Inside Spec-Driven Development: What GitHub's Spec Kit Makes Possible</a>
+        <span class="source">— EPAM Insights</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ACCIONES POST-SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-sesión</div>
+    <p style="font-size:.88rem;color:#475569;margin-bottom:1.2rem">Para la próxima semana, completar al menos <strong>3 de estas 6 acciones</strong>:</p>
+
+    <ul class="checklist">
+      <li>Crear <code>CLAUDE.md</code> para el proyecto principal con stack, convenciones y comandos clave</li>
+      <li>Tomar una feature pendiente y escribir su <code>SPEC.md</code> antes de codear (aunque sea breve)</li>
+      <li>Usar el patrón "entrevista primero" con Claude para al menos una tarea nueva esta semana</li>
+      <li>Configurar Claude Code CLI y hacer el primer commit usando el ciclo SDD completo</li>
+      <li>Revisar un PR existente y analizar si el código hubiese sido mejor con un spec previo</li>
+      <li>Crear un template de <code>SPEC.md</code> reutilizable para el proyecto o equipo</li>
+    </ul>
+
+    <div class="action-highlight">
+      <strong>Criterio de éxito de la semana</strong>
+      Haber completado al menos una feature con el ciclo completo: Feature Request → SPEC.md → PLAN.md → Código → Tests → Commit atómico.
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Asesoría 1-on-1 · Jere · Spec Driven Development con IA · 2026</p>
+</footer>
+
+</body>
+</html>
