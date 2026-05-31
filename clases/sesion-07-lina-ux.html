@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IA para medir sentimientos y emociones en UX — Lina</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#6366F1 0%,#4F46E5 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1.25rem;transition:box-shadow .2s,border-color .2s}
+    .tool-card:hover{box-shadow:0 4px 20px rgba(99,102,241,.12);border-color:#6366F1}
+    .tool-name{font-weight:700;font-size:.95rem;color:#1e293b;margin-bottom:.3rem}
+    .tool-desc{font-size:.82rem;color:#475569;margin-bottom:.75rem;line-height:1.5}
+    .tool-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+    .tool-price{font-size:.78rem;color:#64748b;font-weight:500}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .tool-link{font-size:.78rem;color:#6366F1;text-decoration:none;font-weight:600}
+    .tool-link:hover{text-decoration:underline}
+    .module{border-left:3px solid #6366F1;padding-left:1.25rem;margin-bottom:1.5rem}
+    .module:last-child{margin-bottom:0}
+    .module-title{font-weight:700;font-size:1rem;color:#1e293b;margin-bottom:.5rem}
+    .module-time{display:inline-block;background:#f1f0fe;color:#6366F1;font-size:.75rem;font-weight:600;padding:.15rem .6rem;border-radius:999px;margin-bottom:.5rem}
+    .module p{font-size:.9rem;color:#475569;margin-bottom:.4rem}
+    .module ul{padding-left:1.25rem}
+    .module li{font-size:.9rem;color:#475569;margin-bottom:.3rem}
+    .exercise-box{background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.2);border-radius:.75rem;padding:1.5rem}
+    .exercise-title{font-weight:700;font-size:1rem;color:#4F46E5;margin-bottom:.75rem}
+    .step{display:flex;gap:1rem;margin-bottom:1rem}
+    .step-num{flex-shrink:0;width:28px;height:28px;background:#6366F1;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;margin-top:.1rem}
+    .step-content{flex:1}
+    .step-content strong{display:block;font-size:.9rem;color:#1e293b;margin-bottom:.25rem}
+    .step-content p,.step-content li{font-size:.87rem;color:#475569}
+    pre{background:#1e293b;color:#e2e8f0;border-radius:.5rem;padding:1rem;font-size:.78rem;overflow-x:auto;white-space:pre-wrap;line-height:1.6;margin:.5rem 0}
+    .obj-list{list-style:none;padding:0}
+    .obj-list li{display:flex;gap:.75rem;align-items:flex-start;padding:.6rem 0;border-bottom:1px solid #f1f5f9}
+    .obj-list li:last-child{border-bottom:none}
+    .obj-num{flex-shrink:0;width:24px;height:24px;background:#6366F1;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
+    .obj-text{font-size:.9rem;color:#374151}
+    .obj-text strong{color:#1e293b}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .concept-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.75rem;padding:1.25rem}
+    .concept-card h4{font-size:.9rem;font-weight:700;color:#4F46E5;margin-bottom:.4rem}
+    .concept-card p{font-size:.83rem;color:#475569;line-height:1.5}
+    .resources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .resource-group{background:#f8fafc;border-radius:.75rem;padding:1.25rem;border:1px solid #e2e8f0}
+    .resource-group h4{font-size:.9rem;font-weight:700;color:#1e293b;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+    .resource-group ul{list-style:none;padding:0}
+    .resource-group li{margin-bottom:.5rem}
+    .resource-group a{font-size:.84rem;color:#6366F1;text-decoration:none;font-weight:500}
+    .resource-group a:hover{text-decoration:underline}
+    .resource-group .source{font-size:.75rem;color:#94a3b8;display:block}
+    .stat-bar{display:flex;flex-direction:column;gap:.75rem}
+    .stat-item{display:flex;gap:1rem;align-items:center;background:#f8fafc;border-radius:.5rem;padding:.75rem 1rem;border:1px solid #e2e8f0}
+    .stat-num{font-size:1.4rem;font-weight:800;color:#6366F1;flex-shrink:0;min-width:60px;text-align:center}
+    .stat-desc{font-size:.84rem;color:#475569}
+    .actions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .action-card{border-radius:.75rem;padding:1.25rem;border:1px solid}
+    .action-card.week1{background:#fdf4ff;border-color:#e9d5ff}
+    .action-card.week2{background:#f0f9ff;border-color:#bae6fd}
+    .action-card.mid{background:#f0fdf4;border-color:#bbf7d0}
+    .action-card h4{font-size:.88rem;font-weight:700;margin-bottom:.75rem}
+    .action-card.week1 h4{color:#7c3aed}
+    .action-card.week2 h4{color:#0369a1}
+    .action-card.mid h4{color:#166534}
+    .checklist{list-style:none;padding:0}
+    .checklist li{display:flex;gap:.6rem;align-items:flex-start;font-size:.83rem;color:#475569;margin-bottom:.5rem;line-height:1.4}
+    .checklist li::before{content:"☐";flex-shrink:0;color:#6366F1;font-size:1rem;margin-top:-.1rem}
+    table{width:100%;border-collapse:collapse;font-size:.85rem}
+    th{background:#f1f0fe;color:#4F46E5;font-weight:700;padding:.75rem 1rem;text-align:left;border-bottom:2px solid #e0e0fb}
+    td{padding:.65rem 1rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#fafafa}
+    td a{color:#6366F1;text-decoration:none;font-weight:500}
+    td a:hover{text-decoration:underline}
+    .divider{height:1px;background:#e2e8f0;margin:2rem 0}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    footer a{color:#6366F1;text-decoration:none}
+    @media(max-width:600px){.hero{padding:2rem 1.25rem}.concept-grid,.resources-grid,.actions-grid{grid-template-columns:1fr}.tool-grid{grid-template-columns:1fr}pre{font-size:.72rem}}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="tier-badge">Asesoría 1-on-1</div>
+    <h1>😊 IA para medir sentimientos<br>y emociones en UX</h1>
+    <div class="hero-meta">
+      <span>👤 <strong>Lina</strong> — UX / Marketing</span>
+      <span>⏱ 90 minutos</span>
+      <span>🎯 Sesión individual</span>
+      <span>📅 2026</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la sesión</div>
+    <ul class="obj-list">
+      <li>
+        <span class="obj-num">1</span>
+        <span class="obj-text"><strong>Implementar análisis de sentimientos en flujos de UX</strong> — usar herramientas de Emotion AI para detectar frustración, deleite e incertidumbre en usuarios reales, reduciendo la subjetividad de la investigación.</span>
+      </li>
+      <li>
+        <span class="obj-num">2</span>
+        <span class="obj-text"><strong>Usar plataformas tipo Odaptos</strong> — configurar y ejecutar pruebas de usabilidad con detección facial y vocal de emociones, obteniendo mapas emocionales accionables en lugar de opiniones anecdóticas.</span>
+      </li>
+      <li>
+        <span class="obj-num">3</span>
+        <span class="obj-text"><strong>Interpretar y activar datos emocionales</strong> — traducir heatmaps emocionales, puntuaciones de sentimiento y señales de fricción en decisiones concretas de diseño y marketing.</span>
+      </li>
+      <li>
+        <span class="obj-num">4</span>
+        <span class="obj-text"><strong>Integrar Claude como analizador de feedback cualitativo</strong> — construir prompts estructurados para procesar reseñas, encuestas y transcripciones, extrayendo patrones emocionales en minutos.</span>
+      </li>
+      <li>
+        <span class="obj-num">5</span>
+        <span class="obj-text"><strong>Conectar análisis emocional con métricas de negocio</strong> — vincular señales de emoción con NPS predictivo, churn temprano y conversión para justificar decisiones de UX ante stakeholders.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ESTADÍSTICAS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📊</span> Datos clave del sector</div>
+    <div class="stat-bar">
+      <div class="stat-item">
+        <div class="stat-num">&gt;90%</div>
+        <div class="stat-desc">Precisión del Emotion AI con cámaras estándar usando el sistema FACS de Ekman para detección de expresiones faciales</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">90%</div>
+        <div class="stat-desc">Reducción en tiempo de investigación de usuario que logra Odaptos automatizando reclutamiento, sesión y análisis emocional</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">30%</div>
+        <div class="stat-desc">Reducción en mala clasificación de sentimiento al combinar texto + voz + expresión facial (modelos multimodales vs. solo texto)</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">&gt;80%</div>
+        <div class="stat-desc">Precisión de los mejores modelos NLP modernos en detección de sentimiento y matices emocionales en texto de usuario</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>Sentiment Analysis</h4>
+        <p>Técnica de NLP que clasifica texto como positivo, negativo o neutro. Los modelos basados en Transformers detectan intensidad emocional, aspectos específicos (ABSA) y cambios de tono, superando el 80% de precisión en textos de usuario.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Emotion AI (IA Emocional)</h4>
+        <p>Rama de la IA que detecta emociones combinando expresiones faciales, análisis de voz y texto en tiempo real. Los sistemas multimodales alcanzan &gt;90% de precisión con webcams estándar en sesiones de usuario.</p>
+      </div>
+      <div class="concept-card">
+        <h4>FACS — Facial Action Coding</h4>
+        <p>Sistema científico de Paul Ekman que codifica movimientos musculares faciales en Unidades de Acción (AUs) para detectar 7 emociones universales: alegría, tristeza, sorpresa, miedo, ira, disgusto y desdén. Base técnica de Odaptos.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Heatmaps emocionales</h4>
+        <p>Mapas de calor que superponen estados emocionales sobre la interfaz: muestran en qué momentos y elementos el usuario siente confusión, frustración o satisfacción. Combinan eye-tracking, expresión facial y comportamiento.</p>
+      </div>
+      <div class="concept-card">
+        <h4>NPS Predictivo</h4>
+        <p>Uso de IA para anticipar el Net Promoter Score antes de enviar una encuesta. Plataformas como Qualtrics XM detectan cambios en el tono emocional de conversaciones como predictores tempranos de churn.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Análisis de sesión con IA</h4>
+        <p>Procesamiento automático de grabaciones de sesión (clics de furia, scroll sin interacción, movimientos erráticos) combinado con sentimiento para identificar momentos de fricción sin revisión manual.</p>
+      </div>
+      <div class="concept-card">
+        <h4>ABSA — Aspect-Based Sentiment</h4>
+        <p>Gold standard en análisis empresarial: detecta el sentimiento hacia aspectos específicos del producto ("el checkout fue confuso pero el diseño es bonito"). Fundamental para priorizar qué rediseñar primero.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Análisis vocal de emociones</h4>
+        <p>IA que analiza tono, velocidad, pausas y matices en la voz del usuario para detectar hesitación, frustración o confianza. Odaptos lo combina con FACS facial para una lectura emocional bimodal durante entrevistas.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-name">😊 Odaptos</div>
+        <div class="tool-desc">Plataforma principal de Emotion AI para UX: detección facial FACS + análisis vocal en tiempo real, video player emocional, SUS automático, reclutamiento de participantes y chatbot Oda. Reduce el tiempo de investigación hasta 90%.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Desde €48/mes</span>
+          <span class="badge badge-freemium">Freemium</span>
+          <a class="tool-link" href="https://odaptos.com" target="_blank">odaptos.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">🔥 Hotjar AI</div>
+        <div class="tool-desc">Heatmaps de comportamiento + grabaciones de sesión con detección automática de momentos de frustración y deleite. Encuestas en sitio con análisis de sentimiento integrado. Identificación automática de sesiones con fricción.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Desde $32 USD/mes</span>
+          <span class="badge badge-freemium">Freemium</span>
+          <a class="tool-link" href="https://www.hotjar.com" target="_blank">hotjar.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">🧩 Maze AI</div>
+        <div class="tool-desc">Pruebas de prototipo + entrevistas moderadas por IA: el moderador conduce sesiones autónomamente, hace follow-up, analiza respuestas y agrupa temas con análisis de sentimiento. 25 métricas de calidad por sesión.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Desde $50 USD/usuario/mes</span>
+          <span class="badge badge-paid">Pago</span>
+          <a class="tool-link" href="https://maze.co" target="_blank">maze.co →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">🎬 UserTesting AI</div>
+        <div class="tool-desc">Plataforma enterprise de investigación de usuario: transcripción automática de video, análisis ML de temas y sentimientos, destacado de momentos clave (frustración, emoción), panel de participantes global.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Enterprise (consultar)</span>
+          <span class="badge badge-paid">Pago</span>
+          <a class="tool-link" href="https://www.usertesting.com" target="_blank">usertesting.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">📈 Qualtrics XM AI</div>
+        <div class="tool-desc">Suite enterprise: NPS predictivo, análisis de sentimiento multicanal (texto, voz, social), detección de churn temprano por cambios de tono emocional, codificación automática de preguntas abiertas.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Enterprise (consultar)</span>
+          <span class="badge badge-paid">Pago</span>
+          <a class="tool-link" href="https://www.qualtrics.com" target="_blank">qualtrics.com →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">🤖 Claude (Anthropic)</div>
+        <div class="tool-desc">Análisis de feedback cualitativo: procesa reseñas, transcripciones y encuestas; extrae mapas emocionales, ABSA y patrones de fricción. Claude 3.7 detecta ironía, sarcasmo y sentimiento complejo con alta precisión contextual.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Gratis / $20 USD/mes Pro</span>
+          <span class="badge badge-freemium">Freemium</span>
+          <a class="tool-link" href="https://claude.ai" target="_blank">claude.ai →</a>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">👁 Brandwatch</div>
+        <div class="tool-desc">Escucha social con Emotion AI: clasifica menciones en 6 emociones universales (alegría, ira, miedo, tristeza, disgusto, sorpresa). 100M+ fuentes online, 13 meses de datos históricos, alertas en tiempo real.</div>
+        <div class="tool-footer">
+          <span class="tool-price">Enterprise (consultar)</span>
+          <span class="badge badge-paid">Pago</span>
+          <a class="tool-link" href="https://www.brandwatch.com" target="_blank">brandwatch.com →</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:1.5rem">
+      <div style="font-weight:600;font-size:.9rem;color:#1e293b;margin-bottom:.75rem">Tabla comparativa rápida</div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Herramienta</th>
+              <th>Tipo de análisis</th>
+              <th>Dato emocional</th>
+              <th>Mejor para</th>
+              <th>Precio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Odaptos</strong></td>
+              <td>Facial + vocal + NLP</td>
+              <td>7 emociones FACS en tiempo real</td>
+              <td>Pruebas de usabilidad</td>
+              <td>Desde €48/mes</td>
+            </tr>
+            <tr>
+              <td><strong>Hotjar AI</strong></td>
+              <td>Comportamiento + encuestas</td>
+              <td>Frustración / deleite por sesión</td>
+              <td>Análisis de sitio web</td>
+              <td>Desde $32/mes</td>
+            </tr>
+            <tr>
+              <td><strong>Maze AI</strong></td>
+              <td>NLP + entrevistas IA</td>
+              <td>Sentimiento por respuesta y tema</td>
+              <td>Prototipado y entrevistas</td>
+              <td>Desde $50/usuario/mes</td>
+            </tr>
+            <tr>
+              <td><strong>UserTesting AI</strong></td>
+              <td>ML + video + NLP</td>
+              <td>Momentos positivos/negativos en video</td>
+              <td>Investigación a escala</td>
+              <td>Enterprise</td>
+            </tr>
+            <tr>
+              <td><strong>Qualtrics XM</strong></td>
+              <td>NLP multicanal</td>
+              <td>NPS predictivo + churn por emoción</td>
+              <td>CX enterprise</td>
+              <td>Enterprise</td>
+            </tr>
+            <tr>
+              <td><strong>Claude</strong></td>
+              <td>LLM generativo</td>
+              <td>ABSA + mapa emocional + narrativa</td>
+              <td>Análisis de feedback</td>
+              <td>Gratis / $20/mes</td>
+            </tr>
+            <tr>
+              <td><strong>Brandwatch</strong></td>
+              <td>Social listening + NLP</td>
+              <td>6 emociones en menciones sociales</td>
+              <td>Monitoreo de marca</td>
+              <td>Enterprise</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAN DE SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Plan de la sesión (4 bloques de ~20 min)</div>
+
+    <div class="module">
+      <div class="module-time">Bloque 1 · Min 0–20</div>
+      <div class="module-title">Panorama — IA emocional en UX</div>
+      <ul>
+        <li>¿Por qué los datos de comportamiento ya no son suficientes? Del "qué hacen" al "cómo se sienten"</li>
+        <li>Las 7 emociones universales de Ekman y su relevancia práctica en UX</li>
+        <li>Demostración en vivo: Odaptos analizando una sesión de usuario con mapa emocional</li>
+        <li>Revisión del stack tecnológico y cuál aplica al contexto de Lina</li>
+        <li>Estadística clave: Emotion AI con FACS alcanza &gt;90% de precisión con webcams estándar</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-time">Bloque 2 · Min 20–45</div>
+      <div class="module-title">Herramientas en acción</div>
+      <ul>
+        <li><strong>Odaptos:</strong> walkthrough de reclutamiento, sesión en vivo, video player emocional, SUS automático y chatbot Oda</li>
+        <li><strong>Hotjar AI:</strong> configurar alertas de frustración y leer sesiones con análisis de sentimiento</li>
+        <li><strong>Maze AI Moderator:</strong> configurar una entrevista que el AI conduce sola, con análisis de sentimiento por respuesta</li>
+        <li><strong>Brandwatch:</strong> monitorear las 6 emociones en menciones de producto/marca en tiempo real</li>
+        <li><strong>Qualtrics XM:</strong> NPS predictivo y alertas de churn por deterioro de tono emocional</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-time">Bloque 3 · Min 45–65</div>
+      <div class="module-title">Claude como analizador de feedback</div>
+      <ul>
+        <li>Por qué Claude 3.7 es ideal para feedback cualitativo: detección de ironía, sarcasmo y emoción compleja</li>
+        <li>Estructura de prompts efectivos para análisis de sentimiento y mapas emocionales</li>
+        <li>Ejercicio guiado: analizar 5 reseñas de app en vivo con Claude (demo en sesión)</li>
+        <li>Aspect-Based Sentiment Analysis (ABSA): separar problemas de navegación, diseño visual y velocidad</li>
+        <li>Generación de narrativa de insights emocionales lista para presentar a stakeholders</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-time">Bloque 4 · Min 65–90</div>
+      <div class="module-title">Plan de implementación y cierre</div>
+      <ul>
+        <li>Mapa del flujo de investigación de Lina con Emotion AI integrado</li>
+        <li>Selección de 2-3 herramientas prioritarias según presupuesto y tipo de proyecto</li>
+        <li>Cómo conectar análisis emocional con KPIs de negocio (conversión, retención, NPS)</li>
+        <li>Límites éticos y de privacidad del Emotion AI (consentimiento informado, datos biométricos)</li>
+        <li>Acciones concretas post-sesión y recursos para seguir aprendiendo</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EJERCICIO PRÁCTICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <div class="exercise-title">🗺️ "Mapa emocional desde reseñas de usuarios con Claude"</div>
+      <p style="font-size:.9rem;color:#475569;margin-bottom:1.25rem"><strong>Objetivo:</strong> Analizar 10 reseñas reales de usuarios (App Store, Google Play, Trustpilot o encuesta interna) con Claude y extraer un mapa emocional accionable que identifique puntos de fricción y momentos de deleite por área funcional.</p>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Recopilar las reseñas</strong>
+          <p>Seleccionar 10 reseñas variadas del producto o servicio (mezcla de positivas, negativas y neutras). Pueden ser de App Store, Google Play, encuesta NPS, o transcripciones de entrevistas de usuario.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Usar este prompt base en Claude</strong>
+          <pre>Eres un experto en UX y análisis de sentimiento emocional.
+Analiza las siguientes 10 reseñas de usuarios y:
+
+1. Clasifica el sentimiento general de cada reseña:
+   positivo, negativo o neutro
+2. Identifica la emoción principal de cada una:
+   (alegría, frustración, confusión, decepción, sorpresa, deleite)
+3. Detecta los aspectos específicos mencionados
+   (navegación, diseño, velocidad, onboarding, soporte, precio)
+   y el sentimiento hacia cada aspecto (ABSA)
+4. Genera un mapa emocional:
+   - 3 principales puntos de fricción
+   - 3 principales momentos de deleite
+5. Indica qué área priorizar para rediseño basándote
+   en la intensidad emocional negativa
+6. Redacta un párrafo de resumen ejecutivo
+   para presentar al equipo de producto
+
+Reseñas:
+[PEGAR LAS 10 RESEÑAS AQUÍ, numeradas del 1 al 10]</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Revisar el output</strong>
+          <p>Verificar que los aspectos detectados correspondan con áreas reales del producto. Claude puede cometer errores de contexto con términos muy específicos del negocio; añadir contexto adicional en el prompt mejora la precisión.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Profundizar con preguntas de seguimiento</strong>
+          <ul>
+            <li>"¿Qué emoción aparece más en las reseñas de 3 estrellas o menos?"</li>
+            <li>"¿Los usuarios que mencionan [feature X] tienden a ser más positivos o negativos?"</li>
+            <li>"Redacta 3 hipótesis de UX basadas en estos datos emocionales para testear en la próxima ronda"</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <strong>Exportar el mapa emocional</strong>
+          <p>Copiar los resultados a Notion, Miro o FigJam para compartir con el equipo de diseño y marketing. El mismo ejercicio funciona con comentarios de redes sociales o respuestas de encuestas de campaña.</p>
+        </div>
+      </div>
+
+      <div style="background:rgba(99,102,241,.1);border-radius:.5rem;padding:1rem;margin-top:.5rem">
+        <strong style="font-size:.9rem;color:#4F46E5">⚡ Resultado esperado:</strong>
+        <p style="font-size:.87rem;color:#475569;margin-top:.25rem">Mapa emocional completo con puntos de fricción, momentos de deleite y recomendaciones priorizadas en <strong>menos de 10 minutos</strong>, versus 2-4 horas de análisis manual. Con Claude Pro se pueden procesar cientos de comentarios en un solo prompt.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos recomendados</div>
+    <div class="resources-grid">
+      <div class="resource-group">
+        <h4>🛠️ Herramientas</h4>
+        <ul>
+          <li><a href="https://odaptos.com" target="_blank">Odaptos — Emotion AI para UX</a><span class="source">Plataforma principal de la sesión</span></li>
+          <li><a href="https://odaptos.com/pricing/" target="_blank">Odaptos — Planes y precios</a><span class="source">Desde €48/mes, prueba gratuita</span></li>
+          <li><a href="https://maze.co/features/ai-moderator/" target="_blank">Maze AI Moderator</a><span class="source">Entrevistas autónomas con sentimiento</span></li>
+          <li><a href="https://www.hotjar.com" target="_blank">Hotjar AI</a><span class="source">Heatmaps + detección de frustración</span></li>
+          <li><a href="https://www.brandwatch.com/products/listen/" target="_blank">Brandwatch Listen</a><span class="source">6 emociones en social listening</span></li>
+          <li><a href="https://claude.ai" target="_blank">Claude — Anthropic</a><span class="source">Análisis de feedback cualitativo</span></li>
+        </ul>
+      </div>
+      <div class="resource-group">
+        <h4>📖 Guías y artículos</h4>
+        <ul>
+          <li><a href="https://thelightbulb.ai/blog/the-complete-guide-to-emotion-ai-in-market-research-decoding-the-subconscious-consumer/" target="_blank">Complete Guide to Emotion AI in Market Research</a><span class="source">thelightbulb.ai — guía completa FACS</span></li>
+          <li><a href="https://imentiv.ai/glossary/facial-action-coding-system-facs/" target="_blank">FACS: Foundation of Emotion AI</a><span class="source">imentiv.ai — explicación técnica</span></li>
+          <li><a href="https://beginswithai.com/how-to-use-claude-for-user-experience-analysis/" target="_blank">How to Use Claude for UX Analysis</a><span class="source">BeginsWithAI — guía práctica</span></li>
+          <li><a href="https://platform.claude.com/docs/en/resources/prompt-library/review-classifier" target="_blank">Review Classifier — Prompt Library</a><span class="source">Anthropic oficial — clasificador de reseñas</span></li>
+          <li><a href="https://www.edenai.co/post/best-emotion-detection-apis" target="_blank">Best Emotion Detection APIs 2025</a><span class="source">Eden AI — comparativa de APIs</span></li>
+          <li><a href="https://blog.buildbetter.ai/best-ai-tools-ux-research-2026/" target="_blank">Best AI Tools for UX Research 2026</a><span class="source">BuildBetter — comparativa completa</span></li>
+        </ul>
+      </div>
+      <div class="resource-group">
+        <h4>📊 Estadísticas clave</h4>
+        <ul>
+          <li><span style="font-size:.84rem;color:#475569">&gt;90% de precisión del Emotion AI con cámaras estándar usando FACS <span class="source">thelightbulb.ai, 2025</span></span></li>
+          <li><span style="font-size:.84rem;color:#475569">90% menos tiempo de investigación con Odaptos vs. proceso manual <span class="source">Odaptos, 2025</span></span></li>
+          <li><span style="font-size:.84rem;color:#475569">30% menos errores de clasificación con modelos multimodales <span class="source">CloudTalk, 2026</span></span></li>
+          <li><span style="font-size:.84rem;color:#475569">Claude 3.7: detección de ironía, sarcasmo y sentimiento complejo <span class="source">AIMultiple Benchmark, 2025</span></span></li>
+          <li><span style="font-size:.84rem;color:#475569">Brandwatch clasifica 6 emociones desde 100M+ fuentes en tiempo real <span class="source">Brandwatch, 2025</span></span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCIONES POST-SESIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-sesión</div>
+    <div class="actions-grid">
+      <div class="action-card week1">
+        <h4>⚡ Esta semana (prioridad alta)</h4>
+        <ul class="checklist">
+          <li>Crear cuenta en Odaptos y configurar una sesión de prueba con 3 usuarios internos</li>
+          <li>Recopilar 10–20 reseñas del producto y procesarlas con el prompt de mapa emocional en Claude</li>
+          <li>Activar el plan free de Hotjar y configurar la grabación de sesiones en la página/app principal</li>
+        </ul>
+      </div>
+      <div class="action-card week2">
+        <h4>📅 Próximas 2 semanas</h4>
+        <ul class="checklist">
+          <li>Diseñar el primer flujo de investigación con Emotion AI: hipótesis → 5 usuarios → sesión en Odaptos → insights</li>
+          <li>Configurar una encuesta con análisis de sentimiento en Maze o Hotjar Surveys</li>
+          <li>Crear un dashboard en Brandwatch para monitorear las 6 emociones en menciones del producto/marca</li>
+        </ul>
+      </div>
+      <div class="action-card mid">
+        <h4>🚀 Proyecto de mediano plazo</h4>
+        <ul class="checklist">
+          <li>Integrar análisis emocional en el ciclo de iteración de diseño: investigación → síntesis → wireframe → test → validación</li>
+          <li>Conectar datos emocionales con NPS y retención para presentar ROI emocional al equipo directivo</li>
+          <li>Evaluar Qualtrics XM o UserTesting AI para proyectos con mayor volumen de usuarios</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Sesión 07 · Lina · IA para medir sentimientos y emociones en UX · 2026</p>
+  <p style="margin-top:.4rem">Fuentes: <a href="https://odaptos.com" target="_blank">Odaptos</a> · <a href="https://thelightbulb.ai" target="_blank">thelightbulb.ai</a> · <a href="https://maze.co" target="_blank">Maze</a> · <a href="https://www.brandwatch.com" target="_blank">Brandwatch</a> · <a href="https://claude.ai" target="_blank">Claude / Anthropic</a></p>
+</footer>
+
+</body>
+</html>
