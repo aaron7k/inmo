@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 16 · Agentes autónomos a la medida sin gestor externo — Oviedo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#EF4444 0%,#DC2626 100%);padding:3rem 2rem;color:white}
+    .hero-inner{max-width:900px;margin:0 auto}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-sub{font-size:1rem;opacity:.88;margin-top:.6rem;font-weight:500}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.88rem;margin-top:1.2rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .hero-meta svg{flex-shrink:0}
+
+    /* LAYOUT */
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+
+    /* CARDS */
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#0f172a}
+    .card-title .icon{font-size:1.3rem}
+
+    /* OBJETIVOS */
+    .objetivo-list{list-style:none;display:flex;flex-direction:column;gap:.75rem}
+    .objetivo-list li{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 1rem;border-radius:.5rem;background:#fef2f2;border:1px solid #fecaca}
+    .objetivo-list li .num{background:#EF4444;color:white;border-radius:999px;width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+
+    /* CONCEPTOS */
+    .concepto{border-left:3px solid #EF4444;padding-left:1rem;margin-bottom:1.25rem}
+    .concepto h4{font-weight:700;color:#DC2626;font-size:.95rem;margin-bottom:.25rem}
+    .concepto p{font-size:.9rem;color:#475569}
+
+    /* TOOL GRID */
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;background:#fafafa;display:flex;flex-direction:column;gap:.5rem;transition:box-shadow .2s}
+    .tool-card:hover{box-shadow:0 4px 16px rgba(239,68,68,.15);border-color:#EF4444}
+    .tool-card-header{display:flex;align-items:center;justify-content:space-between}
+    .tool-name{font-weight:700;font-size:.9rem;color:#0f172a}
+    .tool-role{font-size:.8rem;color:#64748b}
+    .tool-link{font-size:.75rem;color:#EF4444;text-decoration:none;font-weight:600}
+    .tool-link:hover{text-decoration:underline}
+
+    /* BADGES */
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+
+    /* MÓDULOS */
+    .module{border-left:3px solid #EF4444;padding-left:1.25rem;margin-bottom:2rem}
+    .module-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
+    .module-num{background:#EF4444;color:white;font-weight:800;font-size:.8rem;border-radius:.4rem;padding:.2rem .55rem}
+    .module-title{font-size:1.05rem;font-weight:700;color:#0f172a}
+    .module-time{font-size:.8rem;color:#94a3b8;margin-left:auto}
+    .module p{font-size:.9rem;color:#475569;margin-bottom:.75rem}
+    .module ul{font-size:.9rem;color:#475569;margin-bottom:.75rem}
+
+    /* CODE BOX */
+    .code-box{background:#0f172a;border-radius:.75rem;padding:1.25rem 1.5rem;margin:.75rem 0;font-family:'Courier New',monospace;font-size:.78rem;color:#94a3b8;white-space:pre;line-height:1.7;overflow-x:auto}
+    .code-box .kw{color:#f472b6}
+    .code-box .fn{color:#60a5fa}
+    .code-box .str{color:#34d399}
+    .code-box .cm{color:#64748b;font-style:italic}
+    .code-label{font-size:.75rem;font-weight:600;color:#64748b;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em}
+
+    /* FLOW */
+    .flow{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}
+    .flow-step{background:#fef2f2;border:1px solid #fca5a5;border-radius:.5rem;padding:.4rem .85rem;font-size:.82rem;font-weight:600;color:#991b1b}
+    .flow-arrow{color:#EF4444;font-weight:700;font-size:1rem}
+
+    /* TABLE */
+    .table-wrap{overflow-x:auto;margin:.75rem 0}
+    table{width:100%;border-collapse:collapse;font-size:.85rem}
+    th{background:#fef2f2;color:#DC2626;font-weight:700;padding:.6rem .9rem;text-align:left;border-bottom:2px solid #fecaca}
+    td{padding:.55rem .9rem;border-bottom:1px solid #f1f5f9;color:#374151}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#fef9f9}
+
+    /* EXERCISE BOX */
+    .exercise-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-box h3{color:#DC2626;font-size:1rem;font-weight:700;margin-bottom:.75rem}
+    .exercise-steps{list-style:none;counter-reset:step;display:flex;flex-direction:column;gap:.6rem}
+    .exercise-steps li{counter-increment:step;display:flex;gap:.75rem;font-size:.88rem;color:#374151}
+    .exercise-steps li::before{content:counter(step);background:#EF4444;color:white;border-radius:999px;width:1.4rem;height:1.4rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+
+    /* RECURSOS */
+    .resource-section{margin-bottom:1.25rem}
+    .resource-section h4{font-size:.85rem;font-weight:700;color:#EF4444;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem}
+    .resource-list{list-style:none;display:flex;flex-direction:column;gap:.4rem}
+    .resource-list a{font-size:.88rem;color:#0f172a;text-decoration:none;display:flex;align-items:center;gap:.5rem}
+    .resource-list a:hover{color:#EF4444}
+    .resource-list a::before{content:'→';color:#EF4444;font-weight:700}
+
+    /* ACCIONES */
+    .action-group{margin-bottom:1.5rem}
+    .action-group h4{font-size:.85rem;font-weight:700;color:#EF4444;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem}
+    .action-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+    .action-list li{display:flex;align-items:flex-start;gap:.75rem;font-size:.9rem;color:#374151}
+    .action-list li .checkbox{width:1.1rem;height:1.1rem;border:2px solid #EF4444;border-radius:.25rem;flex-shrink:0;margin-top:.15rem}
+
+    /* REACT DIAGRAM */
+    .react-loop{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin:1rem 0}
+    .react-step{background:white;border:2px solid #fca5a5;border-radius:.75rem;padding:1rem;text-align:center}
+    .react-step .step-icon{font-size:1.5rem;margin-bottom:.5rem}
+    .react-step .step-name{font-weight:700;color:#DC2626;font-size:.9rem}
+    .react-step .step-desc{font-size:.78rem;color:#64748b;margin-top:.25rem}
+
+    /* UTILS */
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem}
+    a{color:#EF4444}
+    strong{color:#0f172a}
+
+    /* FOOTER */
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem;border-top:1px solid #e2e8f0;margin-top:1rem}
+    footer strong{color:#EF4444}
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="tier-badge">Tier 4 · TI / Dev track</div>
+    <h1>🦾 Agentes autónomos a la medida<br>sin gestor externo</h1>
+    <p class="hero-sub">Construye, orquesta y despliega tus propios agentes IA sin depender de ningún SaaS de orquestación</p>
+    <div class="hero-meta">
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Presentador: <strong>Oviedo</strong>
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Viernes 7 agosto 2026
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        90 minutos
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Devs
+      </span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ MAIN -->
+<main class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la clase</div>
+    <ul class="objetivo-list">
+      <li>
+        <span class="num">1</span>
+        <span>Diseñar e implementar <strong>agentes autónomos propios</strong> desde cero en Python, sin depender de plataformas gestionadas como AutoGPT Platform, LangSmith Cloud u otros servicios SaaS de orquestación.</span>
+      </li>
+      <li>
+        <span class="num">2</span>
+        <span>Implementar el ciclo <strong>ReAct (Reasoning + Acting)</strong> para que el agente razone antes de actuar, evalúe resultados y se autocorrija sin intervención humana en cada paso.</span>
+      </li>
+      <li>
+        <span class="num">3</span>
+        <span>Integrar la <strong>API de Claude y LangGraph</strong> como base de orquestación stateful, controlando el flujo mediante grafos de estado explícitos y sin ningún gestor externo.</span>
+      </li>
+      <li>
+        <span class="num">4</span>
+        <span>Construir sistemas <strong>multi-step</strong> capaces de planificar tareas complejas, invocar herramientas (tool calling), manejar errores y persistir estado entre ejecuciones.</span>
+      </li>
+      <li>
+        <span class="num">5</span>
+        <span>Desplegar agentes en <strong>infraestructura propia</strong> usando FastAPI + Docker + PostgreSQL, con control total de datos, costos y observabilidad, sin dependencia de cloud externo.</span>
+      </li>
+      <li>
+        <span class="num">6</span>
+        <span>Orquestar <strong>agentes multi-rol</strong> al estilo CrewAI o AutoGen, donde cada agente tiene un rol especializado y se coordinan sin necesidad de un manager centralizado externo.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+
+    <div class="concepto">
+      <h4>Agente Autónomo (Autonomous Agent)</h4>
+      <p>Sistema que percibe su entorno, toma decisiones y ejecuta acciones de manera independiente para alcanzar un objetivo, sin supervisión humana en cada paso. Mantiene estado, planifica, actúa mediante herramientas y evalúa si sus acciones lo acercan al objetivo. La autonomía no significa falta de control: el dev define los límites, las herramientas y los criterios de éxito.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>ReAct Loop (Reasoning + Acting)</h4>
+      <p>Paradigma central de los agentes modernos: el agente <strong>Piensa</strong> (genera razonamiento), <strong>Actúa</strong> (invoca una herramienta), <strong>Observa</strong> (recibe el resultado) y repite. La clave es que la observación alimenta el próximo pensamiento, permitiendo <strong>autocorrección en tiempo real</strong>. ReAct supera al Chain-of-Thought puro porque los resultados reales de las herramientas corrigen las suposiciones del modelo.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Planning (Planificación)</h4>
+      <p>Capacidad del agente de descomponer un objetivo complejo en subpasos antes de ejecutar. <strong>Plan-and-Execute</strong>: genera el plan completo al inicio (eficiente, rígido). <strong>ReAct dinámico</strong>: re-evalúa en cada paso (robusto, adaptable). Los agentes modernos combinan ambos. LangGraph modela esta distinción explícitamente como nodos y aristas en el grafo de estado.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Tool Calling (Invocación de herramientas)</h4>
+      <p>Mecanismo que permite al agente actuar en el mundo real: buscar en la web, leer/escribir archivos, consultar bases de datos, llamar APIs, ejecutar código. Claude y otros LLMs exponen tool calling nativamente: el modelo genera un JSON estructurado con nombre de herramienta y argumentos; el código Python ejecuta y devuelve el resultado como observación.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Self-Correction (Autocorrección)</h4>
+      <p>Cuando una acción falla, el agente no se detiene: razona sobre el fallo, ajusta su estrategia y reintenta. Se implementa mediante el ciclo ReAct (cada error llega como Observación) + lógica de reintentos + detección de bucles infinitos (máximo N iteraciones con detección de acciones repetidas).</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Orquestación sin gestor externo</h4>
+      <p>LangGraph modela la orquestación como un <strong>grafo dirigido con estado compartido</strong>: los nodos son funciones Python y las aristas son condiciones lógicas, todo ejecutándose localmente. No se necesita ningún servicio SaaS externo. Esto elimina latencia de red, costos por ejecución, dependencia de proveedor y riesgos de exposición de datos.</p>
+    </div>
+
+    <div class="concepto">
+      <h4>Persistencia de Estado (Checkpointing)</h4>
+      <p>Un agente sin persistencia olvida todo entre ejecuciones. LangGraph usa <strong>checkpointers</strong> nativos que guardan el estado completo del grafo en PostgreSQL o SQLite tras cada paso. Si el agente falla en el paso 7 de 10, se puede reanudar desde el checkpoint sin perder el trabajo previo.</p>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Claude API</span>
+          <span class="badge badge-paid">Pago</span>
+        </div>
+        <span class="tool-role">LLM principal: razonamiento, tool calling nativo, planning y outputs estructurados</span>
+        <a class="tool-link" href="https://www.anthropic.com/api" target="_blank">anthropic.com/api →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">LangGraph</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <span class="tool-role">Orquestación como grafo de estado: nodos, aristas condicionales, checkpointers, multi-agente</span>
+        <a class="tool-link" href="https://langchain-ai.github.io/langgraph/" target="_blank">langchain-ai.github.io →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">CrewAI</span>
+          <span class="badge badge-free">Gratis (MIT)</span>
+        </div>
+        <span class="tool-role">Framework de agentes con roles: Crew, Agents y Tasks con ejecución secuencial, paralela o condicional</span>
+        <a class="tool-link" href="https://docs.crewai.com/" target="_blank">docs.crewai.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">AutoGen (Microsoft)</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <span class="tool-role">Conversación multi-agente asíncrona y event-driven sin manager centralizado</span>
+        <a class="tool-link" href="https://microsoft.github.io/autogen/stable/" target="_blank">microsoft.github.io →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Python 3.11+</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <span class="tool-role">Lenguaje base: async/await nativo, type hints, ecosistema de IA más maduro del mercado</span>
+        <a class="tool-link" href="https://www.python.org" target="_blank">python.org →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">FastAPI</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <span class="tool-role">Capa HTTP async para exponer el agente como API REST: validación Pydantic, docs Swagger automáticas</span>
+        <a class="tool-link" href="https://fastapi.tiangolo.com" target="_blank">fastapi.tiangolo.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">PostgreSQL / SQLite</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <span class="tool-role">Persistencia de estado: SQLite para dev local, PostgreSQL para producción con checkpointers LangGraph</span>
+        <a class="tool-link" href="https://www.postgresql.org" target="_blank">postgresql.org →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Docker + Compose</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <span class="tool-role">Containerización completa del agente y sus dependencias: deploy reproducible sin gestor externo</span>
+        <a class="tool-link" href="https://www.docker.com" target="_blank">docker.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Aegra</span>
+          <span class="badge badge-free">Apache 2.0</span>
+        </div>
+        <span class="tool-role">Backend self-hosted alternativo a LangSmith Platform: FastAPI + PostgreSQL + Redis, zero vendor lock-in</span>
+        <a class="tool-link" href="https://github.com/ibbybuilds/aegra" target="_blank">github.com/aegra →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <span class="tool-name">Ollama</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <span class="tool-role">Servidor local de LLMs (Qwen3, Mistral, Llama): agentes 100% offline sin APIs externas</span>
+        <a class="tool-link" href="https://ollama.com" target="_blank">ollama.com →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTENIDO: MÓDULOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Contenido — Módulos de la clase</div>
+
+    <!-- MÓDULO 1 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">M1</span>
+        <span class="module-title">Arquitectura de agentes autónomos sin gestor externo</span>
+        <span class="module-time">20 min</span>
+      </div>
+      <p>El problema con las plataformas gestionadas: AutoGPT Platform, LangSmith Cloud y similares cobran por ejecución, introducen latencia de red, crean dependencia de proveedor y exponen datos de negocio a terceros. Para compliance o control total de costos, la solución es la infraestructura propia.</p>
+
+      <p><strong>Los tres componentes de todo agente autónomo:</strong></p>
+      <ul>
+        <li><strong>El cerebro (LLM):</strong> Claude API o modelo local via Ollama. Recibe el contexto completo y genera la próxima acción.</li>
+        <li><strong>Las manos (Tools):</strong> funciones Python que el LLM puede invocar: búsqueda web, archivos, APIs, código.</li>
+        <li><strong>La memoria (State):</strong> el contexto acumulado. Sin persistencia, el agente olvida. LangGraph guarda el estado en PostgreSQL tras cada nodo.</li>
+      </ul>
+
+      <div class="flow" style="margin-top:1rem">
+        <div class="flow-step">Usuario</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">FastAPI</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">LangGraph StateGraph</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Claude API</div>
+        <div class="flow-arrow">↕</div>
+        <div class="flow-step">Tool Executor</div>
+        <div class="flow-arrow">↕</div>
+        <div class="flow-step">PostgreSQL</div>
+      </div>
+
+      <p style="margin-top:.75rem"><strong>Benchmark 2026:</strong> LangGraph logra 76% de éxito en tareas medianas vs CrewAI 71% vs AutoGen 68%. LangGraph usa el grafo dirigido explícito: cada nodo es una función Python, cada arista es una condición. Puedes pausar, inspeccionar y reanudar desde cualquier checkpoint.</p>
+    </div>
+
+    <!-- MÓDULO 2 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">M2</span>
+        <span class="module-title">El ciclo ReAct — Razón, Actúa, Observa, Corrige</span>
+        <span class="module-time">25 min</span>
+      </div>
+
+      <div class="react-loop">
+        <div class="react-step">
+          <div class="step-icon">🧠</div>
+          <div class="step-name">THOUGHT</div>
+          <div class="step-desc">El agente razona sobre qué necesita hacer y por qué</div>
+        </div>
+        <div class="react-step">
+          <div class="step-icon">⚡</div>
+          <div class="step-name">ACTION</div>
+          <div class="step-desc">Invoca una herramienta con argumentos concretos</div>
+        </div>
+        <div class="react-step">
+          <div class="step-icon">👁️</div>
+          <div class="step-name">OBSERVATION</div>
+          <div class="step-desc">Recibe el resultado real e integra al contexto</div>
+        </div>
+        <div class="react-step">
+          <div class="step-icon">🔄</div>
+          <div class="step-name">REPEAT / FINISH</div>
+          <div class="step-desc">¿Objetivo alcanzado? Entrega. Si no, nueva iteración</div>
+        </div>
+      </div>
+
+      <div class="code-label">Implementación mínima — Claude API + Tool Calling (Python)</div>
+      <div class="code-box"><span class="kw">import</span> anthropic
+
+client = anthropic.<span class="fn">Anthropic</span>()
+
+tools = [{
+    <span class="str">"name"</span>: <span class="str">"search_web"</span>,
+    <span class="str">"description"</span>: <span class="str">"Busca información actualizada en internet"</span>,
+    <span class="str">"input_schema"</span>: {
+        <span class="str">"type"</span>: <span class="str">"object"</span>,
+        <span class="str">"properties"</span>: {<span class="str">"query"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>}},
+        <span class="str">"required"</span>: [<span class="str">"query"</span>]
+    }
+}]
+
+<span class="kw">def</span> <span class="fn">run_agent</span>(objective: str, max_iterations: int = <span class="str">10</span>):
+    messages = [{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: objective}]
+
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(max_iterations):
+        response = client.messages.<span class="fn">create</span>(
+            model=<span class="str">"claude-opus-4-5"</span>,
+            max_tokens=<span class="str">4096</span>,
+            tools=tools,
+            messages=messages
+        )
+
+        <span class="kw">if</span> response.stop_reason == <span class="str">"end_turn"</span>:
+            <span class="kw">return</span> response.content[<span class="str">0</span>].text  <span class="cm"># Respuesta final</span>
+
+        <span class="cm"># Procesar tool calls → ejecutar → observación</span>
+        tool_uses = [b <span class="kw">for</span> b <span class="kw">in</span> response.content <span class="kw">if</span> b.type == <span class="str">"tool_use"</span>]
+        messages.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: response.content})
+        tool_results = []
+        <span class="kw">for</span> t <span class="kw">in</span> tool_uses:
+            result = <span class="fn">execute_tool</span>(t.name, t.input)  <span class="cm"># Errores → string de error</span>
+            tool_results.<span class="fn">append</span>({<span class="str">"type"</span>: <span class="str">"tool_result"</span>, <span class="str">"tool_use_id"</span>: t.id, <span class="str">"content"</span>: result})
+        messages.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: tool_results})</div>
+
+      <p>La autocorrección ocurre naturalmente: si <code>execute_tool</code> lanza una excepción, el error se devuelve como Observación. Claude razona sobre el fallo y reformula la Action. Agrega un detector de bucles: si el agente invoca la misma herramienta con los mismos argumentos dos veces seguidas, está atascado.</p>
+    </div>
+
+    <!-- MÓDULO 3 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">M3</span>
+        <span class="module-title">Agentes multi-step con LangGraph — De objetivo a entrega</span>
+        <span class="module-time">25 min</span>
+      </div>
+      <p>LangGraph modela el agente como una máquina de estados explícita con <code>StateGraph</code>. Cada nodo es una función Python, cada arista es una condición lógica. El estado tipado fluye entre nodos y se persiste automáticamente tras cada transición.</p>
+
+      <div class="code-label">StateGraph con persistencia PostgreSQL — sin gestor externo</div>
+      <div class="code-box"><span class="kw">from</span> langgraph.graph <span class="kw">import</span> StateGraph, END
+<span class="kw">from</span> langgraph.checkpoint.postgres <span class="kw">import</span> PostgresSaver
+<span class="kw">from</span> typing <span class="kw">import</span> TypedDict, List
+
+<span class="kw">class</span> <span class="fn">AgentState</span>(TypedDict):
+    objective: str
+    plan: List[str]
+    current_step: int
+    results: List[str]
+    final_report: str
+
+<span class="kw">def</span> <span class="fn">should_continue</span>(state: AgentState) -> str:
+    <span class="kw">if</span> state[<span class="str">"current_step"</span>] >= <span class="fn">len</span>(state[<span class="str">"plan"</span>]):
+        <span class="kw">return</span> <span class="str">"report"</span>
+    <span class="kw">return</span> <span class="str">"execute"</span>
+
+graph = <span class="fn">StateGraph</span>(AgentState)
+graph.<span class="fn">add_node</span>(<span class="str">"plan"</span>, plan_node)
+graph.<span class="fn">add_node</span>(<span class="str">"execute"</span>, execute_node)
+graph.<span class="fn">add_node</span>(<span class="str">"report"</span>, report_node)
+graph.<span class="fn">set_entry_point</span>(<span class="str">"plan"</span>)
+graph.<span class="fn">add_edge</span>(<span class="str">"plan"</span>, <span class="str">"execute"</span>)
+graph.<span class="fn">add_conditional_edges</span>(<span class="str">"execute"</span>, should_continue,
+    {<span class="str">"execute"</span>: <span class="str">"execute"</span>, <span class="str">"report"</span>: <span class="str">"report"</span>})
+graph.<span class="fn">add_edge</span>(<span class="str">"report"</span>, END)
+
+<span class="cm"># Persistencia 100% local — sin LangSmith ni ningún SaaS</span>
+checkpointer = PostgresSaver.<span class="fn">from_conn_string</span>(<span class="str">"postgresql://localhost/agentdb"</span>)
+agent = graph.<span class="fn">compile</span>(checkpointer=checkpointer)</div>
+
+      <p><strong>Agentes multi-rol con CrewAI (autocontenido):</strong> CrewAI asigna <code>role</code>, <code>goal</code> y <code>backstory</code> a cada agente. La coordinación es interna al framework — ningún gestor externo necesario. Benchmark: CrewAI usa 15-20% menos tokens que alternativas en flujos secuenciales, gracias a su eficiente delegación de tareas.</p>
+    </div>
+
+    <!-- MÓDULO 4 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">M4</span>
+        <span class="module-title">Deploy self-hosted — De local a producción sin SaaS</span>
+        <span class="module-time">20 min</span>
+      </div>
+
+      <div class="code-label">docker-compose.yml — Stack completo de producción</div>
+      <div class="code-box">services:
+  api:
+    build: .
+    ports: [<span class="str">"8000:8000"</span>]
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - DATABASE_URL=postgresql://agent:secret@postgres:5432/agentdb
+    depends_on: [postgres, redis]
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: agentdb
+      POSTGRES_USER: agent
+      POSTGRES_PASSWORD: secret
+    volumes: [postgres_data:/var/lib/postgresql/data]
+
+  redis:
+    image: redis:7-alpine
+    <span class="cm"># Para colas de tareas y pub/sub entre workers</span>
+
+volumes:
+  postgres_data:</div>
+
+      <p><strong>FastAPI async:</strong> El agente se expone con <code>POST /agent/run</code> (lanza en background) y <code>GET /agent/{id}/status</code> (consulta estado + reporte). Un solo worker async maneja múltiples agentes concurrentes. Para mayor throughput, Aegra coordina múltiples instancias via Redis con PostgreSQL como fuente de verdad.</p>
+
+      <p><strong>Observabilidad sin LangSmith:</strong> OpenTelemetry (integrado en Aegra) + Prometheus + Grafana, todos self-hosted. Cada llamada al LLM, cada tool call y cada transición de estado queda registrada localmente. Cero datos enviados a terceros.</p>
+    </div>
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <h3>Construir un agente investigador autónomo de principio a fin</h3>
+      <p style="font-size:.9rem;color:#374151;margin-bottom:1rem"><strong>Objetivo:</strong> Un agente que, dado un tema, busca en la web, procesa la información, la analiza y genera un reporte en Markdown — sin intervención humana y sin ninguna plataforma externa.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;font-size:.85rem">
+        <div style="background:#fef2f2;border-radius:.5rem;padding:.75rem">
+          <strong style="color:#DC2626">Input</strong><br>
+          <code>{"topic": "tendencias del mercado inmobiliario en Guadalajara 2026"}</code>
+        </div>
+        <div style="background:#f0fdf4;border-radius:.5rem;padding:.75rem">
+          <strong style="color:#16a34a">Output</strong><br>
+          Archivo <code>reporte_[topic].md</code> con resumen ejecutivo, hallazgos, datos y fuentes
+        </div>
+      </div>
+
+      <ol class="exercise-steps">
+        <li><strong>Setup del entorno (10 min):</strong> <code>pip install anthropic langgraph fastapi uvicorn psycopg2-binary</code> · Configurar <code>ANTHROPIC_API_KEY</code> en <code>.env</code></li>
+        <li><strong>Definir 3 herramientas (15 min):</strong> <code>search_web(query)</code> via DuckDuckGo API gratuita · <code>fetch_url(url)</code> para extraer texto limpio · <code>write_file(name, content)</code> para guardar el reporte</li>
+        <li><strong>Construir el grafo ReAct en LangGraph (20 min):</strong> Nodo <em>research</em> (ciclo ReAct: busca y recopila) · Nodo <em>analyze</em> (estructura hallazgos) · Nodo <em>write</em> (genera Markdown) · Aristas condicionales: reintentar si la información es insuficiente</li>
+        <li><strong>Wrap con FastAPI (10 min):</strong> <code>POST /research</code> lanza el agente en background · <code>GET /research/{id}</code> consulta estado y reporte generado</li>
+        <li><strong>Dockerizar y testear (15 min):</strong> <code>docker-compose up --build</code> · Enviar petición al endpoint · Verificar que el agente maneja automáticamente al menos un error (URL inaccesible)</li>
+      </ol>
+
+      <p style="font-size:.85rem;color:#64748b;margin-top:1rem"><strong>Criterio de éxito:</strong> Reporte de +500 palabras con 3+ fuentes distintas, manejando errores sin intervención manual.<br>
+      <strong>Variante avanzada (CrewAI):</strong> Agente Investigador + Agente Crítico (verifica fuentes, rechaza información no verificada) + Agente Redactor — 3 roles coordinados sin manager externo.</p>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos</div>
+
+    <div class="resource-section">
+      <h4>Documentación oficial</h4>
+      <ul class="resource-list">
+        <li><a href="https://docs.anthropic.com/en/docs/build-with-claude/tool-use" target="_blank">Anthropic Tool Use Guide — Tool calling con Claude API</a></li>
+        <li><a href="https://langchain-ai.github.io/langgraph/" target="_blank">LangGraph Documentation — Orquestación de agentes con grafos de estado</a></li>
+        <li><a href="https://docs.crewai.com/" target="_blank">CrewAI Documentation — Framework de agentes con roles</a></li>
+        <li><a href="https://microsoft.github.io/autogen/stable/" target="_blank">AutoGen (Microsoft) — Multi-agent conversation framework</a></li>
+        <li><a href="https://fastapi.tiangolo.com" target="_blank">FastAPI Documentation — API async production-ready en Python</a></li>
+      </ul>
+    </div>
+
+    <div class="resource-section">
+      <h4>Repositorios de referencia</h4>
+      <ul class="resource-list">
+        <li><a href="https://github.com/ibbybuilds/aegra" target="_blank">github.com/aegra — Backend self-hosted alternativo a LangSmith (FastAPI + PostgreSQL + Redis)</a></li>
+        <li><a href="https://github.com/crewaiinc/crewai" target="_blank">github.com/crewAIInc/crewAI — CrewAI open-source (MIT, +30k stars)</a></li>
+        <li><a href="https://github.com/microsoft/autogen" target="_blank">github.com/microsoft/autogen — AutoGen open-source</a></li>
+        <li><a href="https://github.com/agno-agi/agent-api" target="_blank">github.com/agno-agi/agent-api — Setup minimalista FastAPI + PostgreSQL para agentes</a></li>
+      </ul>
+    </div>
+
+    <div class="resource-section">
+      <h4>Artículos clave</h4>
+      <ul class="resource-list">
+        <li><a href="https://medium.com/data-science-collective/build-an-ai-agent-that-plans-before-it-acts-react-in-50-lines-of-python-b2f325b38e5b" target="_blank">Build an AI Agent with ReAct in 50 Lines of Python — Medium, 2026</a></li>
+        <li><a href="https://medium.com/@er.rajkumaar/building-production-ready-agentic-ai-systems-with-docker-and-fastapi-b4c2231b3945" target="_blank">Building Production-Ready Agentic AI with Docker and FastAPI — Medium, 2026</a></li>
+        <li><a href="https://latenode.com/blog/ai-frameworks-technical-infrastructure/crewai-framework/crewai-framework-2025-complete-review-of-the-open-source-multi-agent-ai-platform" target="_blank">CrewAI Framework 2025: Complete Review — Latenode</a></li>
+        <li><a href="https://pooya.blog/blog/crewai-vs-langgraph-autogen-comparison-2026/" target="_blank">CrewAI vs LangGraph vs AutoGen: Benchmarks y comparativa 2026</a></li>
+        <li><a href="https://wgall.com/blog/self-hosted-ai-agents-2026.html" target="_blank">Self-Hosted AI Agents 2026: Building Your Local Autonomous Workforce</a></li>
+      </ul>
+    </div>
+
+    <div class="resource-section">
+      <h4>Papers y research</h4>
+      <ul class="resource-list">
+        <li><a href="https://arxiv.org/abs/2210.03629" target="_blank">ReAct: Synergizing Reasoning and Acting in Language Models — Yao et al., 2022</a></li>
+        <li><a href="https://www.microsoft.com/en-us/research/publication/autogen-enabling-next-gen-llm-applications-via-multi-agent-conversation-framework/" target="_blank">AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation — Microsoft Research</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-clase</div>
+
+    <div class="action-group">
+      <h4>Esta semana — Accion inmediata</h4>
+      <ul class="action-list">
+        <li><span class="checkbox"></span>Implementar el ejercicio básico: agente ReAct con Claude API + 3 herramientas en Python puro (sin framework) — entender el loop desde cero antes de abstraerlo.</li>
+        <li><span class="checkbox"></span>Leer la documentación de LangGraph <code>StateGraph</code> e implementar el mismo agente como grafo — comparar legibilidad y control vs la versión sin framework.</li>
+      </ul>
+    </div>
+
+    <div class="action-group">
+      <h4>Próximas 2 semanas — Consolidacion</h4>
+      <ul class="action-list">
+        <li><span class="checkbox"></span>Agregar persistencia con SQLite checkpointer de LangGraph y verificar que el agente reanuda tras un fallo simulado.</li>
+        <li><span class="checkbox"></span>Dockerizar el agente con FastAPI y probarlo como servicio HTTP local con <code>docker-compose up</code>.</li>
+        <li><span class="checkbox"></span>Explorar Aegra como backend: sustituir LangSmith Platform con Aegra self-hosted (<code>aegra init</code> + <code>docker compose up</code>).</li>
+        <li><span class="checkbox"></span>Construir una versión multi-rol con CrewAI: mínimo 2 agentes con roles diferentes coordinados sin manager externo.</li>
+      </ul>
+    </div>
+
+    <div class="action-group">
+      <h4>Mes siguiente — Aplicacion real</h4>
+      <ul class="action-list">
+        <li><span class="checkbox"></span>Identificar un proceso repetitivo real en tu proyecto o empresa que se pueda automatizar con un agente (reporte semanal, análisis de datos, procesamiento de documentos).</li>
+        <li><span class="checkbox"></span>Construir el agente para ese caso real, con herramientas conectadas a tus sistemas internos.</li>
+        <li><span class="checkbox"></span>Medir: tiempo ahorrado, tasa de éxito del agente, costo en tokens vs valor generado.</li>
+        <li><span class="checkbox"></span>Presentar el caso de uso al equipo con métricas concretas de ROI y autonomía.</li>
+      </ul>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════ FOOTER -->
+<footer>
+  <p>Clase 16 · <strong>Agentes autónomos a la medida sin gestor externo</strong> · Presentador: <strong>Oviedo</strong></p>
+  <p style="margin-top:.4rem">Tier 4 · TI / Dev track · Viernes 7 agosto 2026 · Serie IA Práctica 2026</p>
+</footer>
+
+</body>
+</html>
