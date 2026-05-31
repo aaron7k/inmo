@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clase 04 · Programas para utilizar Claude como extensión · Fajardo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+
+    /* Hero */
+    .hero{background:linear-gradient(135deg,#F59E0B 0%,#D97706 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-subtitle{font-size:1.1rem;opacity:.9;margin-top:.5rem;font-weight:500}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+
+    /* Layout */
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+
+    /* Cards */
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+
+    /* Badges */
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .badge-pro{background:#f3e8ff;color:#7c3aed}
+
+    /* Objectives */
+    .objective-list{list-style:none;display:flex;flex-direction:column;gap:.75rem}
+    .objective-list li{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 1rem;background:#fffbeb;border-radius:.5rem;border-left:3px solid #F59E0B}
+    .objective-list li::before{content:"→";color:#F59E0B;font-weight:700;flex-shrink:0;margin-top:.05rem}
+
+    /* Concepts grid */
+    .concepts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .concept-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1.25rem;position:relative;overflow:hidden}
+    .concept-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:#F59E0B}
+    .concept-card h3{font-size:.95rem;font-weight:700;color:#1e293b;margin-bottom:.5rem}
+    .concept-card p{font-size:.85rem;color:#475569;line-height:1.5}
+
+    /* Tool grid */
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1.25rem;transition:box-shadow .2s}
+    .tool-card:hover{box-shadow:0 4px 12px rgba(245,158,11,.15);border-color:#F59E0B}
+    .tool-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+    .tool-name{font-size:.95rem;font-weight:700;color:#1e293b}
+    .tool-type{font-size:.75rem;color:#94a3b8;margin-bottom:.4rem}
+    .tool-desc{font-size:.82rem;color:#475569;margin-bottom:.75rem;line-height:1.45}
+    .tool-link{font-size:.8rem;color:#D97706;font-weight:600;text-decoration:none}
+    .tool-link:hover{text-decoration:underline}
+
+    /* Modules */
+    .module{border-left:3px solid #F59E0B;padding-left:1.25rem;margin-bottom:2rem}
+    .module-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+    .module-number{background:#F59E0B;color:white;font-size:.8rem;font-weight:700;padding:.2rem .6rem;border-radius:.3rem;flex-shrink:0}
+    .module-title{font-size:1.05rem;font-weight:700;color:#1e293b}
+    .module-duration{font-size:.8rem;color:#94a3b8;margin-left:auto;white-space:nowrap}
+    .module-body{font-size:.9rem;color:#334155;line-height:1.7}
+    .module-body p{margin-bottom:.8rem}
+    .module-body strong{color:#1e293b}
+
+    /* Layer pills */
+    .layer-list{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0}
+    .layer-item{display:flex;align-items:center;gap:.75rem;background:#f8fafc;border-radius:.5rem;padding:.6rem 1rem;font-size:.88rem}
+    .layer-num{background:#F59E0B;color:white;font-size:.75rem;font-weight:700;width:1.4rem;height:1.4rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+    /* Table */
+    .data-table{width:100%;border-collapse:collapse;font-size:.875rem}
+    .data-table th{background:#fffbeb;color:#92400e;font-weight:700;padding:.6rem 1rem;text-align:left;border-bottom:2px solid #F59E0B}
+    .data-table td{padding:.6rem 1rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    .data-table tr:hover td{background:#fffbeb}
+    .data-table a{color:#D97706;text-decoration:none;font-weight:500}
+    .data-table a:hover{text-decoration:underline}
+    .table-wrapper{overflow-x:auto;border-radius:.5rem;border:1px solid #e2e8f0}
+
+    /* Platform comparison */
+    .platform-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin:1rem 0}
+    .platform-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1.25rem}
+    .platform-card h4{font-size:.95rem;font-weight:700;color:#1e293b;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+    .platform-card p{font-size:.84rem;color:#475569;margin-bottom:.5rem}
+    .platform-card .price-tag{font-size:.8rem;color:#16a34a;font-weight:600;background:#dcfce7;padding:.1rem .5rem;border-radius:999px;display:inline-block}
+
+    /* Use case list */
+    .use-case-list{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+    .use-case-list li{display:flex;gap:.6rem;font-size:.88rem;color:#334155;padding:.4rem 0;border-bottom:1px solid #f1f5f9}
+    .use-case-list li:last-child{border-bottom:none}
+    .use-case-list li::before{content:"✦";color:#F59E0B;flex-shrink:0;font-size:.8rem;margin-top:.15rem}
+
+    /* MCP architecture */
+    .arch-box{background:#1e293b;color:#e2e8f0;border-radius:.75rem;padding:1.25rem;font-family:'Courier New',monospace;font-size:.82rem;line-height:1.8;margin:1rem 0}
+    .arch-box .highlight{color:#F59E0B;font-weight:700}
+
+    /* MCP servers table */
+    .mcp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;margin:1rem 0}
+    .mcp-item{background:#fffbeb;border:1px solid #fde68a;border-radius:.5rem;padding:.75rem 1rem}
+    .mcp-item h5{font-size:.85rem;font-weight:700;color:#92400e;margin-bottom:.3rem}
+    .mcp-item p{font-size:.78rem;color:#78350f}
+
+    /* Stats row */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin:1.25rem 0}
+    .stat-box{text-align:center;background:#fffbeb;border:1px solid #fde68a;border-radius:.75rem;padding:1rem}
+    .stat-number{font-size:1.6rem;font-weight:800;color:#D97706}
+    .stat-label{font-size:.78rem;color:#78350f;margin-top:.2rem}
+
+    /* Exercise box */
+    .exercise-box{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:.75rem;padding:1.5rem;margin-bottom:1.5rem}
+    .exercise-title{font-size:1rem;font-weight:700;color:#92400e;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+    .exercise-steps{list-style:none;counter-reset:steps;display:flex;flex-direction:column;gap:.6rem}
+    .exercise-steps li{counter-increment:steps;display:flex;gap:.75rem;font-size:.88rem;color:#334155}
+    .exercise-steps li::before{content:counter(steps);background:#F59E0B;color:white;font-weight:700;font-size:.75rem;width:1.4rem;height:1.4rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+    .code-block{background:#1e293b;color:#94a3b8;border-radius:.5rem;padding:.75rem 1rem;font-family:'Courier New',monospace;font-size:.8rem;margin:.75rem 0;overflow-x:auto}
+    .code-block .key{color:#F59E0B}
+
+    /* Resources */
+    .resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .resource-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem}
+    .resource-card h4{font-size:.9rem;font-weight:700;color:#1e293b;margin-bottom:.5rem}
+    .resource-list{list-style:none;display:flex;flex-direction:column;gap:.4rem}
+    .resource-list a{font-size:.84rem;color:#D97706;text-decoration:none;display:flex;align-items:flex-start;gap:.4rem}
+    .resource-list a::before{content:"→";flex-shrink:0}
+    .resource-list a:hover{text-decoration:underline}
+
+    /* Actions */
+    .actions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .action-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1.25rem}
+    .action-card h4{font-size:.9rem;font-weight:700;color:#1e293b;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+    .action-card ul{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+    .action-card ul li{display:flex;align-items:flex-start;gap:.5rem;font-size:.84rem;color:#334155}
+    .action-card ul li::before{content:"□";color:#F59E0B;flex-shrink:0;font-weight:700}
+
+    /* Safety note */
+    .safety-note{background:#fef2f2;border:1px solid #fecaca;border-radius:.5rem;padding:1rem;margin:1rem 0;font-size:.85rem;color:#991b1b}
+    .safety-note strong{display:block;margin-bottom:.3rem}
+
+    /* Info note */
+    .info-note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:.5rem;padding:1rem;margin:1rem 0;font-size:.85rem;color:#1e40af}
+    .info-note strong{display:block;margin-bottom:.3rem}
+
+    /* Divider */
+    .divider{height:1px;background:#e2e8f0;margin:1.5rem 0}
+
+    /* Lists */
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem}
+
+    /* Footer */
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem;border-top:1px solid #e2e8f0;margin-top:2rem}
+    footer strong{color:#D97706}
+
+    /* Responsive */
+    @media(max-width:600px){
+      .hero{padding:2rem 1rem}
+      .card{padding:1.25rem}
+      .hero-meta{gap:.6rem;font-size:.82rem}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="tier-badge">Tier 1 · Fundamentos</div>
+    <h1>🔌 Programas para utilizar Claude como extensión</h1>
+    <p class="hero-subtitle">Integra Claude a tu navegador, IDE, apps y flujos de trabajo automatizados</p>
+    <div class="hero-meta">
+      <span>👤 Fajardo</span>
+      <span>📅 Viernes 12 junio 2026</span>
+      <span>👥 Todos los niveles</span>
+      <span>⏱ 90 minutos</span>
+      <span>📌 Clase 04</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la Clase</div>
+    <ul class="objective-list">
+      <li>Integrar Claude al flujo de trabajo diario usando extensiones de navegador, apps de escritorio y editores de código</li>
+      <li>Conectar Claude con herramientas externas (Notion, Slack, Google Drive, GitHub) a través del protocolo MCP</li>
+      <li>Automatizar tareas repetitivas con plataformas no-code como Zapier, Make.com y n8n sin escribir código</li>
+      <li>Configurar Claude Code en VS Code para asistencia de IA directamente en el editor con diffs en línea</li>
+      <li>Comprender la arquitectura MCP (Model Context Protocol) y por qué se convirtió en el estándar universal de integración IA en 2026</li>
+    </ul>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos Clave</div>
+    <div class="concepts-grid">
+      <div class="concept-card">
+        <h3>Model Context Protocol (MCP)</h3>
+        <p>Estándar abierto de Anthropic (nov. 2024) basado en JSON-RPC 2.0. Conecta Claude con herramientas externas de forma bidireccional y segura. El "USB universal" de la IA. Adoptado por OpenAI, Google y Microsoft.</p>
+      </div>
+      <div class="concept-card">
+        <h3>API (REST)</h3>
+        <p>Interfaz que permite a programas externos comunicarse con Claude mediante código. Base de todas las integraciones avanzadas. Endpoint: <code>api.anthropic.com/v1/messages</code>.</p>
+      </div>
+      <div class="concept-card">
+        <h3>Extensión de Navegador</h3>
+        <p>Programa instalado en Chrome/Edge/Brave que añade Claude directamente a la experiencia de navegación. Claude puede ver páginas, hacer clic y rellenar formularios.</p>
+      </div>
+      <div class="concept-card">
+        <h3>Automatización No-Code</h3>
+        <p>Plataformas visuales (Zapier, Make.com, n8n) que permiten conectar Claude con cientos de apps mediante flujos gráficos, sin programar. Claude actúa como motor de inteligencia.</p>
+      </div>
+      <div class="concept-card">
+        <h3>Claude Cowork</h3>
+        <p>Funcionalidad de Claude Desktop que ejecuta tareas agenticas en una VM local aislada. Accede a archivos locales y conectores MCP para trabajo de conocimiento más allá del código.</p>
+      </div>
+      <div class="concept-card">
+        <h3>Servidor MCP</h3>
+        <p>Servicio que expone herramientas y recursos a Claude mediante el protocolo MCP. Hay más de 10,000 servidores públicos en 2026: GitHub, Slack, Notion, Postgres, Filesystem...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack Tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div>
+            <div class="tool-name">Claude.ai</div>
+            <div class="tool-type">Plataforma web base</div>
+          </div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-desc">Interfaz web principal. Acceso a todos los modelos Claude. Incluye directorio de conectores con +50 integraciones en 1 clic.</p>
+        <a href="https://claude.ai" target="_blank" class="tool-link">→ claude.ai</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div>
+            <div class="tool-name">Claude Desktop</div>
+            <div class="tool-type">App de escritorio (macOS / Windows)</div>
+          </div>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <p class="tool-desc">App nativa que habilita MCP, Cowork y conexiones locales. Necesaria para integrar servidores MCP con tus herramientas.</p>
+        <a href="https://claude.com/download" target="_blank" class="tool-link">→ claude.com/download</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div>
+            <div class="tool-name">Claude en Chrome</div>
+            <div class="tool-type">Extensión de navegador</div>
+          </div>
+          <span class="badge badge-paid">Plan pago</span>
+        </div>
+        <p class="tool-desc">Claude navega, hace clic y rellena formularios en tu nombre. Compatible con Chrome, Edge, Brave y Arc. Beta disponible desde dic. 2025.</p>
+        <a href="https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn" target="_blank" class="tool-link">→ Chrome Web Store</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div>
+            <div class="tool-name">Claude Code (VS Code)</div>
+            <div class="tool-type">Extensión IDE</div>
+          </div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-desc">Asistente de código con diffs en línea, @-menciones, plan review, historial de sesiones y soporte MCP. Requiere VS Code 1.98.0+.</p>
+        <a href="https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code" target="_blank" class="tool-link">→ VS Code Marketplace</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div>
+            <div class="tool-name">Servidores MCP</div>
+            <div class="tool-type">Protocolo de integración</div>
+          </div>
+          <span class="badge badge-free">Open source</span>
+        </div>
+        <p class="tool-desc">+10,000 servidores en 2026: GitHub, Slack, Notion, Postgres, Google Drive, Jira, Filesystem, Puppeteer, Zapier y más.</p>
+        <a href="https://modelcontextprotocol.io" target="_blank" class="tool-link">→ modelcontextprotocol.io</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div>
+            <div class="tool-name">Zapier</div>
+            <div class="tool-type">Automatización no-code</div>
+          </div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-desc">Más popular del mercado. +9,000 apps integradas. MCP support desde abril 2025. Ideal para flujos simples y primeras pruebas.</p>
+        <a href="https://zapier.com/apps/anthropic-claude/integrations" target="_blank" class="tool-link">→ zapier.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div>
+            <div class="tool-name">Make.com</div>
+            <div class="tool-type">Automatización visual</div>
+          </div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-desc">Constructor visual avanzado con nodos y bifurcaciones. Mejor para flujos complejos con condicionales y transformaciones de datos.</p>
+        <a href="https://www.make.com/en/integrations/anthropic-claude" target="_blank" class="tool-link">→ make.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div>
+            <div class="tool-name">n8n</div>
+            <div class="tool-type">Automatización dev-friendly</div>
+          </div>
+          <span class="badge badge-free">Open source</span>
+        </div>
+        <p class="tool-desc">Self-hosteable y open source. Ideal para equipos técnicos. Claude como capa de inteligencia. Batch API con 50% de descuento para volumen alto.</p>
+        <a href="https://n8n.io/integrations/claude/" target="_blank" class="tool-link">→ n8n.io</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div>
+            <div class="tool-name">JetBrains Plugin</div>
+            <div class="tool-type">Extensión IDE</div>
+          </div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-desc">Extensión oficial para IntelliJ IDEA, PyCharm, WebStorm y todos los IDEs de JetBrains. Mismo conjunto de características que VS Code.</p>
+        <a href="https://plugins.jetbrains.com" target="_blank" class="tool-link">→ JetBrains Marketplace</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div>
+            <div class="tool-name">Amazon Bedrock</div>
+            <div class="tool-type">Plataforma cloud empresarial</div>
+          </div>
+          <span class="badge badge-paid">Pago por uso</span>
+        </div>
+        <p class="tool-desc">Accede a Claude mediante infraestructura AWS. Ideal para empresas que requieren datos dentro de su entorno cloud de AWS.</p>
+        <a href="https://aws.amazon.com/bedrock" target="_blank" class="tool-link">→ aws.amazon.com/bedrock</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div>
+            <div class="tool-name">Google Vertex AI</div>
+            <div class="tool-type">Plataforma cloud empresarial</div>
+          </div>
+          <span class="badge badge-paid">Pago por uso</span>
+        </div>
+        <p class="tool-desc">Accede a Claude en la infraestructura Google Cloud. Para organizaciones que ya operan en el ecosistema GCP.</p>
+        <a href="https://cloud.google.com/vertex-ai" target="_blank" class="tool-link">→ cloud.google.com/vertex-ai</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MÓDULOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Contenido — 4 Módulos</div>
+
+    <!-- Módulo 1 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-number">01</span>
+        <span class="module-title">Panorama General — El Ecosistema de Extensiones Claude</span>
+        <span class="module-duration">20 min</span>
+      </div>
+      <div class="module-body">
+        <p>Claude.ai en el navegador es poderoso, pero su verdadero potencial se libera cuando se conecta con el contexto de tu trabajo real: tus archivos, tu código, tus emails, tu calendario. Las extensiones e integraciones eliminan el copiar-y-pegar constante y convierten a Claude en un colega digital que ya conoce tu entorno.</p>
+        <p><strong>Las 5 capas del ecosistema Claude (2026):</strong></p>
+        <div class="layer-list">
+          <div class="layer-item"><div class="layer-num">1</div><div><strong>Apps nativas</strong> — Claude Desktop + Claude.ai web. Base de todo el ecosistema.</div></div>
+          <div class="layer-item"><div class="layer-num">2</div><div><strong>Extensiones de interfaz</strong> — Navegador (Chrome) e IDE (VS Code, JetBrains). Claude trabaja donde tú trabajas.</div></div>
+          <div class="layer-item"><div class="layer-num">3</div><div><strong>Integraciones MCP</strong> — Conexiones directas y bidireccionales con servicios externos. Claude lee y escribe en tus herramientas.</div></div>
+          <div class="layer-item"><div class="layer-num">4</div><div><strong>Automatizaciones</strong> — Zapier / Make.com / n8n. Flujos que se ejecutan solos; Claude como motor de inteligencia.</div></div>
+          <div class="layer-item"><div class="layer-num">5</div><div><strong>Infraestructura empresarial</strong> — API directa, Amazon Bedrock, Google Vertex AI. Para integraciones a escala.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Módulo 2 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-number">02</span>
+        <span class="module-title">Extensiones de Navegador — Claude en Chrome</span>
+        <span class="module-duration">20 min</span>
+      </div>
+      <div class="module-body">
+        <p>Claude en Chrome es la extensión oficial de Anthropic para todos los navegadores basados en Chromium. Llegó como preview en agosto 2025 (1,000 testers), se expandió a suscriptores Max en noviembre 2025, y desde diciembre 2025 está disponible en beta para todos los planes pagos.</p>
+
+        <div class="safety-note">
+          <strong>⚠️ Consideración de seguridad</strong>
+          Riesgo de prompt injection: actores maliciosos pueden intentar inyectar instrucciones en páginas web para engañar a Claude. Siempre revisa las acciones propuestas antes de autorizar operaciones sensibles.
+        </div>
+
+        <p><strong>Capacidades principales:</strong></p>
+        <ul class="use-case-list">
+          <li>Se ejecuta en el panel lateral — Claude ve lo que tú ves en tiempo real</li>
+          <li>Puede hacer clic, navegar páginas y rellenar formularios en tu nombre</li>
+          <li>Aprende flujos de trabajo: graba los pasos, Claude los repite automáticamente</li>
+          <li>Se integra con Claude Code para flujos web → código → deploy</li>
+          <li>Comparte el estado de login del navegador; accede a sitios en los que ya estás autenticado</li>
+        </ul>
+
+        <div class="info-note">
+          <strong>💡 Modelos por plan</strong>
+          Plan Pro ($20/mes) → Haiku 4.5 (más rápido). Plan Max ($100-200/mes) → Sonnet y Opus completos con más capacidad.
+        </div>
+      </div>
+    </div>
+
+    <!-- Módulo 3 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-number">03</span>
+        <span class="module-title">Integraciones No-Code — Zapier, Make.com y n8n</span>
+        <span class="module-duration">25 min</span>
+      </div>
+      <div class="module-body">
+        <p>Las plataformas de automatización permiten conectar Claude con cualquier aplicación sin escribir código. Claude aporta el "cerebro" (comprensión, redacción, clasificación) y la plataforma aporta la "fontanería" (cuándo disparar el flujo, adónde enviar los resultados).</p>
+
+        <div class="platform-grid">
+          <div class="platform-card">
+            <h4>⚡ Zapier</h4>
+            <p>+9,000 apps integradas. El más accesible para equipos no técnicos. MCP support desde abril 2025 (30,000+ acciones en una sesión agentica). Acción principal: "Create Conversation" — Claude procesa y genera respuesta.</p>
+            <span class="price-tag">Free / desde $19.99/mes</span>
+          </div>
+          <div class="platform-card">
+            <h4>🔧 Make.com</h4>
+            <p>Constructor visual drag-and-drop con nodos, bifurcaciones y bucles. Ideal para flujos complejos con condicionales y transformación de datos. Integración nativa con la API de Anthropic.</p>
+            <span class="price-tag">Free / desde $9/mes</span>
+          </div>
+          <div class="platform-card">
+            <h4>🛠️ n8n</h4>
+            <p>Open source y self-hosteable. Para equipos técnicos con control de costos. Claude como capa de inteligencia dentro de flujos complejos. Batch API: 50% de descuento para volúmenes altos.</p>
+            <span class="price-tag">Self-hosted gratis / cloud $20+/mes</span>
+          </div>
+        </div>
+
+        <p><strong>Ejemplos de flujos automatizados:</strong></p>
+        <ul class="use-case-list">
+          <li>Nuevo email → Claude resume y clasifica → guardado en Notion automáticamente</li>
+          <li>Nuevo lead en CRM → Claude redacta email personalizado → enviado al instante</li>
+          <li>Artículo RSS → Claude traduce y adapta → publicado en Slack del equipo</li>
+          <li>PDF de cliente → Claude extrae datos estructurados → hoja de cálculo actualizada</li>
+          <li>Formulario de contacto → Claude clasifica prioridad → ticket creado en Jira</li>
+        </ul>
+
+        <div class="info-note">
+          <strong>📌 Stack recomendado para equipos</strong>
+          n8n como motor central + Claude Code para proyectos de código + Zapier/Make para automatizaciones rápidas ad-hoc.
+        </div>
+      </div>
+    </div>
+
+    <!-- Módulo 4 -->
+    <div class="module">
+      <div class="module-header">
+        <span class="module-number">04</span>
+        <span class="module-title">MCP Avanzado — Conecta Claude con Todo</span>
+        <span class="module-duration">25 min</span>
+      </div>
+      <div class="module-body">
+        <p>MCP es el estándar de integración más importante del ecosistema IA 2024-2026. A diferencia de las APIs tradicionales (unidireccionales), MCP crea un canal persistente donde Claude puede <strong>leer y escribir</strong> en tus herramientas.</p>
+
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="stat-number">10,000+</div>
+            <div class="stat-label">Servidores MCP activos (2026)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">97M</div>
+            <div class="stat-label">Descargas mensuales del SDK</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">50+</div>
+            <div class="stat-label">Conectores 1-clic en Claude.ai</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">Nov 2024</div>
+            <div class="stat-label">Lanzamiento por Anthropic</div>
+          </div>
+        </div>
+
+        <p><strong>Arquitectura de tres capas:</strong></p>
+        <div class="arch-box">
+          <div><span class="highlight">[HOST]</span>  Claude Desktop / VS Code / Claude.ai</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓</div>
+          <div><span class="highlight">[CLIENT]</span> Puente MCP interno (dentro del host)</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓</div>
+          <div><span class="highlight">[SERVER]</span> Servicio externo con sus herramientas</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓</div>
+          <div><span class="highlight">[RECURSO]</span> GitHub API / Base de datos / Archivos</div>
+        </div>
+
+        <p><strong>Servidores MCP oficiales de Anthropic:</strong></p>
+        <div class="mcp-grid">
+          <div class="mcp-item"><h5>GitHub</h5><p>Leer repos, crear PRs, revisar código, gestionar issues</p></div>
+          <div class="mcp-item"><h5>Slack</h5><p>Enviar mensajes, leer historial de canales, buscar usuarios</p></div>
+          <div class="mcp-item"><h5>Google Drive</h5><p>Buscar, leer y crear archivos en Drive</p></div>
+          <div class="mcp-item"><h5>Notion</h5><p>Leer y escribir páginas, bases de datos y comentarios en tiempo real</p></div>
+          <div class="mcp-item"><h5>PostgreSQL</h5><p>Ejecutar consultas SQL, leer esquemas de base de datos</p></div>
+          <div class="mcp-item"><h5>Filesystem</h5><p>Acceder a archivos y carpetas del sistema local</p></div>
+          <div class="mcp-item"><h5>Git</h5><p>Operaciones de control de versiones en repos locales</p></div>
+          <div class="mcp-item"><h5>Jira</h5><p>Crear y gestionar tickets, sprints y proyectos</p></div>
+          <div class="mcp-item"><h5>Puppeteer</h5><p>Control de navegador headless para automatización web</p></div>
+          <div class="mcp-item"><h5>Zapier MCP</h5><p>Acceso a 30,000+ acciones de las 9,000 apps de Zapier</p></div>
+        </div>
+
+        <p style="margin-top:1rem"><strong>Configuración en Claude Desktop (ejemplo):</strong></p>
+        <div class="code-block">
+{
+  <span class="key">"mcpServers"</span>: {
+    <span class="key">"github"</span>: {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "tu-token" }
+    },
+    <span class="key">"filesystem"</span>: {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/ruta/carpeta"]
+    }
+  }
+}
+        </div>
+
+        <p><strong>Gobernanza y adopción:</strong> Desde diciembre 2025, MCP está administrado por la Linux Foundation bajo el Agentic AI Foundation (AAIF), co-fundado por Anthropic, OpenAI y Block. OpenAI lo adoptó en marzo 2025; Google DeepMind y Microsoft Copilot Studio también lo integran.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio Práctico</div>
+
+    <div class="exercise-box">
+      <div class="exercise-title">🅐 Parte A — Claude Code en VS Code <span style="font-size:.85rem;font-weight:400;color:#78350f">(15 min)</span></div>
+      <ol class="exercise-steps">
+        <li>Verificar versión de VS Code: debe ser 1.98.0 o superior (<em>Ayuda → Acerca de</em>)</li>
+        <li>Abrir Extensions: <code>Ctrl+Shift+X</code> (Win/Linux) o <code>Cmd+Shift+X</code> (Mac)</li>
+        <li>Buscar "Claude Code" (publicador: Anthropic) → clic en <strong>Instalar</strong></li>
+        <li>Abrir cualquier archivo de código → aparece el icono ✦ en la esquina superior del editor</li>
+        <li>Clic en ✦ → hacer clic en <strong>Sign in</strong> → autorizar en el navegador</li>
+        <li>Seleccionar un bloque de código y preguntar: <em>"Explica qué hace esta función"</em></li>
+        <li>Pedir: <em>"Encuentra los bugs en este archivo y corrígelos"</em> → revisar el diff antes de aceptar</li>
+      </ol>
+    </div>
+
+    <div class="exercise-box">
+      <div class="exercise-title">🅑 Parte B — Flujo Automatizado en Zapier <span style="font-size:.85rem;font-weight:400;color:#78350f">(15 min)</span></div>
+      <p style="font-size:.88rem;color:#475569;margin-bottom:1rem">Flujo: <strong>Nuevo formulario de contacto → Claude clasifica y resume → Guardado en Google Sheets</strong></p>
+      <ol class="exercise-steps">
+        <li>Crear cuenta gratuita en <a href="https://zapier.com" target="_blank" style="color:#D97706">zapier.com</a> → clic en "Create Zap"</li>
+        <li>Trigger: "Webhooks by Zapier" → "Catch Hook" (o usa Google Forms si lo tienes)</li>
+        <li>Agregar acción: buscar "Anthropic (Claude)" → "Create Conversation"</li>
+        <li>Conectar cuenta con API key de <a href="https://console.anthropic.com" target="_blank" style="color:#D97706">console.anthropic.com</a></li>
+        <li>Escribir el prompt con las variables del formulario (nombre, mensaje, empresa)</li>
+        <li>Seleccionar modelo: Claude 3.5 Sonnet → probar la acción</li>
+        <li>Agregar acción final: "Google Sheets" → "Create Row" → mapear campos de Claude</li>
+        <li>Activar el Zap → enviar datos de prueba → verificar resultado en Sheets</li>
+      </ol>
+      <div class="code-block" style="margin-top:1rem">
+Prompt de ejemplo:
+Analiza este mensaje de un cliente y responde en JSON:
+- <span class="key">resumen</span>: qué necesita (1 oración)
+- <span class="key">prioridad</span>: Alta / Media / Baja
+- <span class="key">siguiente_paso</span>: acción recomendada
+
+Nombre: {{nombre}} | Empresa: {{empresa}}
+Mensaje: {{mensaje}}
+      </div>
+    </div>
+
+    <div class="exercise-box">
+      <div class="exercise-title">⭐ Bonus — Conectar servidor MCP <span style="font-size:.85rem;font-weight:400;color:#78350f">(para quienes terminen antes)</span></div>
+      <ol class="exercise-steps">
+        <li>Descargar Claude Desktop desde <a href="https://claude.com/download" target="_blank" style="color:#D97706">claude.com/download</a></li>
+        <li>Editar el archivo de configuración MCP (ver Módulo 4 para la estructura JSON)</li>
+        <li>Agregar el servidor de Filesystem apuntando a tu carpeta de Documentos</li>
+        <li>Reiniciar Claude Desktop → pedir: <em>"Lista todos los archivos .pdf en mi carpeta Documentos"</em></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos de Aprendizaje</div>
+    <div class="resource-grid">
+
+      <div class="resource-card">
+        <h4>📖 Documentación Oficial</h4>
+        <ul class="resource-list">
+          <li><a href="https://modelcontextprotocol.io" target="_blank">Model Context Protocol — Guía oficial</a></li>
+          <li><a href="https://code.claude.com/docs" target="_blank">Claude Code Docs — VS Code y CLI</a></li>
+          <li><a href="https://docs.anthropic.com" target="_blank">API de Anthropic — Referencia completa</a></li>
+          <li><a href="https://support.claude.com" target="_blank">Centro de ayuda de Claude</a></li>
+          <li><a href="https://github.com/modelcontextprotocol" target="_blank">MCP en GitHub — Servidores oficiales</a></li>
+        </ul>
+      </div>
+
+      <div class="resource-card">
+        <h4>🔧 Herramientas de Integración</h4>
+        <ul class="resource-list">
+          <li><a href="https://zapier.com/apps/anthropic-claude/integrations" target="_blank">Zapier × Claude — Integraciones y plantillas</a></li>
+          <li><a href="https://www.make.com/en/integrations/anthropic-claude" target="_blank">Make.com × Claude — Módulos oficiales</a></li>
+          <li><a href="https://n8n.io/integrations/claude/" target="_blank">n8n × Claude — Nodo oficial y plantillas</a></li>
+          <li><a href="https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn" target="_blank">Claude en Chrome — Chrome Web Store</a></li>
+          <li><a href="https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code" target="_blank">Claude Code — VS Code Marketplace</a></li>
+        </ul>
+      </div>
+
+      <div class="resource-card">
+        <h4>🌐 Artículos y Análisis</h4>
+        <ul class="resource-list">
+          <li><a href="https://www.anthropic.com/news/claude-for-chrome" target="_blank">Piloting Claude in Chrome — Anthropic</a></li>
+          <li><a href="https://claude.com/blog/integrations" target="_blank">Claude can now connect to your world</a></li>
+          <li><a href="https://medium.com/data-science-collective/the-mcp-revolution-10-000-servers-97m-downloads-a-new-ai-nervous-system-89d701c1f487" target="_blank">MCP Revolution: 10,000 Servers, 97M Downloads</a></li>
+          <li><a href="https://www.sitepoint.com/model-context-protocol-mcp/" target="_blank">MCP Complete 2026 Guide — SitePoint</a></li>
+          <li><a href="https://eesel.ai/blog/vs-code-claude-code" target="_blank">How to use Claude Code in VS Code (2026)</a></li>
+        </ul>
+      </div>
+
+      <div class="resource-card">
+        <h4>👥 Comunidades</h4>
+        <ul class="resource-list">
+          <li><a href="https://discord.gg/anthropic" target="_blank">Discord oficial de Anthropic</a></li>
+          <li><a href="https://reddit.com/r/ClaudeAI" target="_blank">Reddit r/ClaudeAI</a></li>
+          <li><a href="https://github.com/modelcontextprotocol/servers" target="_blank">MCP Community — Directorio de servidores</a></li>
+          <li><a href="https://console.anthropic.com" target="_blank">Anthropic Console — API keys y uso</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones Post-Clase</div>
+    <div class="actions-grid">
+
+      <div class="action-card">
+        <h4>🔴 Esta semana (prioridad alta)</h4>
+        <ul>
+          <li>Instalar Claude Code en VS Code y usarlo en un proyecto real durante 2+ horas</li>
+          <li>Crear tu primer Zap con Claude: automatiza una tarea repetitiva de tu trabajo actual</li>
+          <li>Descargar Claude Desktop y explorar los conectores del directorio</li>
+        </ul>
+      </div>
+
+      <div class="action-card">
+        <h4>🟡 Próximas 2 semanas</h4>
+        <ul>
+          <li>Configurar al menos 1 servidor MCP (recomendado: Filesystem o Notion) en Claude Desktop</li>
+          <li>Documentar tu flujo actual e identificar 3 puntos donde Claude puede automatizar</li>
+          <li>Explorar n8n si tienes perfil técnico: instala la versión self-hosted</li>
+        </ul>
+      </div>
+
+      <div class="action-card">
+        <h4>🟢 Exploración avanzada</h4>
+        <ul>
+          <li>Leer la especificación completa de MCP en modelcontextprotocol.io</li>
+          <li>Crear un servidor MCP personalizado para una herramienta interna de tu organización</li>
+          <li>Integrar Claude Code con Amazon Bedrock o Google Vertex AI si tu empresa usa cloud empresarial</li>
+        </ul>
+      </div>
+
+      <div class="action-card">
+        <h4>📅 Para la próxima clase</h4>
+        <ul>
+          <li>Documenta un flujo de trabajo que hayas automatizado o mejorado con Claude esta semana</li>
+          <li>Prepara una captura de pantalla o demo de 2 minutos de tu integración favorita</li>
+          <li>Anota 2 dudas o casos de uso que quieras profundizar en la próxima sesión</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Clase 04 · <strong>Programas para utilizar Claude como extensión</strong> · Presentador: Fajardo</p>
+  <p style="margin-top:.3rem">Serie: IA para Todos · Tier 1 · Fundamentos · Viernes 12 junio 2026</p>
+</footer>
+
+</body>
+</html>

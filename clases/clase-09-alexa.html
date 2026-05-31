@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 09 · Aplicar IA para vender mejor sin perder humanidad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#10B981 0%,#059669 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#0f172a}
+    .card-title .emoji{font-size:1.4rem}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;transition:border-color .2s,box-shadow .2s}
+    .tool-card:hover{border-color:#10B981;box-shadow:0 4px 12px rgba(16,185,129,.12)}
+    .tool-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.5rem}
+    .tool-name{font-weight:700;font-size:.95rem;color:#0f172a}
+    .tool-desc{font-size:.82rem;color:#64748b;margin-bottom:.75rem;line-height:1.5}
+    .tool-link{font-size:.8rem;color:#10B981;text-decoration:none;font-weight:600}
+    .tool-link:hover{text-decoration:underline}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600;white-space:nowrap}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .module{border-left:3px solid #10B981;padding-left:1.25rem;margin-bottom:2rem}
+    .module:last-child{margin-bottom:0}
+    .module-title{font-weight:700;font-size:1rem;color:#059669;margin-bottom:.5rem}
+    .module-time{font-size:.78rem;color:#94a3b8;font-weight:500;margin-bottom:.75rem}
+    .module p{color:#374151;font-size:.93rem;margin-bottom:.75rem}
+    .module ul{padding-left:1.5rem;color:#374151;font-size:.93rem}
+    .module ul li{margin-bottom:.4rem}
+    .exercise-box{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:.75rem;padding:1.5rem;margin-bottom:1.5rem}
+    .exercise-box:last-child{margin-bottom:0}
+    .exercise-title{font-weight:700;color:#059669;margin-bottom:.75rem;font-size:1rem}
+    .exercise-box p{color:#374151;font-size:.93rem;margin-bottom:.75rem}
+    .exercise-box ul{padding-left:1.5rem;color:#374151;font-size:.93rem}
+    .exercise-box ul li{margin-bottom:.4rem}
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem}
+    .obj-list{list-style:none;padding-left:0}
+    .obj-list li{display:flex;align-items:flex-start;gap:.75rem;padding:.6rem 0;border-bottom:1px solid #f1f5f9;font-size:.93rem;color:#374151}
+    .obj-list li:last-child{border-bottom:none}
+    .obj-list li::before{content:"✓";color:#10B981;font-weight:700;flex-shrink:0;margin-top:.05rem}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .concept-card{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.75rem;padding:1.25rem}
+    .concept-card-title{font-weight:700;color:#065f46;margin-bottom:.5rem;font-size:.95rem}
+    .concept-card p{font-size:.85rem;color:#374151;line-height:1.55}
+    .stat-row{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem}
+    .stat-card{background:linear-gradient(135deg,#10B981,#059669);color:white;border-radius:.75rem;padding:1rem 1.5rem;flex:1;min-width:160px;text-align:center}
+    .stat-number{font-size:1.8rem;font-weight:800;line-height:1}
+    .stat-label{font-size:.78rem;opacity:.9;margin-top:.25rem;line-height:1.4}
+    .resource-list{list-style:none;padding-left:0}
+    .resource-list li{padding:.6rem 0;border-bottom:1px solid #f1f5f9;font-size:.9rem}
+    .resource-list li:last-child{border-bottom:none}
+    .resource-list a{color:#10B981;text-decoration:none;font-weight:500}
+    .resource-list a:hover{text-decoration:underline}
+    .resource-list .source{color:#94a3b8;font-size:.8rem}
+    .checklist{list-style:none;padding-left:0}
+    .checklist li{display:flex;align-items:flex-start;gap:.75rem;padding:.5rem 0;font-size:.9rem;color:#374151;border-bottom:1px solid #f1f5f9}
+    .checklist li:last-child{border-bottom:none}
+    .check-box{width:18px;height:18px;border:2px solid #10B981;border-radius:.3rem;flex-shrink:0;margin-top:.1rem}
+    .timeline-week{font-weight:700;color:#059669;margin-bottom:.75rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em}
+    .tab-section{margin-bottom:1.5rem}
+    .tab-section:last-child{margin-bottom:0}
+    .prompt-box{background:#0f172a;color:#e2e8f0;border-radius:.75rem;padding:1.25rem;font-family:'Courier New',monospace;font-size:.8rem;line-height:1.7;margin:1rem 0;overflow-x:auto}
+    .prompt-box .comment{color:#64748b}
+    .highlight-text{color:#10B981;font-weight:700}
+    .section-subtitle{font-weight:600;color:#374151;margin-bottom:.75rem;font-size:.95rem}
+    .mini-table{width:100%;border-collapse:collapse;font-size:.85rem;margin:.75rem 0}
+    .mini-table th{background:#f0fdf4;color:#065f46;font-weight:600;padding:.6rem .8rem;text-align:left;border-bottom:2px solid #bbf7d0}
+    .mini-table td{padding:.6rem .8rem;border-bottom:1px solid #f1f5f9;color:#374151;vertical-align:top}
+    .mini-table tr:last-child td{border-bottom:none}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    footer strong{color:#10B981}
+    @media(max-width:600px){
+      .hero{padding:2rem 1.25rem}
+      .card{padding:1.25rem}
+      .stat-card{min-width:130px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<header class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="tier-badge">Tier 2 · Ventas, CX</div>
+    <h1>🤝 Aplicar IA para vender mejor<br>sin perder humanidad</h1>
+    <div class="hero-meta">
+      <span>👤 <strong>Alexa</strong></span>
+      <span>📅 Viernes 10 julio 2026</span>
+      <span>⏱ 90 minutos</span>
+      <span>📍 Marketing track · Clase 09</span>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ═══ ESTADÍSTICAS CLAVE ═══ -->
+  <div class="stat-row" style="margin-top:0;margin-bottom:1.5rem">
+    <div class="stat-card">
+      <div class="stat-number">50%</div>
+      <div class="stat-label">más leads con herramientas de IA</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">6×</div>
+      <div class="stat-label">más transacciones con emails personalizados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">73%</div>
+      <div class="stat-label">de consumidores evita empresas sin empatía</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">60%</div>
+      <div class="stat-label">reducción en tiempos de llamada con IA</div>
+    </div>
+  </div>
+
+  <!-- ═══ OBJETIVOS ═══ -->
+  <section class="card">
+    <div class="card-title"><span class="emoji">🎯</span> Objetivos de la clase</div>
+    <ul class="obj-list">
+      <li>Usar IA para personalizar propuestas a escala sin que pierdan autenticidad ni calidez, generando mensajes que resuenen con cada prospecto de forma individual.</li>
+      <li>Automatizar seguimientos (follow-ups) de manera inteligente, priorizando leads con mayor intención de compra mediante lead scoring con IA.</li>
+      <li>Mantener la conexión humana como ventaja diferencial: identificar en qué momentos del funnel la intervención humana genera más impacto y confianza.</li>
+      <li>Analizar conversaciones de ventas con herramientas de inteligencia conversacional para detectar patrones que cierran y pierden negocios.</li>
+      <li>Construir un flujo de ventas híbrido que combine automatización eficiente con momentos de alto contacto humano.</li>
+    </ul>
+  </section>
+
+  <!-- ═══ CONCEPTOS CLAVE ═══ -->
+  <section class="card">
+    <div class="card-title"><span class="emoji">🔑</span> Conceptos clave</div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-card-title">Personalización masiva</div>
+        <p>La IA adapta el contenido, tono y timing de cada comunicación para cientos de prospectos simultáneamente, usando datos reales: industria, cargo, comportamiento en el sitio y señales de compra.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-card-title">Lead Scoring con IA</div>
+        <p>Los modelos de IA analizan cientos de variables en tiempo real —visitas, clics, interacciones, historial— para asignar una puntuación de propensión de compra y enfocar la energía del equipo.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-card-title">Empatía en ventas</div>
+        <p>El 73% de los consumidores evita empresas sin empatía. La IA puede analizar el lenguaje emocional, pero escuchar de verdad y construir confianza sigue siendo exclusivamente humano.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-card-title">CRM Inteligente</div>
+        <p>Un CRM con IA no solo almacena datos: enriquece registros automáticamente, detecta riesgo de churn, sugiere el mejor momento para contactar y genera borradores basados en el contexto de cada cuenta.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-card-title">Automatizar con criterio</div>
+        <p>Regla de oro: automatiza lo que no requiere empatía, invierte energía humana donde sí la requiere. Tareas administrativas → IA. Negociaciones complejas y cierres → presencia humana auténtica.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-card-title">Inteligencia conversacional</div>
+        <p>Herramientas como Gong y Chorus convierten cada llamada en datos accionables: ratio escucha/habla, preguntas de discovery, manejo de objeciones y compromisos capturados automáticamente.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ STACK TECNOLÓGICO ═══ -->
+  <section class="card">
+    <div class="card-title"><span class="emoji">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">HubSpot Breeze AI</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">CRM con IA: enriquecimiento de datos, agente de prospección, lead scoring y generación de contenido para equipos de ventas.</div>
+        <a class="tool-link" href="https://www.hubspot.com/products/artificial-intelligence" target="_blank">→ hubspot.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Salesforce Einstein</div>
+          <span class="badge badge-paid">Pago</span>
+        </div>
+        <div class="tool-desc">IA integrada en CRM: predicciones de oportunidades, automatización de flujos con Flow Builder y Einstein Copilot para equipos de ventas.</div>
+        <a class="tool-link" href="https://www.salesforce.com/products/einstein/overview/" target="_blank">→ salesforce.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Claude (Anthropic)</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Redacción de propuestas personalizadas, análisis de documentos de clientes, preparación de llamadas y role-play de negociaciones.</div>
+        <a class="tool-link" href="https://claude.ai" target="_blank">→ claude.ai</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Gong.io</div>
+          <span class="badge badge-paid">Pago</span>
+        </div>
+        <div class="tool-desc">Inteligencia conversacional: graba y analiza llamadas de ventas, detecta patrones ganadores/perdedores y proporciona coaching automático al equipo.</div>
+        <a class="tool-link" href="https://www.gong.io" target="_blank">→ gong.io</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Chorus.ai (ZoomInfo)</div>
+          <span class="badge badge-paid">Pago</span>
+        </div>
+        <div class="tool-desc">Análisis de llamadas y reuniones, captura automática de compromisos y tracking de temas clave en conversaciones de ventas.</div>
+        <a class="tool-link" href="https://www.chorus.ai" target="_blank">→ chorus.ai</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Apollo.io</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Base de datos B2B + engagement con IA: secuencias automatizadas, lead scoring y enriquecimiento de datos de prospectos. Plan free: 50 créditos/mes.</div>
+        <a class="tool-link" href="https://www.apollo.io" target="_blank">→ apollo.io</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Lavender AI</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Asistente de email de ventas en tiempo real: puntúa cada correo y sugiere mejoras para maximizar la tasa de respuesta. Extensión Chrome gratuita.</div>
+        <a class="tool-link" href="https://www.lavender.ai" target="_blank">→ lavender.ai</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Crystal Knows</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-desc">Analiza la personalidad DISC de cada prospecto y sugiere cómo adaptar el mensaje y el estilo de comunicación. 10 perfiles gratuitos al mes.</div>
+        <a class="tool-link" href="https://www.crystalknows.com" target="_blank">→ crystalknows.com</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ MÓDULOS ═══ -->
+  <section class="card">
+    <div class="card-title"><span class="emoji">📋</span> Contenido — Módulos de la clase</div>
+
+    <div class="module">
+      <div class="module-title">Módulo 1 · El nuevo funnel de ventas aumentado por IA</div>
+      <div class="module-time">⏱ 20 min</div>
+      <p>El funnel tradicional (Conciencia → Interés → Decisión → Acción) se transforma con IA en cada etapa:</p>
+      <ul>
+        <li><strong>Conciencia:</strong> Herramientas de intención (Apollo.io, ZoomInfo) identifican prospectos que ya investigan soluciones como la tuya antes de que te contacten.</li>
+        <li><strong>Interés:</strong> El lead scoring prioriza automáticamente quién merece tu tiempo hoy. Un modelo de IA procesa cientos de señales y entrega una lista ordenada cada mañana.</li>
+        <li><strong>Decisión:</strong> Propuestas generadas con IA (Claude) adaptadas al lenguaje, industria y preocupaciones específicas de cada prospecto. Tiempo: minutos, no horas.</li>
+        <li><strong>Acción y post-venta:</strong> Automatización de onboarding, alertas de churn y oportunidades de upsell detectadas por el CRM inteligente.</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-title">Módulo 2 · Personalización sin perder autenticidad</div>
+      <div class="module-time">⏱ 25 min</div>
+      <p>El mayor riesgo de la IA en ventas no es la ineficiencia: es sonar falso. El proceso de 3 capas para personalizar con autenticidad:</p>
+      <ul>
+        <li><strong>Capa 1 – IA genera el borrador:</strong> Basado en el perfil del prospecto, su industria, interacciones previas y el objetivo de la comunicación.</li>
+        <li><strong>Capa 2 – El vendedor refina:</strong> Ajusta el tono, añade referencias específicas de la última conversación, personaliza el call-to-action.</li>
+        <li><strong>Capa 3 – Revisión de empatía:</strong> "¿Yo escribiría esto a un amigo en esta situación?" Si la respuesta es no, hay que ajustar.</li>
+      </ul>
+      <p>Señales de personalización que funcionan: referencia a publicaciones recientes del prospecto, mención de desafíos específicos de su industria, lenguaje adaptado a su perfil DISC.</p>
+    </div>
+
+    <div class="module">
+      <div class="module-title">Módulo 3 · Inteligencia conversacional y coaching con IA</div>
+      <div class="module-time">⏱ 25 min</div>
+      <p>Herramientas como Gong.io y Chorus.ai transforman cada llamada de ventas en una fuente de aprendizaje:</p>
+      <ul>
+        <li><strong>Ratio de escucha vs. habla:</strong> Los mejores vendedores hablan menos del 46% del tiempo en llamadas exitosas.</li>
+        <li><strong>Preguntas de discovery:</strong> La IA mide cuántas preguntas abiertas hace el vendedor vs. cuánto tiempo dedica a presentar el producto.</li>
+        <li><strong>Manejo de objeciones:</strong> Detección de qué respuestas funcionan mejor ante las objeciones más comunes del equipo.</li>
+        <li><strong>Compromisos capturados:</strong> La IA transcribe y extrae automáticamente los next steps acordados en la llamada, eliminando errores de memoria.</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <div class="module-title">Módulo 4 · Construir el flujo de ventas híbrido ideal</div>
+      <div class="module-time">⏱ 20 min</div>
+      <p>El objetivo no es "más IA" sino "mejor IA + mejor humano". Mapear cada actividad en dos ejes: ¿Requiere empatía? ¿Es repetitiva?</p>
+      <table class="mini-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Baja repetición</th>
+            <th>Alta repetición</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Alta empatía</strong></td>
+            <td>Negociación compleja, cierre final → 100% humano</td>
+            <td>Seguimientos post-reunión → híbrido: IA draft + revisión humana</td>
+          </tr>
+          <tr>
+            <td><strong>Baja empatía</strong></td>
+            <td>Investigación de prospectos ad-hoc → IA asiste</td>
+            <td>Actualización CRM, recordatorios, reportes → 100% automatizable</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ EJERCICIO ═══ -->
+  <section class="card">
+    <div class="card-title"><span class="emoji">💪</span> Ejercicio práctico</div>
+
+    <div class="exercise-box">
+      <div class="exercise-title">Parte 1 · Crear una propuesta personalizada con Claude (30 min)</div>
+      <p><strong>Contexto:</strong> Tienes una reunión mañana con el Director de Ventas de una empresa de logística con 200 empleados que ha visitado tu página de precios 3 veces en los últimos 7 días.</p>
+      <p>Usa este prompt en <a href="https://claude.ai" target="_blank" style="color:#10B981;font-weight:600">claude.ai</a>:</p>
+      <div class="prompt-box">
+<span class="comment"># Prompt para preparación de reunión de ventas</span>
+
+Actúa como un consultor de ventas experto.
+Necesito preparar una propuesta personalizada para:
+- Empresa: [nombre y sector]
+- Contacto: [nombre, cargo]
+- Señales de interés: [visitas al sitio, interacciones]
+- Nuestra solución: [descripción breve]
+- Su mayor dolor ahora mismo: [problema específico]
+
+Genera:
+1. Email de confirmación pre-reunión cálido y relevante
+2. Las 3 preguntas de discovery más poderosas
+3. Un one-pager de propuesta adaptado a su situación
+      </div>
+      <ul>
+        <li>¿El resultado suena como tú o como un robot?</li>
+        <li>¿Menciona algo específico de SU situación o podría ser para cualquiera?</li>
+        <li>¿El tono es apropiado para el cargo del contacto?</li>
+        <li>Itera con Claude hasta pasar la "prueba de autenticidad".</li>
+      </ul>
+    </div>
+
+    <div class="exercise-box">
+      <div class="exercise-title">Parte 2 · Analizar una llamada con Gong (30 min)</div>
+      <p><strong>Con acceso a Gong:</strong> Sube una grabación reciente (con consentimiento), revisa el análisis automático de ratio de escucha, temas detectados y momentos de riesgo. Identifica un solo cambio accionable.</p>
+      <p><strong>Alternativa sin Gong:</strong></p>
+      <ul>
+        <li>Graba un role-play de 10 minutos con un colega.</li>
+        <li>Transcríbelo con <a href="https://otter.ai" target="_blank" style="color:#10B981;font-weight:600">Otter.ai</a> (gratuito, 300 min/mes).</li>
+        <li>Pega la transcripción en Claude y pregunta: "Analiza esta llamada de ventas. ¿En qué momentos perdí momentum? ¿Cuáles fueron mis mejores preguntas? ¿Qué haría diferente?"</li>
+      </ul>
+      <p style="margin-top:.75rem"><strong>Reflexión grupal:</strong> Cada participante comparte el insight más sorprendente de su análisis.</p>
+    </div>
+  </section>
+
+  <!-- ═══ RECURSOS ═══ -->
+  <section class="card">
+    <div class="card-title"><span class="emoji">📚</span> Recursos recomendados</div>
+
+    <div class="section-subtitle">Lecturas esenciales</div>
+    <ul class="resource-list" style="margin-bottom:1.5rem">
+      <li>
+        <a href="https://solutionsreview.com/crm/2025/11/11/why-the-human-touch-still-matters-in-an-ai-driven-crm-world/" target="_blank">Why the Human Touch Still Matters in an AI-Driven CRM World</a>
+        <div class="source">Solutions Review</div>
+      </li>
+      <li>
+        <a href="https://anyleads.com/how-to-scale-personalized-outreach-using-ai-without-losing-authenticity" target="_blank">How to Scale Personalized Outreach Using AI Without Losing Authenticity</a>
+        <div class="source">Anyleads</div>
+      </li>
+      <li>
+        <a href="https://web.superagi.com/the-human-touch-in-ai-driven-sales-strategies-for-balancing-tech-and-personal-relationships-in-2025/" target="_blank">The Human Touch in AI-Driven Sales: Strategies for 2025</a>
+        <div class="source">SuperAGI</div>
+      </li>
+      <li>
+        <a href="https://www.vested.marketing/blog/ai-blending-automation-with-personalization-in-sales" target="_blank">AI vs. Human Touch: How to Blend Automation with Personalization in Sales</a>
+        <div class="source">Vested Marketing</div>
+      </li>
+      <li>
+        <a href="https://saleshive.com/blog/ai-hubspot-vs-salesforce-features-compared/" target="_blank">HubSpot vs. Salesforce: AI Features Compared</a>
+        <div class="source">SalesHive</div>
+      </li>
+    </ul>
+
+    <div class="section-subtitle">Datos clave para citar</div>
+    <ul style="color:#374151;font-size:.9rem">
+      <li>80% de las empresas ya usan o planean usar IA en sus CRM (2025)</li>
+      <li>El mercado global de IA en CRM alcanzará $14.3B en 2025 (CAGR 43.7%)</li>
+      <li>73% de los consumidores evita empresas sin empatía (Zurich Study, 2025)</li>
+      <li>60% de los clientes prefiere interacciones reales sobre IA pura</li>
+      <li>Los emails personalizados generan 6× más transacciones que los genéricos</li>
+      <li>Casi 2 de cada 3 equipos de ventas B2B vieron ROI de IA en menos de un año</li>
+    </ul>
+  </section>
+
+  <!-- ═══ ACCIONES POST-CLASE ═══ -->
+  <section class="card">
+    <div class="card-title"><span class="emoji">🔗</span> Acciones post-clase</div>
+
+    <div class="tab-section">
+      <div class="timeline-week">Esta semana — compromiso mínimo</div>
+      <ul class="checklist">
+        <li><div class="check-box"></div>Instalar la extensión de Lavender AI en Chrome y usarla en el próximo email de ventas.</li>
+        <li><div class="check-box"></div>Crear un prompt maestro en Claude para preparación de reuniones adaptado a tu industria.</li>
+        <li><div class="check-box"></div>Revisar el lead scoring actual en tu CRM e identificar qué señales no está capturando.</li>
+      </ul>
+    </div>
+
+    <div class="tab-section">
+      <div class="timeline-week">Este mes</div>
+      <ul class="checklist">
+        <li><div class="check-box"></div>Implementar una secuencia de follow-up automatizada con al menos 1 punto de contacto humano personalizado.</li>
+        <li><div class="check-box"></div>Analizar 3 llamadas de ventas recientes (Gong, Chorus, o Claude + transcripción) y documentar los patrones encontrados.</li>
+        <li><div class="check-box"></div>Completar el perfil Crystal Knows de tus 5 prospectos más calientes y ajustar tu comunicación.</li>
+      </ul>
+    </div>
+
+    <div class="tab-section">
+      <div class="timeline-week">Este trimestre</div>
+      <ul class="checklist">
+        <li><div class="check-box"></div>Diseñar el mapa completo de tu flujo de ventas híbrido: qué automatiza la IA, dónde interviene el humano.</li>
+        <li><div class="check-box"></div>Establecer una métrica de "calidad de personalización" en tu equipo (ej: tasa de respuesta a primeros emails).</li>
+        <li><div class="check-box"></div>Presentar los resultados al equipo: ¿qué cambió en tus métricas de ventas tras aplicar estas herramientas?</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Clase 09 · Programa IA Aplicada · Track Marketing · Tier 2</p>
+  <p style="margin-top:.5rem">Presentado por <strong>Alexa</strong> · Viernes 10 julio 2026</p>
+</footer>
+
+</body>
+</html>

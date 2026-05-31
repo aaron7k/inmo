@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 05 · Mantenerse actualizada con lo nuevo de IA para marketing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#10B981 0%,#059669 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero-sub{font-size:1rem;opacity:.85;margin-top:.5rem;font-weight:500}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.35rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;transition:box-shadow .15s}
+    .tool-card:hover{box-shadow:0 4px 12px rgba(16,185,129,.12);border-color:#a7f3d0}
+    .tool-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+    .tool-name{font-weight:700;font-size:.95rem;color:#1e293b}
+    .tool-category{font-size:.75rem;color:#64748b;margin-bottom:.5rem}
+    .tool-desc{font-size:.8rem;color:#475569;line-height:1.5}
+    .tool-link{display:inline-block;margin-top:.5rem;font-size:.75rem;color:#10B981;font-weight:600;text-decoration:none}
+    .tool-link:hover{text-decoration:underline}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600;white-space:nowrap}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .module{border-left:3px solid #10B981;padding-left:1.25rem;margin-bottom:2rem}
+    .module-title{font-weight:700;font-size:1rem;color:#059669;margin-bottom:.75rem}
+    .module-sub{font-weight:600;font-size:.9rem;margin-top:1rem;margin-bottom:.5rem;color:#1e293b}
+    .exercise-box{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-step{display:flex;gap:1rem;margin-bottom:1rem;align-items:flex-start}
+    .exercise-step-num{background:#10B981;color:white;border-radius:50%;width:1.75rem;height:1.75rem;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;margin-top:.1rem}
+    .exercise-step-content h4{font-weight:600;font-size:.9rem;margin-bottom:.25rem}
+    .exercise-step-content p{font-size:.85rem;color:#475569}
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem;font-size:.9rem}
+    .objectives-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem}
+    .obj-card{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.75rem;padding:1rem}
+    .obj-card .num{font-size:1.4rem;font-weight:800;color:#10B981;margin-bottom:.25rem}
+    .obj-card p{font-size:.85rem;color:#374151}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .concept-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem}
+    .concept-card h4{font-weight:700;font-size:.9rem;color:#059669;margin-bottom:.4rem}
+    .concept-card p{font-size:.82rem;color:#475569;line-height:1.5}
+    .newsletter-table{width:100%;border-collapse:collapse;font-size:.85rem}
+    .newsletter-table th{background:#f0fdf4;color:#059669;font-weight:700;padding:.6rem .8rem;text-align:left;border-bottom:2px solid #a7f3d0}
+    .newsletter-table td{padding:.6rem .8rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    .newsletter-table tr:last-child td{border-bottom:none}
+    .newsletter-table tr:hover td{background:#f8fafc}
+    .newsletter-table a{color:#10B981;text-decoration:none;font-weight:600}
+    .newsletter-table a:hover{text-decoration:underline}
+    .framework-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:1rem}
+    .framework-card{border-radius:.75rem;padding:1.25rem;border:1px solid}
+    .framework-card h4{font-weight:700;font-size:.9rem;margin-bottom:.5rem}
+    .framework-card p{font-size:.8rem}
+    .level-1{background:#ecfdf5;border-color:#6ee7b7;color:#065f46}
+    .level-2{background:#eff6ff;border-color:#93c5fd;color:#1e3a5f}
+    .level-3{background:#fdf4ff;border-color:#d8b4fe;color:#4a1772}
+    .level-4{background:#fff7ed;border-color:#fdba74;color:#7c2d12}
+    .action-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem}
+    .action-col h4{font-weight:700;color:#059669;margin-bottom:.75rem;font-size:.95rem}
+    .action-item{display:flex;gap:.5rem;align-items:flex-start;margin-bottom:.5rem}
+    .action-checkbox{width:1rem;height:1rem;border:2px solid #10B981;border-radius:.25rem;flex-shrink:0;margin-top:.15rem}
+    .action-item span{font-size:.85rem}
+    .resources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .resource-group h4{font-weight:700;color:#059669;margin-bottom:.75rem;font-size:.95rem;display:flex;align-items:center;gap:.4rem}
+    .resource-item{display:flex;flex-direction:column;margin-bottom:.6rem}
+    .resource-item a{color:#10B981;font-weight:600;text-decoration:none;font-size:.88rem}
+    .resource-item a:hover{text-decoration:underline}
+    .resource-item span{font-size:.78rem;color:#94a3b8}
+    .stat-row{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem}
+    .stat-pill{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:999px;padding:.4rem 1rem;font-size:.82rem;font-weight:600;color:#065f46}
+    .tag{display:inline-block;background:#f0fdf4;color:#059669;border:1px solid #a7f3d0;border-radius:999px;font-size:.7rem;font-weight:600;padding:.1rem .5rem;margin-right:.3rem}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    .divider{height:1px;background:#e2e8f0;margin:1.5rem 0}
+    @media(max-width:600px){.tool-grid{grid-template-columns:1fr}.objectives-grid{grid-template-columns:1fr 1fr}.newsletter-table{font-size:.78rem}.action-grid{grid-template-columns:1fr}.resources-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="tier-badge">Tier 2 · Marketing track</div>
+    <h1>Mantenerse actualizada con lo nuevo de IA para marketing</h1>
+    <p class="hero-sub">Construye tu sistema personal para no perderte en el ruido — y aplicar solo lo que importa.</p>
+    <div class="hero-meta">
+      <span>👤 Manu</span>
+      <span>📅 Viernes 19 junio 2026</span>
+      <span>👥 Equipo de marketing</span>
+      <span>⏱ 90 minutos</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Objetivos de la clase</div>
+    <div class="objectives-grid">
+      <div class="obj-card">
+        <div class="num">01</div>
+        <p>Construir un <strong>sistema de actualizacion continua</strong> sobre IA sin perderte en el ruido</p>
+      </div>
+      <div class="obj-card">
+        <div class="num">02</div>
+        <p>Seguir las <strong>fuentes clave</strong> que filtran lo relevante para marketers</p>
+      </div>
+      <div class="obj-card">
+        <div class="num">03</div>
+        <p>Aplicar herramientas nuevas de IA de forma <strong>estrategica, no reactiva</strong></p>
+      </div>
+      <div class="obj-card">
+        <div class="num">04</div>
+        <p>Evaluar herramientas con <strong>criterios claros de ROI</strong> y caso de uso</p>
+      </div>
+      <div class="obj-card">
+        <div class="num">05</div>
+        <p>Crear tu <strong>tablero personal</strong> de seguimiento de tendencias de IA</p>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-pill">87% de marketers usa IA generativa en 2026</div>
+      <div class="stat-pill">+22% ROI con campanas potenciadas por IA</div>
+      <div class="stat-pill">2.5 horas ahorradas por empleado al dia</div>
+      <div class="stat-pill">-29% costo de adquisicion con IA</div>
+    </div>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>Curation de contenido</h4>
+        <p>Proceso de seleccionar, filtrar y organizar fuentes de informacion relevantes para tu rol. Un buen sistema ahorra 3-5 horas semanales y reduce el FOMO.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Newsletters especializadas</h4>
+        <p>La forma mas eficiente de absorber novedades de IA para marketing. Las mejores tienen tasas de apertura del 40-50%, muy por encima del promedio sectorial (31%).</p>
+      </div>
+      <div class="concept-card">
+        <h4>Benchmarks de herramientas</h4>
+        <p>Evaluaciones sistematicas que comparan rendimiento, calidad de output, precio y facilidad de uso entre competidores. Fuentes clave: G2, Zapier, The CMO.</p>
+      </div>
+      <div class="concept-card">
+        <h4>IA para copy e imagen</h4>
+        <p>Jasper, Copy.ai y ChatGPT generan copy a escala. Midjourney, Canva AI y Adobe Firefly crean imagenes de campana. La clave: ingenieria de prompts + voz de marca.</p>
+      </div>
+      <div class="concept-card">
+        <h4>IA para video</h4>
+        <p>HeyGen crea videos con avatares IA sin camara. Sora genera video desde texto. Descript edita por transcripto. Revolucionan la produccion de contenido en video.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Agentic AI en marketing</h4>
+        <p>Agentes autonomos que ejecutan flujos completos: investigacion, creacion, publicacion y analisis. La transicion de 2025-2026: de herramientas puntuales a agentes.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STACK TECNOLOGICO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span> Stack tecnologico recomendado</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Jasper AI</div>
+          <span class="badge badge-paid">Desde $49/mes</span>
+        </div>
+        <div class="tool-category"><span class="tag">Copy</span><span class="tag">Contenido</span></div>
+        <div class="tool-desc">Plataforma de escritura con IA entrenada en marketing. Genera blogs, emails, ads y captions con voz de marca consistente.</div>
+        <a href="https://www.jasper.ai" target="_blank" class="tool-link">jasper.ai →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Copy.ai</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-category"><span class="tag">Copy</span><span class="tag">Automatizacion</span></div>
+        <div class="tool-desc">Especializada en copy para ads y landing pages. Muy fuerte en flujos de marketing automatizados sin codigo.</div>
+        <a href="https://www.copy.ai" target="_blank" class="tool-link">copy.ai →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">HubSpot Breeze</div>
+          <span class="badge badge-paid">Pro+ incluido</span>
+        </div>
+        <div class="tool-category"><span class="tag">CRM</span><span class="tag">Automatizacion</span></div>
+        <div class="tool-desc">IA nativa en el CRM: lead scoring predictivo, generacion de emails, resumen de conversaciones y agentes autonomos.</div>
+        <a href="https://www.hubspot.com/products/artificial-intelligence" target="_blank" class="tool-link">hubspot.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Canva Magic Studio</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-category"><span class="tag">Diseno</span><span class="tag">Imagen</span></div>
+        <div class="tool-desc">Generacion de imagenes, eliminacion de fondos, redimensionado inteligente y copy dentro de Canva. Ideal para equipos sin disenadores.</div>
+        <a href="https://www.canva.com" target="_blank" class="tool-link">canva.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Midjourney</div>
+          <span class="badge badge-paid">Desde $10/mes</span>
+        </div>
+        <div class="tool-category"><span class="tag">Imagen</span><span class="tag">Creatividad</span></div>
+        <div class="tool-desc">Lider en calidad de imagenes fotorrealistas e ilustraciones para campanas publicitarias. Requiere prompting pero produce resultados excepcionales.</div>
+        <a href="https://www.midjourney.com" target="_blank" class="tool-link">midjourney.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">HeyGen</div>
+          <span class="badge badge-paid">Desde $29/mes</span>
+        </div>
+        <div class="tool-category"><span class="tag">Video</span><span class="tag">Avatar IA</span></div>
+        <div class="tool-desc">Crea videos con portavoces de IA sin camara ni estudio. Ideal para videos de producto, onboarding y contenido educativo. #1 producto G2 2025.</div>
+        <a href="https://www.heygen.com" target="_blank" class="tool-link">heygen.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Perplexity AI</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-category"><span class="tag">Investigacion</span><span class="tag">Curation</span></div>
+        <div class="tool-desc">Motor de busqueda con IA que cita fuentes verificadas. Ideal para investigacion rapida de tendencias, competencia y nuevas herramientas.</div>
+        <a href="https://www.perplexity.ai" target="_blank" class="tool-link">perplexity.ai →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Feedly</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-category"><span class="tag">Curation</span><span class="tag">RSS</span></div>
+        <div class="tool-desc">Agrega feeds RSS de medios especializados. Su IA (Leo AI) filtra solo las noticias relevantes para tu industria, eliminando el ruido.</div>
+        <a href="https://feedly.com" target="_blank" class="tool-link">feedly.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Surfer SEO</div>
+          <span class="badge badge-paid">Desde $99/mes</span>
+        </div>
+        <div class="tool-category"><span class="tag">SEO</span><span class="tag">Contenido</span></div>
+        <div class="tool-desc">Optimizacion de contenido en tiempo real con IA. Analiza SERPs, genera briefs basados en datos y mejora el posicionamiento organico.</div>
+        <a href="https://surferseo.com" target="_blank" class="tool-link">surferseo.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Zapier</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-category"><span class="tag">Automatizacion</span><span class="tag">Integraciones</span></div>
+        <div class="tool-desc">Conecta mas de 6,000 apps y crea flujos de marketing automatizados con IA sin codigo. El pegamento del stack de marketing moderno.</div>
+        <a href="https://zapier.com" target="_blank" class="tool-link">zapier.com →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Sora (OpenAI)</div>
+          <span class="badge badge-paid">ChatGPT Plus</span>
+        </div>
+        <div class="tool-category"><span class="tag">Video</span><span class="tag">Generacion</span></div>
+        <div class="tool-desc">Genera videos de hasta 60 segundos a partir de texto. Revoluciona la produccion de contenido para redes sociales y campanas digitales.</div>
+        <a href="https://openai.com/sora" target="_blank" class="tool-link">openai.com/sora →</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-name">Descript</div>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <div class="tool-category"><span class="tag">Video</span><span class="tag">Audio</span></div>
+        <div class="tool-desc">Edicion de video y podcast editando el transcripto como si fuera un documento de texto. Elimina muletillas automaticamente con IA.</div>
+        <a href="https://www.descript.com" target="_blank" class="tool-link">descript.com →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODULOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Contenido por modulos</div>
+
+    <!-- Modulo 1 -->
+    <div class="module">
+      <div class="module-title">Modulo 1 · El problema de la sobrecarga informativa en IA (20 min)</div>
+      <p style="font-size:.9rem;color:#475569;margin-bottom:.75rem">El dilema del marketer en 2026: cada semana se lanzan decenas de herramientas nuevas. Sin sistema, el resultado es FOMO constante, adopcion caotica y tiempo malgastado.</p>
+      <div class="module-sub">El framework de los 3 niveles de actualizacion</div>
+      <div class="framework-grid">
+        <div class="framework-card level-1">
+          <h4>Nivel macro</h4>
+          <p>Tendencias tecnologicas grandes. Frecuencia: cada 1-2 semanas via newsletters semanales.</p>
+        </div>
+        <div class="framework-card level-2">
+          <h4>Nivel meso</h4>
+          <p>Herramientas y features nuevas en tu categoria. Frecuencia: diaria/semanal via feeds curados.</p>
+        </div>
+        <div class="framework-card level-3">
+          <h4>Nivel micro</h4>
+          <p>Tutoriales y tacticas aplicables. Cuando necesitas resolver algo concreto.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modulo 2 -->
+    <div class="module">
+      <div class="module-title">Modulo 2 · Fuentes clave para mantenerse actualizada (25 min)</div>
+      <div class="module-sub">Newsletters imprescindibles para marketers</div>
+      <table class="newsletter-table">
+        <thead>
+          <tr><th>Newsletter</th><th>Frecuencia</th><th>Suscriptores</th><th>Enfoque</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="https://www.therundown.ai" target="_blank">The Rundown AI</a></td>
+            <td>Diario</td>
+            <td>2M+</td>
+            <td>Noticias de IA aplicadas a negocios, tasa apertura 50%</td>
+          </tr>
+          <tr>
+            <td><a href="https://tldr.tech/ai" target="_blank">TLDR AI</a></td>
+            <td>Diario</td>
+            <td>1.25M+</td>
+            <td>Resumenes tecnicos con aplicacion practica a marketing</td>
+          </tr>
+          <tr>
+            <td><a href="https://www.superhuman.ai" target="_blank">Superhuman AI</a></td>
+            <td>Diario</td>
+            <td>1.25M+</td>
+            <td>Tacticas de IA para ventas y marketing con ejemplos</td>
+          </tr>
+          <tr>
+            <td><a href="https://bensbites.beehiiv.com" target="_blank">Ben's Bites</a></td>
+            <td>Diario</td>
+            <td>100K+</td>
+            <td>Curation con comentario editorial de calidad</td>
+          </tr>
+          <tr>
+            <td><a href="https://www.theneurondaily.com" target="_blank">The Neuron</a></td>
+            <td>3x/semana</td>
+            <td>400K+</td>
+            <td>IA explicada de forma simple y accionable</td>
+          </tr>
+          <tr>
+            <td><a href="https://www.marketingaiinstitute.com" target="_blank">Marketing AI Institute</a></td>
+            <td>Semanal</td>
+            <td>50K+</td>
+            <td>IA especificamente para marketing: estrategia y casos</td>
+          </tr>
+          <tr>
+            <td><a href="https://theresanaiforthat.com" target="_blank">There's An AI for That</a></td>
+            <td>Diario</td>
+            <td>2.5M+</td>
+            <td>Directorio y novedades de herramientas de IA</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Modulo 3 -->
+    <div class="module">
+      <div class="module-title">Modulo 3 · Herramientas de IA para marketing: como evaluarlas y adoptarlas (25 min)</div>
+      <div class="module-sub">Las 5 preguntas antes de probar cualquier herramienta nueva</div>
+      <ul>
+        <li><strong>Problema especifico:</strong> ?Que problema concreto de mi flujo de trabajo resuelve?</li>
+        <li><strong>Alternativas actuales:</strong> ?Ya tengo una herramienta que lo hace? ?Esta nueva es 10x mejor?</li>
+        <li><strong>Curva de aprendizaje:</strong> ?Cuanto tiempo necesito para ver valor real?</li>
+        <li><strong>Precio vs. ROI:</strong> ?El costo se justifica con el tiempo ahorrado o el incremento de output?</li>
+        <li><strong>Integraciones:</strong> ?Se conecta con las herramientas que ya uso (CRM, CMS, redes)?</li>
+      </ul>
+      <div class="module-sub">Las 4 categorias de herramientas de IA para marketing</div>
+      <div class="framework-grid">
+        <div class="framework-card level-1">
+          <h4>A. Copy y contenido</h4>
+          <p>Jasper (voz de marca a escala), Copy.ai (ads y landing pages), ChatGPT/Claude (investigacion y brainstorming).</p>
+        </div>
+        <div class="framework-card level-2">
+          <h4>B. Imagen y diseno</h4>
+          <p>Canva AI (rapido, sin disenador), Midjourney (alta calidad de campana), Adobe Firefly (integrado en Creative Cloud).</p>
+        </div>
+        <div class="framework-card level-3">
+          <h4>C. Video y audio</h4>
+          <p>HeyGen (avatares), Sora (video desde texto), Descript (edicion por transcripto para podcasts y reels).</p>
+        </div>
+        <div class="framework-card level-4">
+          <h4>D. Automatizacion y analisis</h4>
+          <p>HubSpot Breeze (CRM nativo), Zapier + IA (flujos sin codigo), Perplexity (research rapido de mercado).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modulo 4 -->
+    <div class="module" style="margin-bottom:0">
+      <div class="module-title">Modulo 4 · Construyendo tu sistema personal de actualizacion (20 min)</div>
+      <div class="module-sub">El sistema en 4 bloques</div>
+      <ul>
+        <li><strong>Bloque 1 - Input controlado:</strong> 2-3 newsletters, 1-2 podcasts, Feedly para feeds RSS. Nada mas.</li>
+        <li><strong>Bloque 2 - Procesamiento semanal:</strong> 30 min el lunes. Pregunta filtro: "?Esto cambia algo en mi trabajo actual?"</li>
+        <li><strong>Bloque 3 - Experimentacion controlada:</strong> 1 herramienta nueva por mes maximo. Protocolo: 2h libres + 1 caso real.</li>
+        <li><strong>Bloque 4 - Sharing con el equipo:</strong> Canal Slack/Notion con 5 puntos maximos por semana. Rotacion de quien comparte.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EJERCICIO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💪</span> Ejercicio practico</div>
+    <div class="exercise-box">
+      <h3 style="font-weight:700;font-size:1.05rem;margin-bottom:.3rem;color:#065f46">Crea tu tablero personal de seguimiento de IA para marketing</h3>
+      <p style="font-size:.85rem;color:#047857;margin-bottom:1.25rem">Tiempo estimado: 30-45 minutos · Saldras con un sistema funcional y personalizado</p>
+
+      <div class="exercise-step">
+        <div class="exercise-step-num">1</div>
+        <div class="exercise-step-content">
+          <h4>Auditoria de fuentes actuales (5 min)</h4>
+          <p>Lista todas las newsletters, podcasts y cuentas que sigues ahora relacionadas con IA. Evalua: ?Cuales te dieron informacion util en los ultimos 30 dias?</p>
+        </div>
+      </div>
+
+      <div class="exercise-step">
+        <div class="exercise-step-num">2</div>
+        <div class="exercise-step-content">
+          <h4>Seleccion de tu stack de fuentes (10 min)</h4>
+          <p>Elige 1 newsletter diaria + 1 semanal de marketing + 1 podcast + 2-3 cuentas de referencia. Suscribete ahora mismo a las que no sigues.</p>
+        </div>
+      </div>
+
+      <div class="exercise-step">
+        <div class="exercise-step-num">3</div>
+        <div class="exercise-step-content">
+          <h4>Crear tablero en Notion (15 min)</h4>
+          <p>Secciones: <strong>Herramientas que uso</strong> (nombre, categoria, precio, satisfaccion 1-5) + <strong>Por probar</strong> (nombre, por que, fecha target) + <strong>Descartadas</strong> (por que no me sirve) + <strong>Novedades de la semana.</strong></p>
+        </div>
+      </div>
+
+      <div class="exercise-step">
+        <div class="exercise-step-num">4</div>
+        <div class="exercise-step-content">
+          <h4>Definir tu rutina de actualizacion (5 min)</h4>
+          <p>Bloquea en tu calendario: 15 min el lunes (review newsletters), 1 hora al mes (prueba de herramienta nueva), 30 min trimestrales (actualizacion del tablero).</p>
+        </div>
+      </div>
+
+      <div class="exercise-step" style="margin-bottom:0">
+        <div class="exercise-step-num">5</div>
+        <div class="exercise-step-content">
+          <h4>Compartir con el equipo</h4>
+          <p>Comparte el link de tu tablero de Notion con el grupo. En 4 semanas, revisamos juntos que encontraron y que adoptaron del equipo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Recursos adicionales</div>
+    <div class="resources-grid">
+
+      <div class="resource-group">
+        <h4>✉️ Newsletters</h4>
+        <div class="resource-item">
+          <a href="https://www.therundown.ai" target="_blank">The Rundown AI</a>
+          <span>Diaria · 2M+ suscriptores · Noticias de IA para negocios</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://tldr.tech/ai" target="_blank">TLDR AI</a>
+          <span>Diaria · 1.25M+ · Resumenes tecnicos con aplicacion practica</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://www.superhuman.ai" target="_blank">Superhuman AI</a>
+          <span>Diaria · 1.25M+ · Tacticas de IA para ventas y marketing</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://bensbites.beehiiv.com" target="_blank">Ben's Bites</a>
+          <span>Diaria · 100K+ · Curation con comentario editorial</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://www.theneurondaily.com" target="_blank">The Neuron</a>
+          <span>3x semana · 400K+ · IA simple y accionable</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://www.marketingaiinstitute.com" target="_blank">Marketing AI Institute</a>
+          <span>Semanal · IA especificamente para marketing</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://theresanaiforthat.com" target="_blank">There's An AI for That</a>
+          <span>Diaria · 2.5M+ · Directorio de herramientas de IA</span>
+        </div>
+      </div>
+
+      <div class="resource-group">
+        <h4>🎙️ Podcasts</h4>
+        <div class="resource-item">
+          <a href="https://www.marketingaiinstitute.com/podcasts" target="_blank">The Artificial Intelligence Show</a>
+          <span>Semanal · Marketing AI Institute · Noticias de IA con lente de marketing</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://lastweekin.ai/podcast" target="_blank">Last Week in AI</a>
+          <span>Semanal · El resumen mas completo de noticias de IA</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://www.latent.space/podcast" target="_blank">Latent Space</a>
+          <span>Tecnico · Senales tempranas sobre capacidades emergentes</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://www.nopriorsshow.com" target="_blank">No Priors</a>
+          <span>Perspectiva de inversores sobre que tendencias de IA tienen traccion real</span>
+        </div>
+
+        <h4 style="margin-top:1rem">🐦 Cuentas X / LinkedIn</h4>
+        <div class="resource-item">
+          <a href="https://x.com/paulroetzer" target="_blank">@paulroetzer</a>
+          <span>CEO Marketing AI Institute · IA practica para marketing</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://x.com/emollick" target="_blank">@emollick</a>
+          <span>Investigador Wharton · IA aplicada al trabajo</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://x.com/sama" target="_blank">@sama (Sam Altman)</a>
+          <span>OpenAI · Actualizaciones directas de la empresa</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://x.com/aibreakfast" target="_blank">@aibreakfast</a>
+          <span>Curation diaria de herramientas de IA con enfoque practico</span>
+        </div>
+      </div>
+
+      <div class="resource-group">
+        <h4>🔍 Directorios y benchmarks</h4>
+        <div class="resource-item">
+          <a href="https://theresanaiforthat.com" target="_blank">There's An AI for That</a>
+          <span>El directorio mas completo de herramientas de IA</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://www.producthunt.com" target="_blank">Product Hunt</a>
+          <span>Para descubrir herramientas nuevas antes que nadie</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://www.futurepedia.io" target="_blank">Futurepedia</a>
+          <span>Directorio y comparativas de herramientas de IA</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://www.g2.com/categories/artificial-intelligence" target="_blank">G2 AI Category</a>
+          <span>Reviews reales y verificadas de usuarios de herramientas de IA</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://zapier.com/blog" target="_blank">Zapier Blog</a>
+          <span>Comparativas detalladas y neutrales de herramientas</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://thecmo.com/tools" target="_blank">The CMO</a>
+          <span>Reviews en profundidad para profesionales de marketing</span>
+        </div>
+
+        <h4 style="margin-top:1rem">🤝 Comunidades</h4>
+        <div class="resource-item">
+          <a href="https://www.reddit.com/r/marketing/" target="_blank">r/marketing + r/artificial</a>
+          <span>Combinacion potente para casos de uso reales</span>
+        </div>
+        <div class="resource-item">
+          <a href="https://www.marketingaiinstitute.com/community" target="_blank">Slack Marketing AI Institute</a>
+          <span>Comunidad activa de profesionales de marketing e IA</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Acciones post-clase</div>
+    <div class="action-grid">
+      <div class="action-col">
+        <h4>Esta semana</h4>
+        <div class="action-item"><div class="action-checkbox"></div><span>Suscribirte a The Rundown AI y una newsletter semanal de marketing</span></div>
+        <div class="action-item"><div class="action-checkbox"></div><span>Crear tu tablero en Notion con herramientas actuales y por probar</span></div>
+        <div class="action-item"><div class="action-checkbox"></div><span>Seguir 3 cuentas nuevas de X/LinkedIn que cubran IA para marketing</span></div>
+        <div class="action-item"><div class="action-checkbox"></div><span>Bloquear 15 minutos cada lunes en tu calendario para review de newsletters</span></div>
+      </div>
+      <div class="action-col">
+        <h4>Este mes</h4>
+        <div class="action-item"><div class="action-checkbox"></div><span>Probar una herramienta de IA nueva usando el protocolo del Modulo 3</span></div>
+        <div class="action-item"><div class="action-checkbox"></div><span>Compartir 1 hallazgo util de IA con el equipo de marketing</span></div>
+        <div class="action-item"><div class="action-checkbox"></div><span>Evaluar si tu stack actual tiene gaps que cubrir con IA</span></div>
+      </div>
+      <div class="action-col">
+        <h4>Este trimestre</h4>
+        <div class="action-item"><div class="action-checkbox"></div><span>Hacer una auditoria completa de tu stack de herramientas de IA</span></div>
+        <div class="action-item"><div class="action-checkbox"></div><span>Proponer 1 mejora de proceso en el equipo usando IA</span></div>
+        <div class="action-item"><div class="action-checkbox"></div><span>Participar activamente en una comunidad online de marketing e IA</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Clase 05 &nbsp;·&nbsp; Tier 2 · Marketing track &nbsp;·&nbsp; Manu &nbsp;·&nbsp; Viernes 19 junio 2026
+</footer>
+
+</body>
+</html>

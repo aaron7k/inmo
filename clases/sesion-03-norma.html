@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IA para ayuda contable | Norma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+    .hero{background:linear-gradient(135deg,#6366F1 0%,#4F46E5 100%);padding:3rem 2rem;color:white}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2}
+    .hero p{opacity:.85;margin-top:.75rem;font-size:1rem;max-width:600px}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:1rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem}
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#1e293b}
+    .card-title .icon{font-size:1.4rem}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1.25rem;transition:box-shadow .2s}
+    .tool-card:hover{box-shadow:0 4px 16px rgba(99,102,241,.12)}
+    .tool-name{font-weight:700;font-size:.95rem;margin-bottom:.3rem;color:#1e293b}
+    .tool-desc{font-size:.82rem;color:#64748b;margin-bottom:.6rem;line-height:1.5}
+    .tool-price{font-size:.78rem;color:#94a3b8;margin-bottom:.5rem}
+    .tool-link{font-size:.78rem;color:#6366F1;text-decoration:none;font-weight:600}
+    .tool-link:hover{text-decoration:underline}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600;display:inline-block}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+    .module{border-left:3px solid #6366F1;padding-left:1rem;margin-bottom:1.5rem}
+    .module-title{font-weight:700;color:#4F46E5;margin-bottom:.4rem;font-size:1rem}
+    .module-time{font-size:.78rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem}
+    .exercise-box{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.25);border-radius:.75rem;padding:1.5rem}
+    .exercise-box h3{color:#4F46E5;font-size:1rem;font-weight:700;margin-bottom:1rem}
+    .step{display:flex;gap:.75rem;margin-bottom:.75rem;align-items:flex-start}
+    .step-num{background:#6366F1;color:white;border-radius:50%;width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+    .prompt-box{background:#1e293b;color:#e2e8f0;border-radius:.6rem;padding:1rem;font-family:'Courier New',monospace;font-size:.78rem;line-height:1.6;margin:1rem 0;overflow-x:auto}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:1rem}
+    .stat-card{background:linear-gradient(135deg,#6366F1 0%,#4F46E5 100%);color:white;border-radius:.75rem;padding:1.25rem;text-align:center}
+    .stat-number{font-size:2rem;font-weight:800;line-height:1}
+    .stat-label{font-size:.75rem;opacity:.85;margin-top:.4rem;line-height:1.4}
+    .objectives-list{list-style:none;padding:0}
+    .objectives-list li{display:flex;gap:.75rem;margin-bottom:.75rem;align-items:flex-start;padding:.75rem;background:#f8fafc;border-radius:.6rem}
+    .objectives-list li .obj-icon{font-size:1.2rem;flex-shrink:0}
+    .objectives-list li .obj-text{font-size:.9rem}
+    .objectives-list li .obj-text strong{color:#4F46E5}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .concept-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1.25rem}
+    .concept-title{font-weight:700;font-size:.9rem;color:#4F46E5;margin-bottom:.4rem}
+    .concept-text{font-size:.82rem;color:#475569;line-height:1.5}
+    .checklist{list-style:none;padding:0}
+    .checklist li{display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.5rem;font-size:.9rem}
+    .checklist li::before{content:"☐";color:#6366F1;font-size:1rem;flex-shrink:0;margin-top:.05rem}
+    .resources-list{list-style:none;padding:0}
+    .resources-list li{margin-bottom:.5rem}
+    .resources-list li a{color:#6366F1;text-decoration:none;font-size:.9rem;font-weight:500}
+    .resources-list li a:hover{text-decoration:underline}
+    .resources-list li span{color:#94a3b8;font-size:.82rem;margin-left:.5rem}
+    ul{padding-left:1.5rem}
+    li{margin-bottom:.4rem}
+    footer{text-align:center;padding:2rem;color:#94a3b8;font-size:.85rem}
+    .section-divider{height:3px;background:linear-gradient(90deg,#6366F1,#4F46E5,transparent);border:none;margin:0 0 1.5rem 0;border-radius:999px}
+    @media(max-width:600px){.hero{padding:2rem 1rem}.stats-grid{grid-template-columns:repeat(2,1fr)}.tool-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div style="max-width:900px;margin:0 auto">
+      <div class="tier-badge">Asesoría 1-on-1</div>
+      <h1>🧮 IA para ayuda contable</h1>
+      <p>Automatiza tareas repetitivas, analiza estados financieros y concilia cuentas en minutos con inteligencia artificial.</p>
+      <div class="hero-meta">
+        <span>👤 Norma</span>
+        <span>⏱ 90 minutos</span>
+        <span>🎯 Sesión individual práctica</span>
+        <span>📅 2025</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- ESTADÍSTICAS CLAVE -->
+    <div class="card">
+      <div class="card-title"><span class="icon">📊</span> IA en contabilidad: cifras clave 2025</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">98%</div>
+          <div class="stat-label">de contadores ya usan herramientas con IA (Intuit)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">75%</div>
+          <div class="stat-label">menos tiempo en conciliación bancaria automatizada</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">96%</div>
+          <div class="stat-label">reducción: de 4 horas a 10 min por cliente/mes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">70%</div>
+          <div class="stat-label">menos errores de captura con IA vs manual</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">59%</div>
+          <div class="stat-label">de los CFOs ya usan IA en su función financiera (Gartner)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">$94k</div>
+          <div class="stat-label">ahorro anual promedio en costos laborales por automatización</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OBJETIVOS -->
+    <div class="card">
+      <div class="card-title"><span class="icon">🎯</span> Objetivos de la sesión</div>
+      <ul class="objectives-list">
+        <li>
+          <span class="obj-icon">⚙️</span>
+          <span class="obj-text"><strong>Automatizar tareas repetitivas</strong> — categorización de transacciones, captura de facturas y generación de asientos contables con IA, liberando horas de trabajo manual.</span>
+        </li>
+        <li>
+          <span class="obj-icon">📈</span>
+          <span class="obj-text"><strong>Analizar estados financieros con Claude</strong> — identificar varianzas significativas (&gt;10%), detectar anomalías y generar narrativas ejecutivas listas para presentar a la dirección.</span>
+        </li>
+        <li>
+          <span class="obj-icon">🏦</span>
+          <span class="obj-text"><strong>Ejecutar conciliaciones bancarias asistidas por IA</strong> — reducir el tiempo de conciliación de ~90 minutos a 15 minutos, con tasas de error menores al 0.3%.</span>
+        </li>
+        <li>
+          <span class="obj-icon">🧾</span>
+          <span class="obj-text"><strong>Aplicar IA al análisis de IVA e impuestos</strong> — usar prompts estructurados para revisar declaraciones, detectar discrepancias y preparar reportes fiscales.</span>
+        </li>
+        <li>
+          <span class="obj-icon">🔗</span>
+          <span class="obj-text"><strong>Integrar herramientas de IA</strong> en el flujo de trabajo contable diario: QuickBooks, Xero, Excel con Copilot y Dext Prepare.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- CONCEPTOS CLAVE -->
+    <div class="card">
+      <div class="card-title"><span class="icon">🔑</span> Conceptos clave</div>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="concept-title">⚙️ Automatización contable con IA</div>
+          <div class="concept-text">La IA aplica aprendizaje automático para ejecutar tareas repetitivas: categorización, asientos de ajuste, detección de anomalías y reportes. Los mejores sistemas combinan automatización con revisión humana.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">📊 Análisis de varianzas</div>
+          <div class="concept-text">Comparar resultados reales vs. presupuesto o período anterior. Claude identifica varianzas &gt;10%, realiza análisis de causa raíz y genera recomendaciones priorizadas para la dirección en segundos.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">🏦 Conciliación bancaria con IA</div>
+          <div class="concept-text">Automatización del cruce entre registros contables y estados de cuenta. Reduce el tiempo de 47 minutos (manual) a 10-20 minutos, y la tasa de errores del 4.2% al 0.3%.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">🧾 IVA e impuestos con IA</div>
+          <div class="concept-text">Uso de Claude para revisar declaraciones de IVA, detectar ingresos o deducciones mal clasificados, calcular diferencias y preparar resúmenes ejecutivos para el auditor o la dirección.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">📄 Captura inteligente de documentos</div>
+          <div class="concept-text">OCR + IA extrae automáticamente datos de facturas, recibos y estados de cuenta con hasta 99.9% de precisión, sincronizando directamente al software contable.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">💬 Prompts contables efectivos</div>
+          <div class="concept-text">Instrucciones precisas para que la IA ejecute tareas contables específicas. La calidad del prompt determina la calidad del análisis: contexto + tarea + formato de salida.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STACK TECNOLÓGICO -->
+    <div class="card">
+      <div class="card-title"><span class="icon">🛠️</span> Stack tecnológico recomendado</div>
+      <div class="tool-grid">
+
+        <div class="tool-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem">
+            <div class="tool-name">🤖 Claude (Anthropic)</div>
+            <span class="badge badge-freemium">Freemium</span>
+          </div>
+          <div class="tool-desc">Análisis financiero, varianzas, narrativas ejecutivas, revisión de IVA, redacción de reportes. PwC certifica 30,000 profesionales en Claude para flujos CFO.</div>
+          <div class="tool-price">Gratis / $20 USD/mes (Pro)</div>
+          <a href="https://claude.ai" target="_blank" class="tool-link">→ claude.ai</a>
+        </div>
+
+        <div class="tool-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem">
+            <div class="tool-name">📒 QuickBooks + Intuit Assist</div>
+            <span class="badge badge-paid">Pago</span>
+          </div>
+          <div class="tool-desc">Contabilidad completa con IA integrada: auto-categorización, consultas en lenguaje natural, reportes automáticos. Sin software adicional requerido.</div>
+          <div class="tool-price">Desde $30 USD/mes</div>
+          <a href="https://quickbooks.intuit.com" target="_blank" class="tool-link">→ quickbooks.intuit.com</a>
+        </div>
+
+        <div class="tool-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem">
+            <div class="tool-name">📗 Xero + JAX AI</div>
+            <span class="badge badge-paid">Pago</span>
+          </div>
+          <div class="tool-desc">Asistente JAX (generativo): crea facturas, concilia transacciones, analiza flujo de caja por WhatsApp o email. 61% de adopción en 2025. Automatiza ciclo completo de transacciones.</div>
+          <div class="tool-price">Desde $15 USD/mes</div>
+          <a href="https://www.xero.com" target="_blank" class="tool-link">→ xero.com</a>
+        </div>
+
+        <div class="tool-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem">
+            <div class="tool-name">📊 Excel + Microsoft Copilot</div>
+            <span class="badge badge-paid">Pago</span>
+          </div>
+          <div class="tool-desc">Análisis contable en lenguaje natural: genera fórmulas, limpia datos, identifica varianzas, construye modelos predictivos. Finance en Microsoft 365 Copilot ya disponible con conexión ERP.</div>
+          <div class="tool-price">Incluido en Microsoft 365 Business</div>
+          <a href="https://www.microsoft.com/en-us/microsoft-365" target="_blank" class="tool-link">→ microsoft.com/copilot</a>
+        </div>
+
+        <div class="tool-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem">
+            <div class="tool-name">🧾 Dext Prepare</div>
+            <span class="badge badge-paid">Pago</span>
+          </div>
+          <div class="tool-desc">Captura de facturas y recibos con 99.9% de precisión OCR+IA. AI Agent Beta aprende tu flujo de trabajo para automatizar tareas repetitivas. +110 nuevas funciones en 2025. Sincroniza con QBO y Xero.</div>
+          <div class="tool-price">Desde $25 USD/mes (PYME) · $199 USD/mes (despachos)</div>
+          <a href="https://dext.com" target="_blank" class="tool-link">→ dext.com</a>
+        </div>
+
+        <div class="tool-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem">
+            <div class="tool-name">🗂️ TaxDome AI</div>
+            <span class="badge badge-paid">Pago</span>
+          </div>
+          <div class="tool-desc">Gestión de despachos contables: reconocimiento automático de documentos fiscales (1099s, cartas de compromiso), dashboards interactivos de cuentas por cobrar, utilización y productividad.</div>
+          <div class="tool-price">Desde $50 USD/mes</div>
+          <a href="https://taxdome.com" target="_blank" class="tool-link">→ taxdome.com</a>
+        </div>
+
+        <div class="tool-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem">
+            <div class="tool-name">🤖 Vic.ai</div>
+            <span class="badge badge-paid">Pago</span>
+          </div>
+          <div class="tool-desc">Automatización de cuentas por pagar: captura de facturas, rutas de aprobación inteligentes, analítica de costos. Aprende los patrones de aprobación únicos de cada empresa con el tiempo.</div>
+          <div class="tool-price">Precio bajo consulta</div>
+          <a href="https://www.vic.ai" target="_blank" class="tool-link">→ vic.ai</a>
+        </div>
+
+        <div class="tool-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem">
+            <div class="tool-name">💡 Zeni</div>
+            <span class="badge badge-paid">Pago</span>
+          </div>
+          <div class="tool-desc">Contabilidad gestionada con IA: conciliaciones, asientos de diario y reportes revisados por equipo contable humano. Modelo híbrido IA + experto para máxima precisión.</div>
+          <div class="tool-price">Desde $549 USD/mes</div>
+          <a href="https://www.zeni.ai" target="_blank" class="tool-link">→ zeni.ai</a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PLAN DE SESIÓN -->
+    <div class="card">
+      <div class="card-title"><span class="icon">📋</span> Plan de la sesión — 4 bloques</div>
+
+      <div class="module">
+        <div class="module-time">Bloque 1 · 0–20 min</div>
+        <div class="module-title">Panorama de IA en contabilidad</div>
+        <ul>
+          <li>¿Qué tareas contables se pueden automatizar hoy? Mapa de posibilidades.</li>
+          <li>Demostración en vivo: Claude analiza un estado de resultados ficticio.</li>
+          <li>Revisión del stack tecnológico y cuál aplica al contexto de Norma.</li>
+          <li>Estadística clave: 98% de los contadores ya usan alguna herramienta de IA (Intuit, 2025).</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="module-time">Bloque 2 · 20–45 min</div>
+        <div class="module-title">Claude para análisis financiero</div>
+        <ul>
+          <li>Cómo estructurar prompts contables efectivos: contexto + tarea + formato de salida.</li>
+          <li>Ejercicio guiado: pegar un estado de resultados y solicitar análisis de varianzas.</li>
+          <li>Detección de anomalías: gastos inusuales, partidas fuera de rango histórico.</li>
+          <li>Generación de narrativa ejecutiva lista para presentar a la dirección.</li>
+          <li>Caso real: una firma usó Claude para conciliar 2,000 transacciones en 9 meses — ahorro de 6 horas de trabajo.</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="module-time">Bloque 3 · 45–65 min</div>
+        <div class="module-title">Automatización práctica con herramientas</div>
+        <ul>
+          <li>Dext Prepare: captura de facturas y recibos en 3 pasos con 99.9% de precisión.</li>
+          <li>QuickBooks / Xero: revisión de las funciones de IA integradas y casos de uso.</li>
+          <li>Excel + Copilot: análisis de varianzas con lenguaje natural, sin fórmulas complejas.</li>
+          <li>Conciliación bancaria automatizada: de 90 minutos a 15 minutos por período.</li>
+          <li>Revisión de IVA con Claude: prompt estructurado para detectar discrepancias fiscales.</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="module-time">Bloque 4 · 65–90 min</div>
+        <div class="module-title">Plan de implementación y cierre</div>
+        <ul>
+          <li>Mapa del flujo de trabajo de Norma con IA integrada paso a paso.</li>
+          <li>Selección de 2-3 herramientas prioritarias para implementar esta semana.</li>
+          <li>Preguntas frecuentes y límites de la IA en contabilidad: qué NO delegar.</li>
+          <li>Acciones concretas post-sesión con fechas y criterios de éxito.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- EJERCICIO -->
+    <div class="card">
+      <div class="card-title"><span class="icon">💪</span> Ejercicio práctico: Auditoría rápida con Claude</div>
+      <p style="margin-bottom:1.25rem;color:#475569;font-size:.9rem">Analiza un estado de resultados real con Claude e identifica anomalías, varianzas y puntos de atención — en menos de 5 minutos.</p>
+
+      <div class="exercise-box">
+        <h3>📋 Paso a paso</h3>
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div><strong>Prepara los datos</strong> — Toma el estado de resultados del último trimestre. Puedes pegarlo como texto o subir el PDF/Excel directamente a Claude.</div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div>
+            <strong>Usa este prompt base en Claude:</strong>
+            <div class="prompt-box">Eres un contador experto. Analiza el siguiente estado de resultados y:
+1. Identifica todas las varianzas significativas (&gt;10% vs período anterior)
+2. Detecta gastos o ingresos que parezcan inusuales o fuera de rango
+3. Realiza un análisis de causa raíz para las 3 varianzas más importantes
+4. Indica cuáles son temporales y cuáles pueden ser permanentes
+5. Redacta un resumen ejecutivo de 5 puntos para presentar a la dirección
+
+Estado de resultados:
+[PEGAR DATOS AQUÍ]</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div><strong>Revisa el output</strong> — Verifica que las varianzas identificadas correspondan con la realidad del negocio. La IA puede cometer errores de contexto; la revisión humana sigue siendo esencial.</div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div>
+            <strong>Itera con preguntas de seguimiento:</strong>
+            <ul style="margin-top:.4rem">
+              <li>"¿Qué pasaría si los gastos de nómina aumentan 15% el próximo trimestre?"</li>
+              <li>"¿Cómo se compara este margen bruto con el promedio del sector?"</li>
+              <li>"Identifica las 3 partidas de gasto con mayor potencial de reducción."</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div><strong>Exporta</strong> — Copia el análisis a Word o Google Docs para incluirlo en el reporte mensual. Resultado esperado: análisis completo + narrativa ejecutiva en menos de 5 minutos.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.25rem;padding:.75rem 1rem;background:#f0fdf4;border-radius:.6rem;border-left:3px solid #16a34a">
+        <strong style="color:#16a34a;font-size:.88rem">Resultado esperado:</strong>
+        <span style="font-size:.88rem;color:#475569"> Análisis de varianzas completo + narrativa ejecutiva en menos de 5 minutos vs. 60-90 minutos de forma manual.</span>
+      </div>
+    </div>
+
+    <!-- RECURSOS -->
+    <div class="card">
+      <div class="card-title"><span class="icon">📚</span> Recursos recomendados</div>
+      <ul class="resources-list">
+        <li>
+          <a href="https://jetpackworkflow.com/blog/how-accountants-use-claude-ai-real-firm-examples/" target="_blank">Cómo los contadores usan Claude AI — ejemplos reales de despachos</a>
+          <span>— Jetpack Workflow</span>
+        </li>
+        <li>
+          <a href="https://www.cfoconnect.eu/resources/finance-insights/25-claude-prompts-finance-teams-cowork-code-fpa/" target="_blank">25 prompts de Claude para equipos de finanzas: análisis FP&amp;A</a>
+          <span>— CFO Connect</span>
+        </li>
+        <li>
+          <a href="https://www.xero.com/us/ai-in-accounting/" target="_blank">IA en contabilidad: guía completa de Xero para contadores</a>
+          <span>— Xero US</span>
+        </li>
+        <li>
+          <a href="https://www.anthropic.com/news/finance-agents" target="_blank">Agentes de IA para servicios financieros — casos de uso reales</a>
+          <span>— Anthropic</span>
+        </li>
+        <li>
+          <a href="https://taxdome.com/blog/best-ai-software-accounting" target="_blank">Los 10 mejores softwares de IA para contabilidad en 2025</a>
+          <span>— TaxDome Blog</span>
+        </li>
+        <li>
+          <a href="https://dext.com/en/news/dext-delivers-strong-global-growth-and-launches-ai-agent-beta-to-power-the-next-era-of-bookkeeping-automation" target="_blank">Dext lanza AI Agent Beta para automatización de bookkeeping</a>
+          <span>— Dext</span>
+        </li>
+        <li>
+          <a href="https://resolvepay.com/blog/17-statistics-that-prove-automated-reconciliation-slashes-month-end-close" target="_blank">17 estadísticas que prueban el impacto de la conciliación automatizada</a>
+          <span>— Resolve</span>
+        </li>
+        <li>
+          <a href="https://platform.claude.ai/cookbook/skills-notebooks-02-skills-financial-applications" target="_blank">Claude Skills para aplicaciones financieras — Cookbook oficial</a>
+          <span>— Anthropic Platform</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ACCIONES POST-SESIÓN -->
+    <div class="card">
+      <div class="card-title"><span class="icon">🔗</span> Acciones post-sesión</div>
+      <ul class="checklist">
+        <li><strong>Esta semana:</strong> Probar Claude con el estado de resultados del mes actual usando el prompt del ejercicio.</li>
+        <li><strong>Esta semana:</strong> Activar Intuit Assist en QuickBooks (si ya se usa) o crear cuenta en Xero con período de prueba gratuito.</li>
+        <li><strong>Semana 2:</strong> Instalar Dext Prepare y capturar 10 facturas reales para probar la automatización de documentos.</li>
+        <li><strong>Semana 2:</strong> Crear una plantilla de prompts personalizados para las tareas contables más repetitivas.</li>
+        <li><strong>Semana 3:</strong> Automatizar el reporte mensual de varianzas usando Claude + Excel Copilot en paralelo.</li>
+        <li><strong>30 días:</strong> Sesión de revisión para medir el ahorro de tiempo real vs. el flujo de trabajo anterior.</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>Sesión preparada para <strong>Norma</strong> · Asesoría 1-on-1 de IA aplicada a contabilidad · 90 minutos</p>
+    <p style="margin-top:.4rem;font-size:.78rem">La IA es una herramienta de apoyo. La responsabilidad profesional, el criterio y la revisión final siempre corresponden al contador.</p>
+  </footer>
+
+</body>
+</html>

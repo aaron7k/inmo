@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 03 · Habilidad para hacer prompt · Efren</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#F59E0B 0%,#D97706 100%);padding:3rem 2rem;color:white;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:320px;height:320px;background:rgba(255,255,255,0.07);border-radius:50%}
+    .hero::after{content:'';position:absolute;bottom:-80px;left:-40px;width:240px;height:240px;background:rgba(0,0,0,0.06);border-radius:50%}
+    .hero-inner{max-width:900px;margin:0 auto;position:relative;z-index:1}
+    .tier-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:.3rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem;text-transform:uppercase;backdrop-filter:blur(4px)}
+    .hero h1{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;line-height:1.2;margin-bottom:.5rem}
+    .hero-sub{font-size:1rem;opacity:.85;margin-bottom:1.25rem;font-weight:500}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:1rem;opacity:.9;font-size:.9rem;margin-top:.75rem}
+    .hero-meta span{display:flex;align-items:center;gap:.4rem;background:rgba(255,255,255,0.15);padding:.3rem .85rem;border-radius:999px;backdrop-filter:blur(4px)}
+
+    /* LAYOUT */
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+
+    /* CARDS */
+    .card{background:white;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.04)}
+    .card-title{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:#0f172a}
+    .card-title .emoji{font-size:1.4rem}
+
+    /* OBJETIVOS */
+    .objectives-list{list-style:none;display:flex;flex-direction:column;gap:.75rem}
+    .objectives-list li{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 1rem;background:#fffbeb;border-radius:.6rem;border-left:3px solid #F59E0B;font-size:.95rem}
+    .obj-num{font-weight:800;color:#D97706;font-size:1rem;flex-shrink:0;margin-top:.05rem}
+
+    /* CONCEPTS */
+    .concept{border-left:3px solid #F59E0B;padding-left:1.25rem;margin-bottom:2rem}
+    .concept:last-child{margin-bottom:0}
+    .concept h3{font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem}
+    .concept p{font-size:.9rem;color:#475569;margin-bottom:.75rem}
+    .concept-when{font-size:.8rem;background:#f1f5f9;border-radius:.5rem;padding:.5rem .85rem;color:#64748b;display:inline-block;margin-bottom:.75rem}
+    .concept-when strong{color:#D97706}
+    .code-block{background:#0f172a;color:#e2e8f0;border-radius:.6rem;padding:1rem 1.25rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.6;overflow-x:auto;margin:.5rem 0;white-space:pre-wrap}
+    .tag-amber{color:#fbbf24}
+    .tag-green{color:#86efac}
+    .tag-blue{color:#93c5fd}
+
+    /* TOOL GRID */
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .tool-card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;transition:box-shadow .2s,transform .2s;background:#fafafa}
+    .tool-card:hover{box-shadow:0 4px 20px rgba(245,158,11,.15);transform:translateY(-2px)}
+    .tool-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+    .tool-name{font-weight:700;font-size:.95rem;color:#0f172a}
+    .tool-desc{font-size:.82rem;color:#64748b;margin-bottom:.75rem;line-height:1.45}
+    .tool-link{font-size:.8rem;color:#D97706;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:.3rem}
+    .tool-link:hover{text-decoration:underline}
+    .badge{font-size:.72rem;padding:.15rem .6rem;border-radius:999px;font-weight:600}
+    .badge-free{background:#dcfce7;color:#16a34a}
+    .badge-paid{background:#fef3c7;color:#d97706}
+    .badge-freemium{background:#e0f2fe;color:#0369a1}
+
+    /* MODULES */
+    .module{border-left:3px solid #F59E0B;padding-left:1.25rem;margin-bottom:2rem;padding-bottom:.5rem}
+    .module:last-child{margin-bottom:0}
+    .module-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem}
+    .module-num{background:#F59E0B;color:white;font-weight:800;font-size:.75rem;padding:.25rem .65rem;border-radius:.4rem;flex-shrink:0}
+    .module-title{font-weight:700;font-size:1rem;color:#0f172a}
+    .module-time{font-size:.8rem;color:#94a3b8;margin-left:auto;flex-shrink:0}
+    .module-sub{font-size:.85rem;color:#64748b;font-style:italic;margin-bottom:.75rem}
+    .module-list{list-style:none;display:flex;flex-direction:column;gap:.35rem}
+    .module-list li{font-size:.88rem;color:#475569;display:flex;align-items:flex-start;gap:.5rem}
+    .module-list li::before{content:'→';color:#F59E0B;font-weight:700;flex-shrink:0;margin-top:.05rem}
+    .module-tag{display:inline-block;background:#fffbeb;border:1px solid #fde68a;color:#92400e;font-size:.75rem;font-weight:600;padding:.2rem .6rem;border-radius:.35rem;margin-top:.65rem}
+
+    /* EXERCISE */
+    .exercise-box{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.3);border-radius:.75rem;padding:1.5rem}
+    .exercise-title{font-weight:700;font-size:1rem;color:#92400e;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+    .step{margin-bottom:1.25rem}
+    .step-label{font-size:.8rem;font-weight:700;color:#D97706;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+    .step p{font-size:.88rem;color:#475569;margin-bottom:.4rem}
+    .prompt-bad{background:#fef2f2;border:1px solid #fecaca;border-radius:.5rem;padding:.75rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:#991b1b;margin:.4rem 0}
+    .prompt-good{background:#0f172a;color:#e2e8f0;border-radius:.6rem;padding:1rem 1.25rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.6;overflow-x:auto;margin:.4rem 0;white-space:pre-wrap}
+    .result-tip{background:white;border:1px solid #fde68a;border-radius:.5rem;padding:.75rem 1rem;font-size:.85rem;color:#92400e;margin-top:.75rem;display:flex;gap:.5rem;align-items:flex-start}
+    .result-tip strong{flex-shrink:0}
+
+    /* RESOURCES */
+    .resource-list{display:flex;flex-direction:column;gap:.85rem}
+    .resource-item{display:flex;flex-direction:column;gap:.25rem;padding:.9rem 1rem;border:1px solid #e2e8f0;border-radius:.65rem;transition:border-color .2s,background .2s}
+    .resource-item:hover{border-color:#fcd34d;background:#fffbeb}
+    .resource-name{font-weight:700;font-size:.95rem;color:#0f172a}
+    .resource-desc{font-size:.85rem;color:#64748b}
+    .resource-url{font-size:.8rem;color:#D97706;text-decoration:none;font-weight:600}
+    .resource-url:hover{text-decoration:underline}
+
+    /* ACTIONS */
+    .actions-list{list-style:none;display:flex;flex-direction:column;gap:.65rem}
+    .actions-list li{display:flex;align-items:flex-start;gap:.75rem;font-size:.9rem;color:#334155}
+    .checkbox{width:1.1rem;height:1.1rem;border:2px solid #fcd34d;border-radius:.25rem;flex-shrink:0;margin-top:.15rem;background:white}
+
+    /* TABLES */
+    table{width:100%;border-collapse:collapse;font-size:.88rem}
+    th{background:#fffbeb;color:#92400e;font-weight:700;padding:.6rem .85rem;text-align:left;border-bottom:2px solid #fde68a}
+    td{padding:.55rem .85rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#fafafa}
+    td a{color:#D97706;text-decoration:none;font-weight:600}
+    td a:hover{text-decoration:underline}
+
+    /* DIVIDER */
+    .section-divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0 0;color:#94a3b8;font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+    .section-divider::before,.section-divider::after{content:'';flex:1;height:1px;background:#e2e8f0}
+
+    /* FOOTER */
+    footer{text-align:center;padding:2.5rem 1rem;color:#94a3b8;font-size:.85rem}
+    footer strong{color:#D97706}
+
+    /* HIGHLIGHT STRIP */
+    .stat-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .stat-card{background:white;border-radius:.75rem;padding:1rem 1.25rem;text-align:center;border:1px solid #fde68a;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+    .stat-num{font-size:1.6rem;font-weight:800;color:#D97706;line-height:1}
+    .stat-label{font-size:.78rem;color:#64748b;margin-top:.3rem}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="tier-badge">Tier 1 · Fundamentos</div>
+    <h1>⚡ Habilidad para hacer prompt</h1>
+    <p class="hero-sub">Domina las técnicas que transforman la IA en tu herramienta más poderosa</p>
+    <div class="hero-meta">
+      <span>👤 Efren</span>
+      <span>📅 Viernes 5 junio 2026</span>
+      <span>👥 Todos los niveles</span>
+      <span>⏱️ 90 minutos</span>
+      <span>📍 Clase 03</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stat-strip">
+    <div class="stat-card">
+      <div class="stat-num">58</div>
+      <div class="stat-label">Técnicas de prompting documentadas (The Prompt Report 2025)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">30%</div>
+      <div class="stat-label">Mejora en resultados con prompting estructurado</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">76%</div>
+      <div class="stat-label">Reducción de costos con prompts más precisos (Cluely, 2025)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">55%</div>
+      <div class="stat-label">De usuarios de IA revisan y refinan sus prompts iterativamente</div>
+    </div>
+  </div>
+
+  <!-- OBJETIVOS -->
+  <div class="card">
+    <div class="card-title"><span class="emoji">🎯</span> Objetivos de la clase</div>
+    <ul class="objectives-list">
+      <li><span class="obj-num">01</span> Distinguir y aplicar las técnicas fundamentales de prompting — zero-shot, few-shot y chain-of-thought — eligiendo la más adecuada según el tipo de tarea.</li>
+      <li><span class="obj-num">02</span> Dominar el role prompting para obtener respuestas especializadas asignando roles, contexto, tono y restricciones al modelo de IA.</li>
+      <li><span class="obj-num">03</span> Construir prompts estructurados usando la fórmula RTCF (Rol + Tarea + Contexto + Formato), etiquetas XML y cadenas de prompts para tareas complejas.</li>
+      <li><span class="obj-num">04</span> Identificar y corregir los errores más comunes de prompting: prompts vagos, sin contexto, sin formato definido, y transformarlos en prompts de alto rendimiento.</li>
+      <li><span class="obj-num">05</span> Aplicar técnicas avanzadas (self-criticism, decomposition, prompt chaining) en casos de uso reales: marketing, ventas, análisis y atención al cliente.</li>
+    </ul>
+  </div>
+
+  <!-- CONCEPTOS CLAVE -->
+  <div class="card">
+    <div class="card-title"><span class="emoji">🔑</span> Conceptos clave</div>
+
+    <div class="concept">
+      <h3>1 · Zero-Shot Prompting</h3>
+      <p>Pedirle al modelo que realice una tarea <strong>sin proporcionar ejemplos previos</strong>. El modelo se apoya completamente en su entrenamiento para inferir la respuesta correcta.</p>
+      <div class="concept-when"><strong>Cuándo usarlo:</strong> Traducciones simples, resúmenes directos, preguntas factuales, clasificaciones obvias.</div>
+      <div class="code-block"><span class="tag-amber">Prompt:</span> Clasifica la emoción del siguiente texto:
+<span class="tag-green">"Este producto es increíble, lo recomiendo a todos."</span>
+
+<span class="tag-amber">Respuesta:</span> <span class="tag-green">Positiva</span></div>
+    </div>
+
+    <div class="concept">
+      <h3>2 · Few-Shot Prompting</h3>
+      <p>Proporcionar <strong>2 a 5 ejemplos</strong> de entrada-salida antes de la tarea real. El modelo aprende el patrón por demostración — aprendizaje en contexto (in-context learning).</p>
+      <div class="concept-when"><strong>Cuándo usarlo:</strong> Clasificación personalizada, contenido con formato específico, tareas donde el estilo o tono importa.</div>
+      <div class="code-block"><span class="tag-amber">Ejemplo 1:</span> "El servicio fue terrible." → <span class="tag-green">Negativa</span>
+<span class="tag-amber">Ejemplo 2:</span> "No estuvo mal, cumplió lo esperado." → <span class="tag-blue">Neutral</span>
+<span class="tag-amber">Ejemplo 3:</span> "¡Absolutamente maravilloso!" → <span class="tag-green">Positiva</span>
+<span class="tag-amber">Ahora clasifica:</span> "Esperé 2 horas y nadie me atendió." → <span class="tag-amber">?</span></div>
+    </div>
+
+    <div class="concept">
+      <h3>3 · Chain-of-Thought (CoT) — Cadena de pensamiento</h3>
+      <p>Instruir al modelo para que <strong>explique su razonamiento paso a paso</strong> antes de dar la respuesta final. Reduce errores en tareas de lógica, matemáticas y análisis complejo. El truco más simple: agregar "Piensa paso a paso" al final del prompt.</p>
+      <div class="concept-when"><strong>Cuándo usarlo:</strong> Problemas matemáticos, decisiones de negocio, análisis de escenarios, diagnóstico de situaciones.</div>
+      <div class="code-block"><span class="tag-amber">Prompt:</span> Un agente vende 3 propiedades: $180,000 · $245,000 · $310,000
+Su comisión es del 3% del total. ¿Cuánto gana?
+<span class="tag-green">Piensa paso a paso.</span>
+
+<span class="tag-amber">Respuesta:</span>
+Paso 1: Total = $180,000 + $245,000 + $310,000 = <span class="tag-green">$735,000</span>
+Paso 2: Comisión = $735,000 × 3% = <span class="tag-green">$22,050</span></div>
+    </div>
+
+    <div class="concept">
+      <h3>4 · Role Prompting — Asignación de roles</h3>
+      <p>Asignar al modelo un <strong>rol, personalidad o área de expertise</strong> para obtener respuestas alineadas con esa perspectiva. Funciona mejor en el system prompt o al inicio de la conversación.</p>
+      <div class="concept-when"><strong>Cuándo usarlo:</strong> Chatbots, contenido especializado, análisis jurídico/financiero/técnico, asistentes con personalidad de marca.</div>
+      <div class="code-block"><span class="tag-amber">Rol avanzado con restricciones:</span>
+Eres María, agente de atención al cliente de InmoPlus.
+Tu tono es amable y profesional. Respondes <span class="tag-green">SOLO</span> preguntas
+sobre propiedades en venta o renta.
+Si el cliente pregunta algo fuera de tu área, di:
+<span class="tag-green">"Para eso te conectaré con el especialista correcto."</span></div>
+    </div>
+
+    <div class="concept">
+      <h3>5 · Prompts estructurados con XML / Delimitadores</h3>
+      <p>Usar <strong>etiquetas o delimitadores</strong> para separar instrucciones, contexto y datos. Reduce ambigüedad y mejora la consistencia, especialmente en prompts largos o complejos.</p>
+      <div class="concept-when"><strong>Cuándo usarlo:</strong> Prompts largos con múltiples secciones, inputs variables, workflows automatizados, producción.</div>
+      <div class="code-block"><span class="tag-blue">&lt;rol&gt;</span>Experto en bienes raíces comerciales<span class="tag-blue">&lt;/rol&gt;</span>
+<span class="tag-blue">&lt;tarea&gt;</span>Escribe un correo de seguimiento post-visita<span class="tag-blue">&lt;/tarea&gt;</span>
+<span class="tag-blue">&lt;contexto&gt;</span>
+  Cliente: Carlos Méndez
+  Propiedad: Oficina 302, Torre Reforma, 85 m²
+  Precio: $1,200,000 MXN | Visitó ayer, quiere tiempo para decidir
+<span class="tag-blue">&lt;/contexto&gt;</span>
+<span class="tag-blue">&lt;formato&gt;</span>Correo profesional, máx 150 palabras, tono cálido sin presión<span class="tag-blue">&lt;/formato&gt;</span></div>
+    </div>
+
+    <div class="concept">
+      <h3>6 · Self-Criticism · Decomposition · Prompt Chaining</h3>
+      <p><strong>Self-Criticism:</strong> Pedir al modelo que evalúe y mejore su propia respuesta usando rúbricas definidas. &nbsp;|&nbsp; <strong>Decomposition:</strong> Dividir tareas complejas en subtareas manejables. &nbsp;|&nbsp; <strong>Prompt Chaining:</strong> Usar la salida de un prompt como entrada del siguiente para flujos multi-paso.</p>
+      <div class="concept-when"><strong>Cuándo usarlo:</strong> Proyectos grandes, análisis de mercado, reportes ejecutivos, automatizaciones complejas.</div>
+      <div class="code-block"><span class="tag-amber">Chaining de 4 pasos para análisis de mercado:</span>
+<span class="tag-green">Prompt 1</span> → Investigar precios en la zona
+<span class="tag-green">Prompt 2</span> → Analizar competencia (usa output del P1)
+<span class="tag-green">Prompt 3</span> → Generar estrategia de precio (usa output P1+P2)
+<span class="tag-green">Prompt 4</span> → Redactar reporte ejecutivo (usa todo lo anterior)</div>
+    </div>
+
+  </div>
+
+  <!-- STACK TECNOLÓGICO -->
+  <div class="card">
+    <div class="card-title"><span class="emoji">🛠️</span> Stack tecnológico</div>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <span class="tool-name">Claude</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-desc">Anthropic. Excelente para razonamiento complejo, prompts estructurados y contextos muy largos (200K tokens). Ideal para chain-of-thought.</p>
+        <a class="tool-link" href="https://claude.ai" target="_blank">→ claude.ai</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <span class="tool-name">ChatGPT</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-desc">OpenAI. El más conocido; GPT-4o incluye visión, memoria y herramientas. Ideal para tareas generales, código y análisis de imágenes.</p>
+        <a class="tool-link" href="https://chatgpt.com" target="_blank">→ chatgpt.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <span class="tool-name">Gemini</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-desc">Google. Integrado con Google Workspace y búsqueda web en tiempo real. Ideal para investigación con fuentes actuales y documentos de Drive.</p>
+        <a class="tool-link" href="https://gemini.google.com" target="_blank">→ gemini.google.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <span class="tool-name">Perplexity AI</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-desc">Motor de búsqueda con IA que cita fuentes en tiempo real. Ideal para investigación de mercados, noticias del sector inmobiliario y research.</p>
+        <a class="tool-link" href="https://www.perplexity.ai" target="_blank">→ perplexity.ai</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <span class="tool-name">PromptHero</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-desc">Biblioteca de prompts para imágenes (Midjourney, DALL-E, Stable Diffusion) y texto. Inspírate en prompts de la comunidad y encuentra plantillas.</p>
+        <a class="tool-link" href="https://prompthero.com" target="_blank">→ prompthero.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <span class="tool-name">PromptLayer</span>
+          <span class="badge badge-freemium">Freemium</span>
+        </div>
+        <p class="tool-desc">Plataforma para registrar, versionar, probar y optimizar prompts en producción. Ideal para equipos que usan IA a escala y quieren métricas.</p>
+        <a class="tool-link" href="https://promptlayer.com" target="_blank">→ promptlayer.com</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <span class="tool-name">LangChain</span>
+          <span class="badge badge-free">Gratis</span>
+        </div>
+        <p class="tool-desc">Framework open-source para construir aplicaciones con LLMs: cadenas de prompts, agentes, RAG y pipelines multi-modelo. Para perfiles técnicos.</p>
+        <a class="tool-link" href="https://www.langchain.com" target="_blank">→ langchain.com</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MÓDULOS -->
+  <div class="card">
+    <div class="card-title"><span class="emoji">📋</span> Contenido de la clase — 4 módulos</div>
+
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Módulo 1</span>
+        <span class="module-title">Técnicas básicas — De cero a prompts que funcionan</span>
+        <span class="module-time">20 min</span>
+      </div>
+      <p class="module-sub">Construir la base: por qué la estructura del prompt importa tanto como el modelo que uses.</p>
+      <ul class="module-list">
+        <li>¿Qué es un prompt y por qué su estructura determina el 50% del resultado?</li>
+        <li>La fórmula RTCF: Rol + Tarea + Contexto + Formato — el marco universal</li>
+        <li>Zero-shot vs. Few-shot: cuándo usar cada técnica y cuándo combinarlas</li>
+        <li>Demostración en vivo: el mismo prompt en Claude, ChatGPT y Gemini — comparando diferencias</li>
+        <li>Ejercicio rápido: reformular 3 prompts vagos con la estructura RTCF</li>
+      </ul>
+      <span class="module-tag">Zero-shot · Few-shot · Estructura RTCF · Claridad e intención</span>
+    </div>
+
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Módulo 2</span>
+        <span class="module-title">Técnicas avanzadas — Haciendo que la IA razone como experto</span>
+        <span class="module-time">25 min</span>
+      </div>
+      <p class="module-sub">Pasar del prompting básico a flujos de trabajo complejos y razonamiento estructurado.</p>
+      <ul class="module-list">
+        <li>Chain-of-Thought: activa el "modo razonamiento" con una sola frase ("Piensa paso a paso")</li>
+        <li>Role prompting avanzado: roles + restricciones + tono + comportamiento fallback</li>
+        <li>Prompts estructurados con etiquetas XML y delimitadores para eliminar ambigüedad</li>
+        <li>Self-criticism: hacer que el modelo revise su propio trabajo usando rúbricas</li>
+        <li>Decomposition: dividir proyectos complejos en subtareas manejables y secuenciales</li>
+        <li>Prompt chaining en acción: análisis de mercado inmobiliario en 4 prompts encadenados</li>
+      </ul>
+      <span class="module-tag">CoT · Role Prompting · XML · Self-Criticism · Decomposition · Chaining</span>
+    </div>
+
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Módulo 3</span>
+        <span class="module-title">Práctica guiada — Taller: transforma tus prompts</span>
+        <span class="module-time">25 min</span>
+      </div>
+      <p class="module-sub">Trabajo colaborativo en tiempo real con los prompts reales que cada participante usa en su trabajo diario.</p>
+      <ul class="module-list">
+        <li>Cada participante comparte un prompt que usa regularmente en su área de trabajo</li>
+        <li>Diagnóstico grupal del prompt: ¿qué le falta? ¿qué sobra? ¿qué mejora se espera?</li>
+        <li>Aplicar en vivo: añadir rol, contexto, cadena de pensamiento y formato de salida</li>
+        <li>Ejecutar el prompt original vs. el prompt mejorado — comparación de resultados en tiempo real</li>
+        <li>Ronda de feedback grupal y exploración de variaciones adicionales</li>
+      </ul>
+      <span class="module-tag">Taller · Diagnóstico · Iteración · Claude Sonnet · ChatGPT-4o</span>
+    </div>
+
+    <div class="module">
+      <div class="module-header">
+        <span class="module-num">Módulo 4</span>
+        <span class="module-title">Casos de uso reales — IA aplicada al negocio</span>
+        <span class="module-time">20 min</span>
+      </div>
+      <p class="module-sub">De la teoría a la aplicación directa en inmobiliaria y negocios: prompts listos para usar desde hoy.</p>
+      <ul class="module-list">
+        <li><strong>Marketing:</strong> generar anuncios de propiedades con diferentes tonos para Instagram, email y WhatsApp</li>
+        <li><strong>Ventas:</strong> correos de seguimiento personalizados según etapa del embudo y perfil del cliente</li>
+        <li><strong>Operaciones:</strong> análisis de contratos, extracción de datos clave, resúmenes ejecutivos de reportes</li>
+        <li><strong>Atención al cliente:</strong> respuestas estándar consistentes que mantienen el toque humano y personalización</li>
+        <li><strong>Análisis de mercado:</strong> research de zonas, comparativas de competencia y análisis de tendencias de precio</li>
+      </ul>
+      <span class="module-tag">Marketing · Ventas · Operaciones · CX · Análisis · Biblioteca de 20 prompts</span>
+    </div>
+
+  </div>
+
+  <!-- EJERCICIO PRÁCTICO -->
+  <div class="card">
+    <div class="card-title"><span class="emoji">💪</span> Ejercicio práctico</div>
+    <div class="exercise-box">
+      <div class="exercise-title">⚡ Del prompt malo al prompt poderoso</div>
+
+      <div class="step">
+        <div class="step-label">Punto de partida — Prompt original (malo)</div>
+        <p>Este tipo de prompt produce resultados genéricos, inconsistentes e inutilizables:</p>
+        <div class="prompt-bad">Escríbeme algo sobre esta propiedad para publicarla.</div>
+        <p style="font-size:.82rem;color:#94a3b8;margin-top:.4rem">Problema: sin rol, sin contexto, sin formato, sin audiencia definida.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-label">Paso 1 — Añadir Rol</div>
+        <div class="prompt-good">Eres un copywriter especializado en bienes raíces de lujo
+con experiencia en marketing digital para el mercado mexicano.</div>
+      </div>
+
+      <div class="step">
+        <div class="step-label">Paso 2 — Añadir Tarea específica y múltiple</div>
+        <div class="prompt-good">Escribe 3 versiones de un anuncio para la siguiente propiedad:
+- Versión Instagram: máximo 150 caracteres, incluye 2-3 emojis relevantes
+- Versión Email marketing: 300 palabras, tono elegante y detallado
+- Versión WhatsApp: máximo 100 caracteres, directo y con llamado a la acción</div>
+      </div>
+
+      <div class="step">
+        <div class="step-label">Paso 3 — Añadir Contexto</div>
+        <div class="prompt-good">PROPIEDAD:
+- Tipo: Departamento, 2 recámaras, 2 baños
+- Superficie: 85 m², piso 12 con balcón y vista al parque
+- Amenidades: Gym, alberca, seguridad 24/7, área de coworking
+- Ubicación: Col. Polanco, CDMX
+- Precio: $4,200,000 MXN
+- Público objetivo: Profesionales de 30-45 años, familias jóvenes</div>
+      </div>
+
+      <div class="step">
+        <div class="step-label">Paso 4 — Añadir Formato y restricciones</div>
+        <div class="prompt-good">Usa lenguaje aspiracional pero honesto.
+Incluye un llamado a la acción en cada versión.
+Evita clichés como "no te pierdas esta oportunidad".
+Enumera claramente las 3 versiones con etiqueta de plataforma.</div>
+      </div>
+
+      <div class="result-tip">
+        <strong>Resultado:</strong> Comparar en vivo la respuesta del prompt original (vaga, genérica) vs. el prompt mejorado (3 piezas listas para publicar, en tono correcto, con CTA). La diferencia en calidad es inmediata y medible.
+      </div>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <div class="card">
+    <div class="card-title"><span class="emoji">📚</span> Recursos y referencias</div>
+    <div class="resource-list">
+
+      <div class="resource-item">
+        <span class="resource-name">Anthropic — Prompt Engineering Overview</span>
+        <span class="resource-desc">Guía oficial de Anthropic con técnicas avanzadas, mejores prácticas y ejemplos para Claude. La referencia más actualizada del creador del modelo.</span>
+        <a class="resource-url" href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" target="_blank">docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview</a>
+      </div>
+
+      <div class="resource-item">
+        <span class="resource-name">Anthropic — Tutorial Interactivo de Prompt Engineering</span>
+        <span class="resource-desc">Curso de 9 capítulos en GitHub: desde estructura básica hasta casos de uso empresariales (legal, finanzas, código). Incluye ejercicios prácticos y clave de respuestas.</span>
+        <a class="resource-url" href="https://github.com/anthropics/prompt-eng-interactive-tutorial" target="_blank">github.com/anthropics/prompt-eng-interactive-tutorial</a>
+      </div>
+
+      <div class="resource-item">
+        <span class="resource-name">OpenAI — Prompt Engineering Guide</span>
+        <span class="resource-desc">6 estrategias y 20+ tácticas concretas de OpenAI para ChatGPT y GPT-4o. Incluye ejemplos de código, tácticas específicas y casos de producción.</span>
+        <a class="resource-url" href="https://platform.openai.com/docs/guides/prompt-engineering" target="_blank">platform.openai.com/docs/guides/prompt-engineering</a>
+      </div>
+
+      <div class="resource-item">
+        <span class="resource-name">OpenAI Cookbook</span>
+        <span class="resource-desc">Repositorio de ejemplos prácticos, recetas y notebooks para casos de uso reales con GPT-4o. Código Python listo para copiar y adaptar.</span>
+        <a class="resource-url" href="https://cookbook.openai.com" target="_blank">cookbook.openai.com</a>
+      </div>
+
+      <div class="resource-item">
+        <span class="resource-name">The Prompt Report 2025 — Paper Académico (58 técnicas)</span>
+        <span class="resource-desc">El estudio científico más completo sobre técnicas de prompting. Clasifica y evalúa 58 métodos en 6 categorías principales. Referencia clave para equipos técnicos.</span>
+        <a class="resource-url" href="https://arxiv.org/pdf/2509.11295" target="_blank">arxiv.org/pdf/2509.11295</a>
+      </div>
+
+      <div class="resource-item">
+        <span class="resource-name">IBM — Prompt Engineering Techniques</span>
+        <span class="resource-desc">Artículo técnico accesible de IBM que explica las principales técnicas con ejemplos claros y comparaciones sin necesidad de conocimiento previo de programación.</span>
+        <a class="resource-url" href="https://www.ibm.com/think/topics/prompt-engineering-techniques" target="_blank">ibm.com/think/topics/prompt-engineering-techniques</a>
+      </div>
+
+      <div class="resource-item">
+        <span class="resource-name">Lakera — Ultimate Guide to Prompt Engineering 2026</span>
+        <span class="resource-desc">Guía actualizada que cubre técnicas avanzadas, prompt injection, seguridad en IA y tendencias emergentes en sistemas multiagente y prompts multimodales.</span>
+        <a class="resource-url" href="https://www.lakera.ai/blog/prompt-engineering-guide" target="_blank">lakera.ai/blog/prompt-engineering-guide</a>
+      </div>
+
+      <div class="resource-item">
+        <span class="resource-name">Claude — Prompting Best Practices (Docs oficiales)</span>
+        <span class="resource-desc">Documentación oficial de las mejores prácticas para Claude: etiquetas XML, claridad semántica, control de output y técnicas específicas para este modelo.</span>
+        <a class="resource-url" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices" target="_blank">platform.claude.com/docs — Prompting Best Practices</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ACCIONES POST-CLASE -->
+  <div class="card">
+    <div class="card-title"><span class="emoji">🔗</span> Acciones post-clase</div>
+    <ul class="actions-list">
+      <li><span class="checkbox"></span> Instalar y configurar Claude, ChatGPT y Gemini en tu navegador (extensiones o bookmarks del equipo)</li>
+      <li><span class="checkbox"></span> Aplicar la fórmula RTCF (Rol + Tarea + Contexto + Formato) en el próximo prompt que uses en tu trabajo esta semana</li>
+      <li><span class="checkbox"></span> Crear tu biblioteca personal de 5 prompts útiles para tus tareas diarias, con al menos una técnica avanzada (CoT, Few-shot o Role)</li>
+      <li><span class="checkbox"></span> Probar Chain-of-Thought en un análisis de mercado o reporte de tu área — documentar la diferencia de calidad</li>
+      <li><span class="checkbox"></span> Completar los capítulos 1 a 6 del tutorial interactivo de Anthropic en GitHub (aprox. 45 minutos)</li>
+      <li><span class="checkbox"></span> Compartir en el grupo de WhatsApp / Slack un prompt transformado (antes/después) con el resultado obtenido</li>
+      <li><span class="checkbox"></span> Explorar el OpenAI Cookbook y elegir 1 receta aplicable a tu área de trabajo para la próxima semana</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  <p><strong>Clase 03 · ⚡ Habilidad para hacer prompt</strong> &nbsp;·&nbsp; Presentado por <strong>Efren</strong></p>
+  <p style="margin-top:.4rem">Serie IA Aplicada &nbsp;·&nbsp; InmoPlus 2026 &nbsp;·&nbsp; Tier 1 · Fundamentos</p>
+</footer>
+
+</body>
+</html>
